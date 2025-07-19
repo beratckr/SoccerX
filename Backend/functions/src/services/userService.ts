@@ -1,4 +1,6 @@
 import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import appleSignin from "apple-signin-auth";
 import { db } from "../index";
 import { User, ApiResponse } from "../types";
 
@@ -109,6 +111,74 @@ export const updateUserProfile = functions.https.onCall(async (data, context) =>
     const response: ApiResponse<null> = {
       success: false,
       error: "Failed to update profile",
+    };
+
+    return response;
+  }
+});
+
+/**
+ * Authenticate user with Apple Sign-In
+ */
+export const authenticateWithApple = functions.https.onCall(async (data, context) => {
+  const { identityToken, authorizationCode, user } = data;
+
+  if (!identityToken || !authorizationCode) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Identity token and authorization code are required"
+    );
+  }
+
+  try {
+    // Verify the Apple identity token
+    const appleIdTokenClaims = await appleSignin.verifyIdToken(identityToken, {
+      audience: "com.soccerx.app", // Your app's bundle ID
+      ignoreExpiration: false,
+    });
+
+    // Create Firebase custom token
+    const firebaseToken = await admin.auth().createCustomToken(appleIdTokenClaims.sub, {
+      provider: "apple.com",
+      email: appleIdTokenClaims.email,
+      email_verified: appleIdTokenClaims.email_verified === "true",
+    });
+
+    // Check if user document exists, create if not
+    const userRef = db.collection("users").doc(appleIdTokenClaims.sub);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      const newUser: Partial<User> = {
+        uid: appleIdTokenClaims.sub,
+        email: appleIdTokenClaims.email || "",
+        displayName: user?.firstName && user?.lastName 
+          ? `${user.firstName} ${user.lastName}` 
+          : appleIdTokenClaims.email?.split("@")[0] || "",
+        profileImageUrl: undefined,
+        createdAt: new Date() as any,
+        updatedAt: new Date() as any,
+        isPremium: false,
+        groups: [],
+      };
+
+      await userRef.set(newUser);
+      functions.logger.info(`Apple user profile created for ${appleIdTokenClaims.sub}`);
+    }
+
+    const response: ApiResponse<{ firebaseToken: string }> = {
+      success: true,
+      data: { firebaseToken },
+      message: "Apple authentication successful",
+    };
+
+    return response;
+  } catch (error) {
+    functions.logger.error("Error authenticating with Apple:", error);
+    
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "Apple authentication failed",
     };
 
     return response;
