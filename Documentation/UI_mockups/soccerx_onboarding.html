@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Onboarding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Animation */
+        .field-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(46, 204, 113, 0.3) 35px, rgba(46, 204, 113, 0.3) 70px),
+                repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(46, 204, 113, 0.3) 35px, rgba(46, 204, 113, 0.3) 70px);
+            animation: fieldMove 20s linear infinite;
+        }
+
+        @keyframes fieldMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(70px, 70px); }
+        }
+
+        /* Onboarding Slides */
+        .onboarding-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 60px 30px 40px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Slide 1 - Welcome */
+        .logo-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(46, 204, 113, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #888;
+            text-align: center;
+            line-height: 1.4;
+            max-width: 280px;
+        }
+
+        /* Slide 2+ - Permissions */
+        .permission-slide {
+            padding-top: 100px;
+        }
+
+        .permission-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 50px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .permission-title {
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .permission-description {
+            font-size: 16px;
+            color: #999;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            padding: 0 20px;
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .feature-list {
+            margin-bottom: auto;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+        }
+
+        .feature-text {
+            flex: 1;
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        /* Buttons */
+        .button-container {
+            padding: 20px 0;
+            animation: fadeInUp 0.9s ease-out;
+        }
+
+        .primary-button {
+            width: 100%;
+            height: 56px;
+            background: #2ECC71;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
+        }
+
+        .primary-button:active {
+            transform: translateY(0);
+        }
+
+        .apple-button {
+            background: #fff;
+            color: #000;
+        }
+
+        .apple-logo {
+            font-size: 20px;
+        }
+
+        .secondary-button {
+            width: 100%;
+            height: 44px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 15px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .secondary-button:hover {
+            color: #999;
+        }
+
+        /* Progress Dots */
+        .progress-dots {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #2ECC71;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Permission Badge */
+        .permission-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(46, 204, 113, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #2ECC71;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .primary-button.loading .button-text {
+            display: none;
+        }
+
+        .primary-button.loading .loading-spinner {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <div class="field-background"></div>
+            
+            <div class="onboarding-container" id="onboardingContainer">
+                <!-- Slide 1: Welcome -->
+                <div class="slide">
+                    <div class="logo-container">
+                        <div class="logo">⚽</div>
+                        <h1>SoccerX</h1>
+                        <p class="subtitle">Track your game. Elevate your play. Compete with friends.</p>
+                    </div>
+                    <div class="button-container">
+                        <button class="primary-button" onclick="nextSlide()">
+                            Get Started
+                        </button>
+                        <button class="secondary-button" onclick="nextSlide()">
+                            I already have an account
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Sign in with Apple -->
+                <div class="slide">
+                    <div class="permission-badge">Step 1 of 4</div>
+                    <div class="permission-icon">👤</div>
+                    <h2 class="permission-title">Create Your Account</h2>
+                    <p class="permission-description">
+                        Sign in with Apple for secure access to your stats across all your devices.
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">🔒</div>
+                            <span class="feature-text">Private & secure login</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📱</div>
+                            <span class="feature-text">Sync between iPhone & Watch</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">👥</div>
+                            <span class="feature-text">Join groups with friends</span>
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <button class="primary-button apple-button" onclick="signInWithApple()">
+                            <span class="apple-logo">🍎</span>
+                            <span class="button-text">Sign in with Apple</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Health Permission -->
+                <div class="slide">
+                    <div class="permission-badge">Step 2 of 4</div>
+                    <div class="permission-icon">❤️</div>
+                    <h2 class="permission-title">Connect to Health</h2>
+                    <p class="permission-description">
+                        Allow SoccerX to track your workouts and read heart rate data for accurate game analytics.
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">💪</div>
+                            <span class="feature-text">Track calories burned</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📊</div>
+                            <span class="feature-text">Monitor heart rate zones</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🏃</div>
+                            <span class="feature-text">Measure fitness improvement</span>
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <button class="primary-button" onclick="requestHealthKit()">
+                            <span class="button-text">Allow Health Access</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                        <button class="secondary-button" onclick="nextSlide()">
+                            Not now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Location Permission -->
+                <div class="slide">
+                    <div class="permission-badge">Step 3 of 4</div>
+                    <div class="permission-icon">📍</div>
+                    <h2 class="permission-title">Enable Location</h2>
+                    <p class="permission-description">
+                        GPS tracking during games helps calculate distance, speed, and create your personal heatmap.
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">📏</div>
+                            <span class="feature-text">Accurate distance tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">⚡</div>
+                            <span class="feature-text">Max speed & sprint detection</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🗺️</div>
+                            <span class="feature-text">Premium heatmaps</span>
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <button class="primary-button" onclick="requestLocation()">
+                            <span class="button-text">Allow While Using App</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                        <button class="secondary-button" onclick="nextSlide()">
+                            Not now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Notifications -->
+                <div class="slide">
+                    <div class="permission-badge">Step 4 of 4</div>
+                    <div class="permission-icon">🔔</div>
+                    <h2 class="permission-title">Stay Connected</h2>
+                    <p class="permission-description">
+                        Get notified when friends complete games and weekly leaderboard updates.
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">🏆</div>
+                            <span class="feature-text">Weekly challenge results</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">👥</div>
+                            <span class="feature-text">Group activity updates</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🎯</div>
+                            <span class="feature-text">Personal achievements</span>
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <button class="primary-button" onclick="requestNotifications()">
+                            <span class="button-text">Enable Notifications</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                        <button class="secondary-button" onclick="completeOnboarding()">
+                            Skip for now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Ready to Play -->
+                <div class="slide">
+                    <div class="logo-container">
+                        <div class="logo" style="animation: pulse 1s ease-in-out infinite;">🎉</div>
+                        <h1>You're All Set!</h1>
+                        <p class="subtitle">Put on your Apple Watch and let's track your first game.</p>
+                    </div>
+                    <div class="button-container">
+                        <button class="primary-button" onclick="goToHome()">
+                            <span class="button-text">Start Playing</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 6;
+        const container = document.getElementById('onboardingContainer');
+        const dots = document.querySelectorAll('.dot');
+
+        function updateSlide() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function showLoading(button) {
+            button.classList.add('loading');
+        }
+
+        function hideLoading(button) {
+            button.classList.remove('loading');
+        }
+
+        function signInWithApple() {
+            const button = event.target.closest('.primary-button');
+            showLoading(button);
+            
+            // Simulate API call
+            setTimeout(() => {
+                hideLoading(button);
+                nextSlide();
+            }, 1500);
+        }
+
+        function requestHealthKit() {
+            const button = event.target.closest('.primary-button');
+            showLoading(button);
+            
+            setTimeout(() => {
+                hideLoading(button);
+                nextSlide();
+            }, 1000);
+        }
+
+        function requestLocation() {
+            const button = event.target.closest('.primary-button');
+            showLoading(button);
+            
+            setTimeout(() => {
+                hideLoading(button);
+                nextSlide();
+            }, 1000);
+        }
+
+        function requestNotifications() {
+            const button = event.target.closest('.primary-button');
+            showLoading(button);
+            
+            setTimeout(() => {
+                hideLoading(button);
+                nextSlide();
+            }, 1000);
+        }
+
+        function completeOnboarding() {
+            nextSlide();
+        }
+
+        function goToHome() {
+            // In real app, this would navigate to home screen
+            alert('Welcome to SoccerX! 🎉');
+        }
+
+        // Add swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        container.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        container.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50 && currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+            if (touchEndX > touchStartX + 50 && currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+    </script>
+</body>
+</html>

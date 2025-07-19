@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Game Complete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Compact Rounded', 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Apple Watch Container */
+        .watch-container {
+            width: 368px;
+            height: 448px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Watch Frame */
+        .watch-frame {
+            width: 324px;
+            height: 394px;
+            background: #1a1a1a;
+            border-radius: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        /* Digital Crown */
+        .digital-crown {
+            position: absolute;
+            right: -12px;
+            top: 120px;
+            width: 8px;
+            height: 50px;
+            background: linear-gradient(to bottom, #666, #444, #666);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Side Button */
+        .side-button {
+            position: absolute;
+            right: -10px;
+            top: 200px;
+            width: 6px;
+            height: 35px;
+            background: #333;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Watch Screen */
+        .watch-screen {
+            width: 296px;
+            height: 368px;
+            background: #000;
+            border-radius: 50px;
+            margin: 13px auto;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Confetti Animation */
+        .confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2ECC71;
+            animation: confetti-fall 2s ease-out;
+            opacity: 0;
+        }
+
+        .confetti-piece:nth-child(odd) {
+            background: #FFD700;
+            width: 6px;
+            height: 6px;
+            animation-duration: 2.5s;
+        }
+
+        .confetti-piece:nth-child(3n) {
+            background: #FF6B6B;
+            animation-duration: 1.8s;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(200px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Success Animation */
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: #2ECC71;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: #2ECC71;
+            fill: none;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Header */
+        .complete-header {
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .complete-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2ECC71;
+            margin-bottom: 4px;
+        }
+
+        .game-duration {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 16px;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a2a;
+            animation: slideIn 0.6s ease-out 0.5s both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .primary-stat {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .primary-stat-value {
+            font-size: 36px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .primary-stat-unit {
+            font-size: 18px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .primary-stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .secondary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease-out 0.7s both;
+        }
+
+        .sync-icon {
+            font-size: 16px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .sync-status.synced .sync-icon {
+            animation: none;
+        }
+
+        .sync-text {
+            font-size: 14px;
+            color: #2ECC71;
+        }
+
+        /* Achievement */
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.6s ease-out 0.9s both;
+            display: none;
+        }
+
+        .achievement-card.visible {
+            display: flex;
+        }
+
+        .achievement-icon {
+            font-size: 28px;
+        }
+
+        .achievement-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .achievement-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 2px;
+        }
+
+        .achievement-desc {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* Done Button */
+        .done-button {
+            width: 100%;
+            height: 50px;
+            background: #2ECC71;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out 1s both;
+        }
+
+        .done-button:active {
+            background: #27AE60;
+            transform: scale(0.95);
+        }
+
+        /* Haptic Feedback */
+        .haptic-feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(46, 204, 113, 0.4), transparent);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .haptic-feedback.active {
+            animation: haptic 0.4s ease-out;
+        }
+
+        @keyframes haptic {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.3);
+            }
+        }
+
+        /* Swipe Hint */
+        .swipe-hint {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: fadeIn 0.6s ease-out 1.2s both;
+        }
+
+        .swipe-arrow {
+            animation: swipeHint 2s ease-in-out infinite;
+        }
+
+        @keyframes swipeHint {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-5px); }
+        }
+
+        /* Loading Dots */
+        .loading-dots {
+            display: inline-flex;
+            gap: 3px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: #2ECC71;
+            border-radius: 50%;
+            animation: loadingDot 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0; }
+
+        @keyframes loadingDot {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        /* Personal Record Badge */
+        .pr-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            animation: bounce 0.6s ease-out 1s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="watch-container">
+        <div class="watch-frame">
+            <div class="digital-crown"></div>
+            <div class="side-button"></div>
+            
+            <div class="watch-screen">
+                <!-- Confetti -->
+                <div class="confetti-container" id="confettiContainer"></div>
+
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Success Icon -->
+                    <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25"/>
+                        <path class="checkmark-check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+
+                    <!-- Header -->
+                    <div class="complete-header">
+                        <h1 class="complete-title">Great Game!</h1>
+                        <p class="game-duration">68 minutes</p>
+                    </div>
+
+                    <!-- Stats Summary -->
+                    <div class="stats-summary">
+                        <div class="pr-badge">PR</div>
+                        <div class="primary-stat">
+                            <div class="primary-stat-value">5.2 <span class="primary-stat-unit">km</span></div>
+                            <div class="primary-stat-label">Distance</div>
+                        </div>
+                        <div class="secondary-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">152</div>
+                                <div class="stat-label">Avg HR</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">24.5</div>
+                                <div class="stat-label">Max Speed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">442</div>
+                                <div class="stat-label">Calories</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">85</div>
+                                <div class="stat-label">MVP Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sync Status -->
+                    <div class="sync-status" id="syncStatus">
+                        <span class="sync-icon">🔄</span>
+                        <span class="sync-text">Syncing<span class="loading-dots">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </span></span>
+                    </div>
+
+                    <!-- Achievement (hidden initially) -->
+                    <div class="achievement-card" id="achievementCard">
+                        <span class="achievement-icon">⚡</span>
+                        <div class="achievement-info">
+                            <div class="achievement-title">Speed Demon!</div>
+                            <div class="achievement-desc">New max speed record</div>
+                        </div>
+                    </div>
+
+                    <!-- Done Button -->
+                    <button class="done-button" onclick="completeWorkout()">Done</button>
+
+                    <!-- Swipe Hint -->
+                    <div class="swipe-hint">
+                        <span class="swipe-arrow">←</span>
+                        <span>Swipe for details</span>
+                    </div>
+                </div>
+
+                <!-- Haptic Feedback -->
+                <div class="haptic-feedback" id="hapticFeedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createConfetti();
+            celebrationHaptics();
+            checkAchievements();
+            simulateSync();
+        });
+
+        // Create confetti
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#2ECC71', '#FFD700', '#FF6B6B'];
+            
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(confetti);
+            }
+
+            // Remove confetti after animation
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 3000);
+        }
+
+        // Celebration haptic pattern
+        function celebrationHaptics() {
+            setTimeout(() => triggerHaptic(), 300);
+            setTimeout(() => triggerHaptic(), 600);
+            setTimeout(() => triggerHaptic(), 900);
+        }
+
+        // Check for achievements
+        function checkAchievements() {
+            setTimeout(() => {
+                const achievementCard = document.getElementById('achievementCard');
+                if (Math.random() > 0.5) { // 50% chance of achievement
+                    achievementCard.classList.add('visible');
+                    triggerHaptic();
+                }
+            }, 1500);
+        }
+
+        // Simulate sync process
+        function simulateSync() {
+            const syncStatus = document.getElementById('syncStatus');
+            
+            setTimeout(() => {
+                syncStatus.classList.add('synced');
+                syncStatus.innerHTML = `
+                    <span class="sync-icon">✓</span>
+                    <span class="sync-text">Synced to iPhone</span>
+                `;
+                triggerHaptic();
+            }, 3000);
+        }
+
+        // Complete workout
+        function completeWorkout() {
+            triggerHaptic();
+            console.log('Returning to home screen...');
+            // In real app, would navigate to home
+        }
+
+        // Haptic feedback
+        function triggerHaptic() {
+            const haptic = document.getElementById('hapticFeedback');
+            haptic.classList.remove('active');
+            
+            setTimeout(() => {
+                haptic.classList.add('active');
+            }, 10);
+        }
+
+        // Swipe detection for details
+        let touchStartX = 0;
+        const mainContent = document.querySelector('.main-content');
+
+        mainContent.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        mainContent.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (diff > 50) {
+                // Swipe left - show more details
+                console.log('Showing detailed stats...');
+                triggerHaptic();
+                // In real app, would show detailed view
+            }
+        });
+
+        // Digital Crown for scrolling stats
+        let scrollPosition = 0;
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scrollPosition += e.deltaY;
+            
+            if (Math.abs(scrollPosition) > 30) {
+                console.log('Scrolling through detailed stats...');
+                scrollPosition = 0;
+            }
+        });
+
+        // Long press for sharing
+        let longPressTimer;
+        const statsCard = document.querySelector('.stats-summary');
+
+        statsCard.addEventListener('touchstart', () => {
+            longPressTimer = setTimeout(() => {
+                console.log('Opening share options...');
+                triggerHaptic();
+                // In real app, would show share menu
+            }, 1000);
+        });
+
+        statsCard.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        // Auto-dismiss after 30 seconds
+        let autoDismissTimer = setTimeout(() => {
+            console.log('Auto-dismissing to home...');
+            completeWorkout();
+        }, 30000);
+
+        // Reset timer on interaction
+        document.addEventListener('touchstart', () => {
+            clearTimeout(autoDismissTimer);
+            autoDismissTimer = setTimeout(() => {
+                completeWorkout();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

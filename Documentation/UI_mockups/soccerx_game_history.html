@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Game History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 47px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            padding: 12px 20px 16px;
+            background: #0a0a0a;
+            border-bottom: 1px solid #1a1a1a;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-title {
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .filter-chip.active {
+            background: #2ECC71;
+            border-color: #2ECC71;
+            color: #000;
+        }
+
+        .filter-chip:hover {
+            background: #222;
+        }
+
+        .filter-chip.active:hover {
+            background: #27AE60;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            margin: 16px 20px;
+            border-radius: 20px;
+            border: 1px solid #2a2a2a;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .summary-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2ECC71;
+            margin-bottom: 4px;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Calendar View */
+        .calendar-section {
+            padding: 0 20px 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .month-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 16px;
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: none;
+            color: #2ECC71;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+            transition: opacity 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            opacity: 0.7;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-label {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-day.has-game {
+            background: #1a1a1a;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .calendar-day.has-game::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background: #2ECC71;
+            border-radius: 50%;
+        }
+
+        .calendar-day.selected {
+            background: #2ECC71;
+            color: #000;
+        }
+
+        .calendar-day:hover {
+            background: #2a2a2a;
+        }
+
+        /* Game List */
+        .game-list-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 100px;
+        }
+
+        .game-list-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .date-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: #888;
+            margin: 24px 0 12px;
+            position: sticky;
+            top: 0;
+            background: #0a0a0a;
+            padding: 8px 0;
+            z-index: 10;
+        }
+
+        .game-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .game-card:hover {
+            background: #222;
+            transform: translateX(4px);
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .game-time {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .game-duration {
+            font-size: 14px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .mvp-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .game-stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .game-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .game-stat-icon {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .game-stat-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .game-stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #888;
+        }
+
+        .empty-message {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background: rgba(22, 22, 22, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+        }
+
+        .tab-icon {
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .tab-label {
+            font-size: 11px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .tab-item.active .tab-icon {
+            color: #2ECC71;
+            transform: scale(1.1);
+        }
+
+        .tab-item.active .tab-label {
+            color: #2ECC71;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #1a1a1a;
+            border-top-color: #2ECC71;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Navigation Header -->
+            <div class="nav-header">
+                <h1 class="page-title">History</h1>
+                <div class="filter-section">
+                    <div class="filter-chip active" onclick="selectFilter(this, 'all')">All Time</div>
+                    <div class="filter-chip" onclick="selectFilter(this, 'week')">This Week</div>
+                    <div class="filter-chip" onclick="selectFilter(this, 'month')">This Month</div>
+                    <div class="filter-chip" onclick="selectFilter(this, 'custom')">Custom Range</div>
+                </div>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="stats-summary">
+                <div class="summary-title">July 2024 Summary</div>
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <div class="summary-value">12</div>
+                        <div class="summary-label">Games</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-value">62.4</div>
+                        <div class="summary-label">Total km</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-value">5.2</div>
+                        <div class="summary-label">Avg km</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-value">82</div>
+                        <div class="summary-label">Avg MVP</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Section -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h2 class="month-title">July 2024</h2>
+                    <div class="calendar-nav">
+                        <button onclick="changeMonth(-1)">←</button>
+                        <button onclick="changeMonth(1)">→</button>
+                    </div>
+                </div>
+                <div class="calendar-grid">
+                    <!-- Day Labels -->
+                    <div class="day-label">S</div>
+                    <div class="day-label">M</div>
+                    <div class="day-label">T</div>
+                    <div class="day-label">W</div>
+                    <div class="day-label">T</div>
+                    <div class="day-label">F</div>
+                    <div class="day-label">S</div>
+                    
+                    <!-- Calendar Days -->
+                    <div class="calendar-day"></div>
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day">2</div>
+                    <div class="calendar-day has-game">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day">5</div>
+                    <div class="calendar-day has-game">6</div>
+                    <div class="calendar-day has-game">7</div>
+                    <div class="calendar-day">8</div>
+                    <div class="calendar-day">9</div>
+                    <div class="calendar-day has-game">10</div>
+                    <div class="calendar-day">11</div>
+                    <div class="calendar-day">12</div>
+                    <div class="calendar-day has-game">13</div>
+                    <div class="calendar-day has-game">14</div>
+                    <div class="calendar-day">15</div>
+                    <div class="calendar-day has-game selected">16</div>
+                    <div class="calendar-day has-game">17</div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day has-game">20</div>
+                    <div class="calendar-day has-game">21</div>
+                    <div class="calendar-day">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day has-game">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day has-game">27</div>
+                    <div class="calendar-day has-game">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                    <div class="calendar-day">31</div>
+                </div>
+            </div>
+
+            <!-- Game List -->
+            <div class="game-list-section">
+                <div class="date-header">Wednesday, July 17</div>
+                <div class="game-card" onclick="viewGameDetail('1')">
+                    <div class="game-header">
+                        <div>
+                            <div class="game-time">7:30 PM</div>
+                            <div class="game-duration">72 minutes</div>
+                        </div>
+                        <div class="mvp-badge">
+                            <span>⭐</span>
+                            <span>MVP 88</span>
+                        </div>
+                    </div>
+                    <div class="game-stats-row">
+                        <div class="game-stat">
+                            <span class="game-stat-icon">📏</span>
+                            <span class="game-stat-value">5.8</span>
+                            <span class="game-stat-label">km</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">⚡</span>
+                            <span class="game-stat-value">26.2</span>
+                            <span class="game-stat-label">km/h</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">❤️</span>
+                            <span class="game-stat-value">158</span>
+                            <span class="game-stat-label">Avg HR</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">🔥</span>
+                            <span class="game-stat-value">485</span>
+                            <span class="game-stat-label">Cal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="date-header">Wednesday, July 16</div>
+                <div class="game-card" onclick="viewGameDetail('2')">
+                    <div class="game-header">
+                        <div>
+                            <div class="game-time">6:30 PM</div>
+                            <div class="game-duration">68 minutes</div>
+                        </div>
+                        <div class="mvp-badge">
+                            <span>⭐</span>
+                            <span>MVP 85</span>
+                        </div>
+                    </div>
+                    <div class="game-stats-row">
+                        <div class="game-stat">
+                            <span class="game-stat-icon">📏</span>
+                            <span class="game-stat-value">5.2</span>
+                            <span class="game-stat-label">km</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">⚡</span>
+                            <span class="game-stat-value">24.5</span>
+                            <span class="game-stat-label">km/h</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">❤️</span>
+                            <span class="game-stat-value">152</span>
+                            <span class="game-stat-label">Avg HR</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">🔥</span>
+                            <span class="game-stat-value">442</span>
+                            <span class="game-stat-label">Cal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="date-header">Sunday, July 14</div>
+                <div class="game-card" onclick="viewGameDetail('3')">
+                    <div class="game-header">
+                        <div>
+                            <div class="game-time">10:00 AM</div>
+                            <div class="game-duration">85 minutes</div>
+                        </div>
+                        <div class="mvp-badge">
+                            <span>⭐</span>
+                            <span>MVP 92</span>
+                        </div>
+                    </div>
+                    <div class="game-stats-row">
+                        <div class="game-stat">
+                            <span class="game-stat-icon">📏</span>
+                            <span class="game-stat-value">7.1</span>
+                            <span class="game-stat-label">km</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">⚡</span>
+                            <span class="game-stat-value">28.4</span>
+                            <span class="game-stat-label">km/h</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">❤️</span>
+                            <span class="game-stat-value">164</span>
+                            <span class="game-stat-label">Avg HR</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">🔥</span>
+                            <span class="game-stat-value">612</span>
+                            <span class="game-stat-label">Cal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="date-header">Saturday, July 13</div>
+                <div class="game-card" onclick="viewGameDetail('4')">
+                    <div class="game-header">
+                        <div>
+                            <div class="game-time">4:00 PM</div>
+                            <div class="game-duration">62 minutes</div>
+                        </div>
+                        <div class="mvp-badge">
+                            <span>⭐</span>
+                            <span>MVP 79</span>
+                        </div>
+                    </div>
+                    <div class="game-stats-row">
+                        <div class="game-stat">
+                            <span class="game-stat-icon">📏</span>
+                            <span class="game-stat-value">4.8</span>
+                            <span class="game-stat-label">km</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">⚡</span>
+                            <span class="game-stat-value">22.1</span>
+                            <span class="game-stat-label">km/h</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">❤️</span>
+                            <span class="game-stat-value">148</span>
+                            <span class="game-stat-label">Avg HR</span>
+                        </div>
+                        <div class="game-stat">
+                            <span class="game-stat-icon">🔥</span>
+                            <span class="game-stat-value">398</span>
+                            <span class="game-stat-label">Cal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty state (hidden by default) -->
+                <div class="empty-state" style="display: none;">
+                    <div class="empty-icon">⚽</div>
+                    <h3 class="empty-title">No games yet</h3>
+                    <p class="empty-message">Start tracking your games to see your history and progress here.</p>
+                </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <div class="tab-item" onclick="selectTab(0)">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-label">Home</span>
+                </div>
+                <div class="tab-item active" onclick="selectTab(1)">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-label">History</span>
+                </div>
+                <div class="tab-item" onclick="selectTab(2)">
+                    <span class="tab-icon">👥</span>
+                    <span class="tab-label">Groups</span>
+                </div>
+                <div class="tab-item" onclick="selectTab(3)">
+                    <span class="tab-icon">👤</span>
+                    <span class="tab-label">Profile</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab selection
+        function selectTab(index) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+        }
+
+        // Filter selection
+        function selectFilter(element, filter) {
+            // Remove active from all filters
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            // Add active to selected filter
+            element.classList.add('active');
+            
+            // Update content based on filter
+            updateGameList(filter);
+            updateSummaryStats(filter);
+        }
+
+        // View game detail
+        function viewGameDetail(gameId) {
+            console.log(`Navigating to game ${gameId} details...`);
+            // In real app, this would navigate to game detail view
+        }
+
+        // Calendar navigation
+        let currentMonth = 6; // July (0-indexed)
+        let currentYear = 2024;
+
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            updateCalendar();
+        }
+
+        function updateCalendar() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.querySelector('.month-title').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            // In real app, would regenerate calendar grid
+        }
+
+        // Update game list based on filter
+        function updateGameList(filter) {
+            const gameList = document.querySelector('.game-list-section');
+            
+            // Show loading state
+            gameList.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // In real app, would fetch filtered data
+                if (filter === 'week') {
+                    gameList.innerHTML = `
+                        <div class="date-header">Wednesday, July 17</div>
+                        <div class="game-card" onclick="viewGameDetail('1')">
+                            <div class="game-header">
+                                <div>
+                                    <div class="game-time">7:30 PM</div>
+                                    <div class="game-duration">72 minutes</div>
+                                </div>
+                                <div class="mvp-badge">
+                                    <span>⭐</span>
+                                    <span>MVP 88</span>
+                                </div>
+                            </div>
+                            <div class="game-stats-row">
+                                <div class="game-stat">
+                                    <span class="game-stat-icon">📏</span>
+                                    <span class="game-stat-value">5.8</span>
+                                    <span class="game-stat-label">km</span>
+                                </div>
+                                <div class="game-stat">
+                                    <span class="game-stat-icon">⚡</span>
+                                    <span class="game-stat-value">26.2</span>
+                                    <span class="game-stat-label">km/h</span>
+                                </div>
+                                <div class="game-stat">
+                                    <span class="game-stat-icon">❤️</span>
+                                    <span class="game-stat-value">158</span>
+                                    <span class="game-stat-label">Avg HR</span>
+                                </div>
+                                <div class="game-stat">
+                                    <span class="game-stat-icon">🔥</span>
+                                    <span class="game-stat-value">485</span>
+                                    <span class="game-stat-label">Cal</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="date-header">Wednesday, July 16</div>
+                        <div class="game-card" onclick="viewGameDetail('2')">
+                            <div class="game-header">
+                                <div>
+                                    <div class="game-time">6:30 PM</div>
+                                    <div class="game-duration">68 minutes</div>
+                                </div>
+                                <div class="mvp-badge">
+                                    <span>⭐</span>
+                                    <span>MVP 85</span>
+                                </div>
+                            </div>
+                            <div class="game-stats-row">
+                                <div class="game-stat">
+                                    <span class="game-stat-icon">📏</span>
+                                    <span class="game-stat-value">5.2</span>
+                                    <span class="game-stat-label">km</span>
+                                </div>
+                                <div class="game-stat">
+                                    <span class="game-stat-icon">⚡</span>
+                                    <span class="game-stat-value">24.5</span>

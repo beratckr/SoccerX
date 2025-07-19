@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Game Detail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 47px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0a0a0a;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            color: #2ECC71;
+            font-size: 20px;
+            padding: 8px;
+            margin: -8px 0 -8px -8px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-button:hover {
+            opacity: 0.7;
+        }
+
+        .nav-title {
+            flex: 1;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .action-button {
+            background: none;
+            border: none;
+            color: #2ECC71;
+            font-size: 20px;
+            padding: 8px;
+            margin: -8px -8px -8px 0;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-button:hover {
+            opacity: 0.7;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            padding-bottom: 40px;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Game Header */
+        .game-header-section {
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            margin: 0 20px 20px;
+            border-radius: 24px;
+            border: 1px solid #2a2a2a;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game-date-time {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .game-date {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .game-time {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .mvp-score-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .mvp-score-circle {
+            width: 120px;
+            height: 120px;
+            background: conic-gradient(#2ECC71 0deg, #2ECC71 calc(var(--score) * 3.6deg), #1a1a1a calc(var(--score) * 3.6deg));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .mvp-score-inner {
+            width: 100px;
+            height: 100px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mvp-score-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2ECC71;
+        }
+
+        .mvp-score-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .primary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .primary-stat {
+            text-align: center;
+        }
+
+        .primary-stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .primary-stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Charts Section */
+        .chart-section {
+            padding: 0 20px 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2a2a;
+            margin-bottom: 16px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Speed Chart */
+        .speed-chart {
+            height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .speed-graph {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to top, rgba(46, 204, 113, 0.1), transparent);
+        }
+
+        .speed-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='350' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,100 Q50,80 100,85 T200,70 T300,75 T350,60' stroke='%232ECC71' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Heart Rate Zones */
+        .hr-zones {
+            display: flex;
+            gap: 8px;
+            height: 100px;
+        }
+
+        .hr-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .hr-zone-bar {
+            width: 100%;
+            background: #2a2a2a;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .hr-zone-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--zone-color);
+            border-radius: 8px 8px 0 0;
+            transition: height 1s ease-out;
+        }
+
+        .hr-zone-label {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Speed Zones */
+        .speed-zones-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .speed-zone-card {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+        }
+
+        .speed-zone-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .speed-zone-time {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .speed-zone-name {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Detailed Stats */
+        .detailed-stats {
+            padding: 0 20px 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Premium Section */
+        .premium-section {
+            padding: 0 20px 30px;
+        }
+
+        .premium-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+
+        .premium-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .premium-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .premium-description {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .premium-button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .premium-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Share Menu */
+        .share-menu {
+            position: fixed;
+            bottom: -300px;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            transition: bottom 0.3s ease;
+            z-index: 200;
+        }
+
+        .share-menu.active {
+            bottom: 0;
+        }
+
+        .share-handle {
+            width: 40px;
+            height: 4px;
+            background: #666;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .share-option:hover {
+            opacity: 0.7;
+        }
+
+        .share-icon {
+            width: 60px;
+            height: 60px;
+            background: #2a2a2a;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .share-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .cancel-button {
+            width: 100%;
+            padding: 16px;
+            background: #2a2a2a;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .cancel-button:hover {
+            background: #333;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 190;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Navigation Header -->
+            <div class="nav-header">
+                <button class="back-button" onclick="goBack()">←</button>
+                <span class="nav-title">Game Details</span>
+                <button class="action-button" onclick="showShareMenu()">↗️</button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Game Header -->
+                <div class="game-header-section">
+                    <div class="game-date-time">
+                        <div>
+                            <div class="game-date">Wednesday, July 16</div>
+                            <div class="game-time">6:30 PM - 7:38 PM</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 14px; color: #666;">Duration</div>
+                            <div style="font-size: 18px; font-weight: 600;">68 min</div>
+                        </div>
+                    </div>
+
+                    <div class="mvp-score-display">
+                        <div class="mvp-score-circle" style="--score: 85;">
+                            <div class="mvp-score-inner">
+                                <div class="mvp-score-value">85</div>
+                                <div class="mvp-score-label">MVP Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="primary-stats">
+                        <div class="primary-stat">
+                            <div class="primary-stat-value">5.2</div>
+                            <div class="primary-stat-label">Distance (km)</div>
+                        </div>
+                        <div class="primary-stat">
+                            <div class="primary-stat-value">24.5</div>
+                            <div class="primary-stat-label">Max Speed</div>
+                        </div>
+                        <div class="primary-stat">
+                            <div class="primary-stat-value">442</div>
+                            <div class="primary-stat-label">Calories</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speed Over Time -->
+                <div class="chart-section">
+                    <h2 class="section-title">Speed Analysis</h2>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Speed Over Time</div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #2ECC71;"></div>
+                                    <span>Speed (km/h)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="speed-chart">
+                            <div class="speed-graph"></div>
+                            <div class="speed-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heart Rate Zones -->
+                <div class="chart-section">
+                    <h2 class="section-title">Heart Rate Zones</h2>
+                    <div class="chart-container">
+                        <div class="hr-zones">
+                            <div class="hr-zone">
+                                <div class="hr-zone-bar" style="height: 80px;">
+                                    <div class="hr-zone-fill" style="--zone-color: #3498DB; height: 10%;"></div>
+                                </div>
+                                <div class="hr-zone-label">Rest<br/>2m</div>
+                            </div>
+                            <div class="hr-zone">
+                                <div class="hr-zone-bar" style="height: 80px;">
+                                    <div class="hr-zone-fill" style="--zone-color: #2ECC71; height: 25%;"></div>
+                                </div>
+                                <div class="hr-zone-label">Light<br/>17m</div>
+                            </div>
+                            <div class="hr-zone">
+                                <div class="hr-zone-bar" style="height: 80px;">
+                                    <div class="hr-zone-fill" style="--zone-color: #F39C12; height: 45%;"></div>
+                                </div>
+                                <div class="hr-zone-label">Moderate<br/>31m</div>
+                            </div>
+                            <div class="hr-zone">
+                                <div class="hr-zone-bar" style="height: 80px;">
+                                    <div class="hr-zone-fill" style="--zone-color: #E74C3C; height: 20%;"></div>
+                                </div>
+                                <div class="hr-zone-label">Hard<br/>14m</div>
+                            </div>
+                            <div class="hr-zone">
+                                <div class="hr-zone-bar" style="height: 80px;">
+                                    <div class="hr-zone-fill" style="--zone-color: #9B59B6; height: 8%;"></div>
+                                </div>
+                                <div class="hr-zone-label">Max<br/>4m</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speed Zones -->
+                <div class="chart-section">
+                    <h2 class="section-title">Speed Zones</h2>
+                    <div class="chart-container">
+                        <div class="speed-zones-grid">
+                            <div class="speed-zone-card">
+                                <div class="speed-zone-icon">🚶</div>
+                                <div class="speed-zone-time">8:42</div>
+                                <div class="speed-zone-name">Walking</div>
+                            </div>
+                            <div class="speed-zone-card">
+                                <div class="speed-zone-icon">🏃</div>
+                                <div class="speed-zone-time">32:15</div>
+                                <div class="speed-zone-name">Jogging</div>
+                            </div>
+                            <div class="speed-zone-card">
+                                <div class="speed-zone-icon">💨</div>
+                                <div class="speed-zone-time">22:48</div>
+                                <div class="speed-zone-name">Running</div>
+                            </div>
+                            <div class="speed-zone-card">
+                                <div class="speed-zone-icon">🚀</div>
+                                <div class="speed-zone-time">4:15</div>
+                                <div class="speed-zone-name">Sprinting</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Stats -->
+                <div class="detailed-stats">
+                    <h2 class="section-title">Detailed Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">❤️</div>
+                            <div class="stat-info">
+                                <div class="stat-value">152 bpm</div>
+                                <div class="stat-label">Avg Heart Rate</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💓</div>
+                            <div class="stat-info">
+                                <div class="stat-value">184 bpm</div>
+                                <div class="stat-label">Max Heart Rate</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-info">
+                                <div class="stat-value">4.6 km/h</div>
+                                <div class="stat-label">Avg Speed</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏃</div>
+                            <div class="stat-info">
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Sprint Count</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📍</div>
+                            <div class="stat-info">
+                                <div class="stat-value">76 m</div>
+                                <div class="stat-label">Distance/Minute</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-info">
+                                <div class="stat-value">89%</div>
+                                <div class="stat-label">Active Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Section -->
+                <div class="premium-section">
+                    <div class="premium-card">
+                        <div class="premium-icon">🗺️</div>
+                        <h3 class="premium-title">Unlock Heat Map</h3>
+                        <p class="premium-description">
+                            See your movement patterns on the field with detailed heat maps and position analysis.
+                        </p>
+                        <button class="premium-button" onclick="upgradeToPremium()">
+                            Upgrade to Premium
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Menu -->
+            <div class="share-menu" id="shareMenu">
+                <div class="share-handle"></div>
+                <div class="share-options">
+                    <div class="share-option" onclick="shareToGroup()">
+                        <div class="share-icon">👥</div>
+                        <span class="share-label">Group</span>
+                    </div>
+                    <div class="share-option" onclick="shareToMessages()">
+                        <div class="share-icon">💬</div>
+                        <span class="share-label">Messages</span>
+                    </div>
+                    <div class="share-option" onclick="saveImage()">
+                        <div class="share-icon">🖼️</div>
+                        <span class="share-label">Save Image</span>
+                    </div>
+                    <div class="share-option" onclick="copyStats()">
+                        <div class="share-icon">📋</div>
+                        <span class="share-label">Copy Stats</span>
+                    </div>
+                </div>
+                <button class="cancel-button" onclick="hideShareMenu()">Cancel</button>
+            </div>
+
+            <!-- Overlay -->
+            <div class="overlay" id="overlay" onclick="hideShareMenu()"></div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function goBack() {
+            console.log('Navigating back to history...');
+        }
+
+        // Share menu
+        function showShareMenu() {
+            document.getElementById('shareMenu').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function hideShareMenu() {
+            document.getElementById('shareMenu').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        // Share actions
+        function shareToGroup() {
+            hideShareMenu();
+            alert('Sharing to group...');
+        }
+
+        function shareToMessages() {
+            hideShareMenu();
+            alert('Opening Messages...');
+        }
+
+        function saveImage() {
+            hideShareMenu();
+            alert('Saving game summary image...');
+        }
+
+        function copyStats() {
+            hideShareMenu();
+            const stats = `SoccerX Game Summary
+Date: Wednesday, July 16
+Duration: 68 minutes
+Distance: 5.2 km
+Max Speed: 24.5 km/h
+MVP Score: 85
+Calories: 442`;
+            
+            // In real app, copy to clipboard
+            alert('Stats copied to clipboard!');
+        }
+
+        function upgradeToPremium() {
+            alert('Opening premium subscription page...');
+        }
+
+        // Animate elements on load
+        window.addEventListener('load', () => {
+            // Animate MVP score circle
+            setTimeout(() => {
+                const circle = document.querySelector('.mvp-score-circle');
+                circle.style.transition = 'all 1s ease-out';
+            }, 100);
+
+            // Animate heart rate zone bars
+            setTimeout(() => {
+                const fills = document.querySelectorAll('.hr-zone-fill');
+                fills.forEach((fill, index) => {
+                    setTimeout(() => {
+                        fill.style.height = fill.style.height;
+                    }, 100 * index);
+                });
+            }, 500);
+        });
+
+        // Swipe down to close share menu
+        let touchStartY = 0;
+        const shareMenu = document.getElementById('shareMenu');
+
+        shareMenu.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        shareMenu.addEventListener('touchmove', (e) => {
+            const touchY = e.touches[0].clientY;
+            const diff = touchY - touchStartY;
+            
+            if (diff > 0) {
+                shareMenu.style.transform = `translateY(${diff}px)`;
+            }
+        });
+
+        shareMenu.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].clientY;
+            const diff = touchEndY - touchStartY;
+            
+            if (diff > 100) {
+                hideShareMenu();
+            }
+            shareMenu.style.transform = '';
+        });
+    </script>
+</body>
+</html>

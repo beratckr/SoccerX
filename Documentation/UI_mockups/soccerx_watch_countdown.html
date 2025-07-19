@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Pre-Game Countdown</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Compact Rounded', 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Apple Watch Container */
+        .watch-container {
+            width: 368px;
+            height: 448px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Watch Frame */
+        .watch-frame {
+            width: 324px;
+            height: 394px;
+            background: #1a1a1a;
+            border-radius: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        /* Digital Crown */
+        .digital-crown {
+            position: absolute;
+            right: -12px;
+            top: 120px;
+            width: 8px;
+            height: 50px;
+            background: linear-gradient(to bottom, #666, #444, #666);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Side Button */
+        .side-button {
+            position: absolute;
+            right: -10px;
+            top: 200px;
+            width: 6px;
+            height: 35px;
+            background: #333;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Watch Screen */
+        .watch-screen {
+            width: 296px;
+            height: 368px;
+            background: #000;
+            border-radius: 50px;
+            margin: 13px auto;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Countdown Container */
+        .countdown-container {
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Countdown Number */
+        .countdown-number {
+            font-size: 120px;
+            font-weight: 700;
+            color: #2ECC71;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(46, 204, 113, 0.5);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .countdown-number.go {
+            font-size: 80px;
+            animation: goAnimation 0.6s ease-out;
+        }
+
+        @keyframes goAnimation {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Status Messages */
+        .status-message {
+            font-size: 18px;
+            color: #999;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* GPS Status */
+        .gps-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #1a1a1a;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .gps-icon {
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+
+        .gps-icon::before {
+            content: '📍';
+            font-size: 20px;
+            position: absolute;
+            animation: bounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .gps-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .gps-status.ready .gps-text {
+            color: #2ECC71;
+        }
+
+        /* Heart Rate Display */
+        .heart-rate-section {
+            margin-top: 20px;
+            animation: fadeIn 0.6s ease-out 0.3s both;
+        }
+
+        .heart-icon {
+            font-size: 32px;
+            color: #FF3B30;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            margin-bottom: 8px;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10% { transform: scale(1.2); }
+            20% { transform: scale(1); }
+            30% { transform: scale(1.2); }
+            40% { transform: scale(1); }
+        }
+
+        .heart-rate-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .heart-rate-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Cancel Button */
+        .cancel-button {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 59, 48, 0.2);
+            border: 1px solid #FF3B30;
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #FF3B30;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out 0.5s both;
+        }
+
+        .cancel-button:active {
+            background: rgba(255, 59, 48, 0.3);
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* Progress Ring */
+        .progress-ring {
+            position: absolute;
+            width: 240px;
+            height: 240px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke: #1a1a1a;
+            stroke-width: 8;
+        }
+
+        .progress-ring-circle-progress {
+            fill: none;
+            stroke: #2ECC71;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            animation: fillProgress 3s linear forwards;
+        }
+
+        @keyframes fillProgress {
+            from {
+                stroke-dashoffset: 753.98;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Haptic Indicators */
+        .haptic-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(46, 204, 113, 0.3) 50%, transparent 100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .haptic-pulse.active {
+            animation: hapticPulse 0.6s ease-out;
+        }
+
+        @keyframes hapticPulse {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+        }
+
+        /* Ready State */
+        .ready-container {
+            text-align: center;
+            display: none;
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: #2ECC71;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: #2ECC71;
+            fill: none;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .ready-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2ECC71;
+            margin-bottom: 8px;
+        }
+
+        .ready-subtext {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Loading dots */
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: #666;
+            border-radius: 50%;
+            animation: loadingDot 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0; }
+
+        @keyframes loadingDot {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="watch-container">
+        <div class="watch-frame">
+            <div class="digital-crown"></div>
+            <div class="side-button"></div>
+            
+            <div class="watch-screen">
+                <!-- Progress Ring -->
+                <svg class="progress-ring" viewBox="0 0 240 240">
+                    <circle class="progress-ring-circle" cx="120" cy="120" r="110"/>
+                    <circle class="progress-ring-circle-progress" cx="120" cy="120" r="110"
+                            stroke-dasharray="753.98" stroke-dashoffset="753.98"/>
+                </svg>
+
+                <!-- Countdown Container -->
+                <div class="countdown-container" id="countdownContainer">
+                    <div class="status-message">Getting ready...</div>
+                    
+                    <div class="gps-status" id="gpsStatus">
+                        <div class="gps-icon"></div>
+                        <span class="gps-text">Finding GPS<span class="loading-dots">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </span></span>
+                    </div>
+
+                    <div class="countdown-number" id="countdownNumber">3</div>
+
+                    <div class="heart-rate-section">
+                        <div class="heart-icon">❤️</div>
+                        <div class="heart-rate-value" id="heartRate">--</div>
+                        <div class="heart-rate-label">BPM</div>
+                    </div>
+                </div>
+
+                <!-- Ready Container -->
+                <div class="ready-container" id="readyContainer">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25"/>
+                        <path class="checkmark-check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                    <div class="ready-text">Ready!</div>
+                    <div class="ready-subtext">Let's play soccer!</div>
+                </div>
+
+                <!-- Cancel Button -->
+                <button class="cancel-button" onclick="cancelCountdown()">Cancel</button>
+
+                <!-- Haptic Pulse Effect -->
+                <div class="haptic-pulse" id="hapticPulse"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdownValue = 3;
+        let countdownInterval;
+        let heartRateInterval;
+        let gpsAcquired = false;
+
+        // Start countdown on load
+        window.addEventListener('load', () => {
+            startCountdown();
+            simulateHeartRate();
+            checkGPS();
+        });
+
+        function startCountdown() {
+            countdownInterval = setInterval(() => {
+                updateCountdown();
+            }, 1000);
+        }
+
+        function updateCountdown() {
+            const numberElement = document.getElementById('countdownNumber');
+            
+            // Trigger haptic feedback
+            triggerHaptic();
+            
+            countdownValue--;
+            
+            if (countdownValue > 0) {
+                numberElement.textContent = countdownValue;
+                numberElement.style.animation = 'none';
+                setTimeout(() => {
+                    numberElement.style.animation = 'pulse 1s ease-in-out infinite';
+                }, 10);
+            } else if (countdownValue === 0) {
+                numberElement.textContent = 'GO!';
+                numberElement.classList.add('go');
+                
+                // Double haptic for GO
+                triggerHaptic();
+                setTimeout(triggerHaptic, 200);
+            } else {
+                clearInterval(countdownInterval);
+                showReady();
+            }
+        }
+
+        function showReady() {
+            const countdownContainer = document.getElementById('countdownContainer');
+            const readyContainer = document.getElementById('readyContainer');
+            
+            countdownContainer.style.display = 'none';
+            readyContainer.style.display = 'block';
+            
+            // Final haptic pattern
+            triggerHaptic();
+            setTimeout(triggerHaptic, 200);
+            setTimeout(triggerHaptic, 400);
+            
+            // Transition to active game after delay
+            setTimeout(() => {
+                console.log('Starting active game tracking...');
+                // In real app, would transition to active game screen
+            }, 2000);
+        }
+
+        function checkGPS() {
+            setTimeout(() => {
+                const gpsStatus = document.getElementById('gpsStatus');
+                const gpsText = gpsStatus.querySelector('.gps-text');
+                
+                gpsAcquired = true;
+                gpsStatus.classList.add('ready');
+                gpsText.innerHTML = 'GPS Ready ✓';
+                
+                triggerHaptic();
+            }, 2000);
+        }
+
+        function simulateHeartRate() {
+            const heartRateElement = document.getElementById('heartRate');
+            let baseRate = 70;
+            
+            heartRateInterval = setInterval(() => {
+                // Simulate increasing heart rate as game approaches
+                baseRate += Math.random() * 5 - 2;
+                baseRate = Math.max(65, Math.min(85, baseRate));
+                heartRateElement.textContent = Math.round(baseRate);
+            }, 1000);
+        }
+
+        function triggerHaptic() {
+            const hapticPulse = document.getElementById('hapticPulse');
+            hapticPulse.classList.remove('active');
+            
+            setTimeout(() => {
+                hapticPulse.classList.add('active');
+            }, 10);
+        }
+
+        function cancelCountdown() {
+            clearInterval(countdownInterval);
+            clearInterval(heartRateInterval);
+            
+            // Haptic feedback for cancel
+            triggerHaptic();
+            
+            console.log('Countdown cancelled, returning to home...');
+            // In real app, would navigate back
+        }
+
+        // Digital Crown to adjust something (future feature)
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            // Could adjust workout settings
+            console.log('Digital Crown rotated:', e.deltaY);
+        });
+
+        // Handle long press for accessibility
+        let longPressTimer;
+        const cancelButton = document.querySelector('.cancel-button');
+
+        cancelButton.addEventListener('touchstart', () => {
+            longPressTimer = setTimeout(() => {
+                // Force cancel with long press
+                cancelCountdown();
+            }, 1000);
+        });
+
+        cancelButton.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        // Simulate ambient light adjustment
+        function adjustBrightness() {
+            const screen = document.querySelector('.watch-screen');
+            const hour = new Date().getHours();
+            
+            // Dim screen in low light conditions
+            if (hour < 6 || hour > 20) {
+                screen.style.filter = 'brightness(0.8)';
+            }
+        }
+
+        adjustBrightness();
+    </script>
+</body>
+</html>

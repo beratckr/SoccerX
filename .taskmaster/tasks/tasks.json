@@ -1,0 +1,792 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Repository and Development Environment",
+        "description": "Initialize the SoccerX project repository with proper structure for iOS, watchOS, and Firebase backend components. Configure development environment with required dependencies and tools.",
+        "details": "Create Xcode workspace with iOS and watchOS targets. Set up Swift Package Manager for dependencies. Initialize Firebase project and configure services (Authentication, Firestore, Cloud Storage, Functions). Create folder structure as specified: iOS/ (Core/, Features/, Shared/), watchOS/ (Tracking/, UI/, Services/), Backend/ (Functions/, Security/, Scripts/). Configure .gitignore for Swift/Xcode/Firebase. Set up CI/CD pipeline basics. Install Firebase CLI tools. Configure development certificates and provisioning profiles for both iOS and watchOS apps.",
+        "testStrategy": "Verify Xcode builds successfully for both iOS and watchOS targets. Ensure Firebase project is accessible and all services are enabled. Test that development certificates are properly configured by building to physical devices. Validate folder structure matches architectural requirements.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Xcode Workspace Structure",
+            "description": "Initialize Xcode workspace with iOS and watchOS targets, configure project settings, and establish the foundational app structure",
+            "dependencies": [],
+            "details": "Create new Xcode workspace named 'SoccerX.xcworkspace'. Add iOS app target 'SoccerX' with deployment target iOS 16.0+. Add watchOS app target 'SoccerXWatch' with deployment target watchOS 9.0+. Configure bundle identifiers (com.soccerx.app, com.soccerx.app.watchkitapp). Enable required capabilities: HealthKit, Location Services, Background Modes, Push Notifications for iOS; HealthKit, Location Services, Background Modes for watchOS. Create folder groups matching specified structure: iOS/Core/, iOS/Features/, iOS/Shared/, watchOS/Tracking/, watchOS/UI/, watchOS/Services/. Configure shared schemes for development and production builds.",
+            "status": "pending",
+            "testStrategy": "Build both targets to verify no compilation errors. Run on iOS Simulator and watchOS Simulator to ensure basic app launch. Verify all capabilities are properly configured in project settings."
+          },
+          {
+            "id": 2,
+            "title": "Initialize Firebase Project and Services",
+            "description": "Set up Firebase project with all required services and download configuration files for iOS integration",
+            "dependencies": [],
+            "details": "Create Firebase project named 'soccerx-app' via Firebase Console or CLI. Enable Authentication service with Sign in with Apple provider. Initialize Firestore database in production mode with initial security rules. Enable Cloud Storage with default bucket. Set up Cloud Functions project structure in Backend/functions/. Download GoogleService-Info.plist and add to both iOS and watchOS targets. Create Backend folder structure: Backend/Functions/src/, Backend/Security/rules/, Backend/Scripts/. Initialize Functions project with TypeScript template using 'firebase init functions'. Configure Firebase emulator suite for local development.",
+            "status": "pending",
+            "testStrategy": "Verify Firebase project appears in console with all services enabled. Test Firebase CLI connection with 'firebase projects:list'. Ensure GoogleService-Info.plist is properly added to both app targets. Run 'firebase emulators:start' to verify local development setup."
+          },
+          {
+            "id": 3,
+            "title": "Configure Swift Package Manager Dependencies",
+            "description": "Add and configure all required Swift packages for Firebase SDK, networking, and UI components",
+            "dependencies": [
+              2
+            ],
+            "details": "Add Firebase iOS SDK via Swift Package Manager (https://github.com/firebase/firebase-ios-sdk). Select required Firebase products: FirebaseAuth, FirebaseFirestore, FirebaseStorage, FirebaseMessaging, FirebaseFunctions. Configure Firebase initialization in AppDelegate/App struct with FirebaseApp.configure(). Add additional packages: Alamofire for networking fallback, SwiftLint for code quality, KeychainAccess for secure storage. Create Package.swift manifest if using local packages for shared code. Configure build settings to link Firebase frameworks properly with both targets. Set up module imports in respective target files.",
+            "status": "pending",
+            "testStrategy": "Clean build to verify all packages resolve correctly. Import Firebase modules in a test file to verify proper integration. Run SwiftLint to ensure it's properly configured. Test basic Firebase initialization doesn't crash on app launch."
+          },
+          {
+            "id": 4,
+            "title": "Setup Development Environment and CI/CD Pipeline",
+            "description": "Configure development certificates, provisioning profiles, and establish basic CI/CD pipeline structure",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Generate App IDs for both iOS and watchOS apps in Apple Developer Portal. Create development and distribution certificates. Generate provisioning profiles for development, ad-hoc, and App Store distribution. Configure automatic code signing in Xcode project settings. Create .gitignore file with proper exclusions for Swift/Xcode/Firebase artifacts. Set up Fastlane with initial Fastfile for build automation. Create GitHub Actions workflow file (.github/workflows/ios-build.yml) with basic build and test steps. Configure secrets in repository for certificate passwords and API keys. Install Firebase CLI globally and document in setup instructions.",
+            "status": "pending",
+            "testStrategy": "Build to physical iPhone and Apple Watch to verify certificates work. Run 'fastlane init' and execute basic lane. Trigger GitHub Actions workflow on test branch to verify CI builds. Ensure sensitive files are properly ignored by git."
+          },
+          {
+            "id": 5,
+            "title": "Create Initial Project Documentation and Configuration",
+            "description": "Set up essential project documentation, configuration files, and development guidelines",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Create README.md with project overview, setup instructions, and development workflow. Add CLAUDE.md file with AI assistant guidelines for the codebase structure. Create development configuration files: .swiftlint.yml for code style, firebase.json for emulator settings, .firebaserc for project aliases. Set up environment configuration files for Development and Production in Config/ directory. Create Makefile or shell scripts in Scripts/ for common tasks (setup, build, deploy). Document Firebase project configuration including security rules boilerplate. Add CHANGELOG.md for version tracking. Create pull request and issue templates for GitHub.",
+            "status": "pending",
+            "testStrategy": "Run setup script to verify it correctly configures development environment. Test SwiftLint rules work as expected. Verify Firebase emulator configuration loads properly. Ensure all documentation is accessible and accurate by following setup steps on a clean machine."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Authentication with Sign in with Apple",
+        "description": "Create authentication flow using Sign in with Apple integrated with Firebase Authentication. Implement secure user session management and token handling.",
+        "details": "Configure Sign in with Apple capability in Xcode project settings. Implement AuthenticationManager service using Firebase Auth SDK. Create SignInView with Apple button following HIG guidelines. Handle authentication state changes with Combine publishers. Implement secure token storage in iOS Keychain. Create user document in Firestore upon first sign-in with initial user data structure. Handle authentication errors gracefully. Implement session persistence (30-day duration as specified). Add biometric lock option for app access. Create proper sign-out functionality that cleans up local data.",
+        "testStrategy": "Test Sign in with Apple flow on physical devices (simulator limitations). Verify user creation in Firebase Console. Test token persistence across app launches. Validate session expiration after 30 days. Test biometric lock functionality. Ensure proper cleanup on sign-out. Test error scenarios (network failure, cancelled sign-in).",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Sign in with Apple Capability and Firebase Integration",
+            "description": "Set up Sign in with Apple entitlement in Xcode project settings and configure Firebase Authentication provider for Apple sign-in support",
+            "dependencies": [],
+            "details": "Add Sign in with Apple capability in project settings under Signing & Capabilities. Enable Apple provider in Firebase Console Authentication settings. Add AuthenticationServices framework to project. Configure associated domains for webcredentials. Update Info.plist with required Apple sign-in keys. Create service identifier in Apple Developer portal if needed. Add Firebase Auth SDK to project dependencies via Swift Package Manager.",
+            "status": "pending",
+            "testStrategy": "Verify capability appears in entitlements file. Confirm Firebase Console shows Apple provider enabled. Test framework import compiles successfully."
+          },
+          {
+            "id": 2,
+            "title": "Build AuthenticationManager Service with Firebase Auth SDK",
+            "description": "Create a singleton service class that handles all authentication operations using Firebase Auth and manages authentication state with Combine publishers",
+            "dependencies": [],
+            "details": "Create AuthenticationManager class as ObservableObject singleton. Implement @Published properties for authState, currentUser, and isAuthenticated. Set up Firebase Auth state listener in init(). Create signInWithApple() method using ASAuthorizationController. Implement credential exchange with Firebase Auth. Add error handling enum for authentication failures. Create Combine publishers for auth state changes. Implement automatic token refresh logic.",
+            "status": "pending",
+            "testStrategy": "Unit test auth state publisher emissions. Mock Firebase Auth responses. Test error handling for various failure scenarios. Verify singleton behavior."
+          },
+          {
+            "id": 3,
+            "title": "Create SignInView UI and Keychain Integration",
+            "description": "Build the sign-in interface following Apple HIG with secure token storage in iOS Keychain for session persistence",
+            "dependencies": [],
+            "details": "Design SignInView with SignInWithAppleButton following HIG specifications. Implement ASAuthorizationControllerDelegate methods. Create KeychainManager for secure token storage using Security framework. Store Firebase auth tokens and refresh tokens securely. Implement 30-day session persistence by storing session expiry date. Add loading states and error alerts. Create smooth transition animations to main app view upon successful authentication.",
+            "status": "pending",
+            "testStrategy": "UI test Sign in with Apple button appearance and tap behavior. Test Keychain read/write operations. Verify session persistence across app launches. Test 30-day expiration logic."
+          },
+          {
+            "id": 4,
+            "title": "Implement Biometric Lock and User Document Creation",
+            "description": "Add biometric authentication for app access and create initial user document structure in Firestore upon first sign-in",
+            "dependencies": [],
+            "details": "Implement BiometricAuthManager using LocalAuthentication framework. Add Face ID/Touch ID permission in Info.plist. Create toggle in settings for biometric lock preference. Store preference in UserDefaults. Implement biometric check on app launch if enabled. Create Firestore user document with initial structure: uid, email, displayName, createdAt, lastLoginAt, preferences object, statistics object. Handle document creation only on first sign-in. Update lastLoginAt on subsequent logins.",
+            "status": "pending",
+            "testStrategy": "Test biometric prompt on various devices. Verify Firestore document creation with correct structure. Test preference persistence. Validate biometric fallback to passcode."
+          },
+          {
+            "id": 5,
+            "title": "Handle Sign-Out and Error Scenarios",
+            "description": "Implement comprehensive sign-out functionality with local data cleanup and graceful error handling for all authentication scenarios",
+            "dependencies": [],
+            "details": "Create signOut() method in AuthenticationManager that calls Firebase Auth signOut. Clear all Keychain stored tokens and credentials. Reset all @Published properties to initial state. Clear any cached user data from memory. Implement UserDefaults cleanup for user preferences. Create comprehensive error handling for network failures, invalid credentials, user cancellation, and Apple ID issues. Display user-friendly error messages with retry options. Add analytics tracking for auth events.",
+            "status": "pending",
+            "testStrategy": "Test complete data cleanup after sign-out. Verify no user data persists in Keychain or UserDefaults. Test each error scenario with appropriate UI feedback. Validate analytics events fire correctly."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Build watchOS Real-time Game Tracking Engine",
+        "description": "Develop core workout tracking functionality for Apple Watch including GPS, heart rate monitoring, and motion tracking with battery optimization.",
+        "details": "Create WorkoutManager class implementing HKWorkoutSession for soccer activity type. Configure HealthKit permissions and capabilities. Implement LocationManager with adaptive GPS accuracy based on movement speed (kCLLocationAccuracyBest for active play, kCLLocationAccuracyNearestTenMeters for low activity). Set up CoreMotion for additional movement detection. Create GameDataPoint struct for 5-second interval data aggregation. Implement battery optimization logic that adjusts sensor update frequencies. Create local data persistence for offline scenarios. Implement workout pause/resume functionality. Add pre-game countdown timer. Create SwiftUI views for active tracking display showing main stats, heart rate detail, speed detail, splits, and calories.",
+        "testStrategy": "Test GPS accuracy in various conditions (indoor, outdoor, different speeds). Verify heart rate data collection from actual Apple Watch. Measure battery consumption during 2-hour sessions (target < 10%). Test offline data collection and storage. Validate sensor frequency adjustments based on activity level. Test pause/resume functionality during games.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure HealthKit and Core Motion Permissions",
+            "description": "Set up HealthKit capabilities and permissions for the watchOS app, configure Core Motion access, and create the necessary Info.plist entries for health data access",
+            "dependencies": [],
+            "details": "Add HealthKit capability to watchOS target in Xcode. Create HealthKitManager class to handle authorization requests for activeEnergyBurned, heartRate, distanceWalkingRunning, and workout data. Configure Info.plist with NSHealthShareUsageDescription and NSHealthUpdateUsageDescription. Set up Core Motion entitlements for CMMotionActivityManager and CMPedometer access. Create permission request flow that triggers on first app launch. Implement fallback handling if permissions are denied.",
+            "status": "pending",
+            "testStrategy": "Test permission flows on real Apple Watch device. Verify all requested health data types are properly authorized. Test app behavior when permissions are denied. Validate that permission strings appear correctly in system dialogs."
+          },
+          {
+            "id": 2,
+            "title": "Implement WorkoutManager with HKWorkoutSession",
+            "description": "Create the core WorkoutManager class that manages HKWorkoutSession for soccer activity type, handles workout lifecycle, and coordinates data collection from various sensors",
+            "dependencies": [],
+            "details": "Create WorkoutManager class as ObservableObject for SwiftUI integration. Configure HKWorkoutSession with activityType: .soccer and locationType: .outdoor. Implement workout state management (preparing, running, paused, stopped). Set up HKWorkoutBuilder for accumulating workout data. Create delegate methods for session state changes. Implement pause/resume functionality with proper session handling. Add pre-game countdown timer (configurable 5-60 seconds). Create error handling for session failures. Implement background mode configuration for continuous tracking.",
+            "status": "pending",
+            "testStrategy": "Test workout session lifecycle on physical Apple Watch. Verify background execution continues when app is not in foreground. Test pause/resume maintains data continuity. Validate countdown timer accuracy. Monitor memory usage during long sessions."
+          },
+          {
+            "id": 3,
+            "title": "Build Adaptive GPS and Motion Tracking System",
+            "description": "Implement LocationManager with dynamic GPS accuracy based on movement patterns and create motion detection system using Core Motion for enhanced activity recognition",
+            "dependencies": [],
+            "details": "Create LocationManager class implementing CLLocationManagerDelegate. Implement adaptive GPS accuracy switching: use kCLLocationAccuracyBest when speed > 2 m/s (active play), kCLLocationAccuracyNearestTenMeters when speed < 0.5 m/s (standing), kCLLocationAccuracyHundredMeters during paused state. Set up CMMotionActivityManager to detect running, walking, stationary states. Create movement pattern analyzer combining GPS speed and motion data. Implement location filtering to remove GPS jitter. Set distance filter dynamically (5m for active, 20m for low activity). Create speed calculation with smoothing algorithm. Add altitude tracking for field elevation changes.",
+            "status": "pending",
+            "testStrategy": "Field test GPS accuracy switching during actual soccer play. Measure battery impact of different accuracy modes. Test motion detection accuracy for soccer-specific movements. Verify location updates continue in background."
+          },
+          {
+            "id": 4,
+            "title": "Create Data Aggregation and Battery Optimization Engine",
+            "description": "Develop the GameDataPoint structure for 5-second interval data collection and implement intelligent battery optimization by adjusting sensor update frequencies based on activity level",
+            "dependencies": [],
+            "details": "Create GameDataPoint struct with timestamp, location (lat/lng), speed, distance, heartRate, calories, and activityLevel properties. Implement 5-second aggregation timer that collects and averages sensor data. Create BatteryOptimizationManager that monitors device battery level and activity patterns. Implement sensor frequency adjustments: High activity (HR: 1Hz, GPS: 1Hz, Motion: 5Hz), Medium activity (HR: 0.5Hz, GPS: 0.5Hz, Motion: 2Hz), Low activity (HR: 0.2Hz, GPS: 0.1Hz, Motion: 1Hz). Add data buffering for efficient batch processing. Create rolling window calculations for real-time stats. Implement data compression for storage efficiency.",
+            "status": "pending",
+            "testStrategy": "Measure actual battery consumption over 2-hour sessions (target < 10% drain). Test sensor frequency switching responsiveness. Verify data aggregation accuracy. Monitor CPU usage during peak activity. Test data integrity after compression."
+          },
+          {
+            "id": 5,
+            "title": "Develop SwiftUI Tracking Interface and Local Persistence",
+            "description": "Create the watchOS SwiftUI views for live tracking display and implement local data persistence for offline game recording with automatic sync queuing",
+            "dependencies": [],
+            "details": "Build main tracking view showing elapsed time, distance, current/avg/max speed, heart rate, and calories. Create detailed views accessible via digital crown: HeartRateDetailView with zones and efficiency, SpeedDetailView with pace chart, SplitsView showing 10-minute intervals, CaloriesDetailView with burn rate. Implement Core Data stack for local storage with GameSession and DataPoint entities. Create offline persistence manager that stores up to 7 days or 50MB of game data. Build sync queue system marking data for upload when iPhone connection restored. Add visual indicators for GPS signal strength and heart rate connection. Implement haptic feedback for milestone achievements.",
+            "status": "pending",
+            "testStrategy": "Test UI responsiveness during active tracking. Verify offline data persists across app restarts. Test sync queue behavior when storage limits reached. Validate UI updates match sensor data frequency. Test haptic feedback timing and intensity."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement Watch-iPhone Data Synchronization",
+        "description": "Create robust bidirectional data sync between Apple Watch and iPhone using WatchConnectivity framework with offline support and data queuing.",
+        "details": "Implement WatchConnectivityManager singleton for both iOS and watchOS targets. Create real-time data transfer during active games using sendMessage for immediate delivery when reachable. Implement background transfer using transferUserInfo for reliability. Create data queuing system supporting up to 7 days of offline data or 50MB limit. Implement priority-based sync (Critical: game summary, High: GPS/heart rate, Medium: detailed metrics, Low: raw sensor data). Add data compression using zlib for GPS routes. Implement sync rules based on connection type (WiFi: all data, Cellular: critical+high only). Create sync status UI indicators. Handle connection state changes gracefully. Implement retry logic for failed transfers.",
+        "testStrategy": "Test real-time sync during active game with iPhone nearby. Test offline game recording and subsequent sync. Verify data integrity after compression/decompression. Test queue limits (7 days/50MB). Validate priority-based sync on different connection types. Test sync reliability with connection interruptions.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create WatchConnectivityManager Core Infrastructure",
+            "description": "Implement singleton WatchConnectivityManager classes for both iOS and watchOS targets with session activation, connection state management, and bidirectional communication protocols",
+            "dependencies": [],
+            "details": "Create WatchConnectivityManager.swift in iOS/Shared/Services/ implementing WCSessionDelegate. Initialize WCSession singleton with proper activation sequence. Implement session activation handlers (activationDidCompleteWith, sessionDidBecomeInactive, sessionDidDeactivate). Create connection state enum (notActivated, activated, notReachable, reachable). Implement reachability monitoring with Combine publishers. Add session state observers for UI updates. Create shared message types enum for standardized communication. Implement error handling for session activation failures.",
+            "status": "pending",
+            "testStrategy": "Unit test session activation sequence. Mock WCSession for testing delegate callbacks. Verify state transitions with different connection scenarios. Test error handling for activation failures."
+          },
+          {
+            "id": 2,
+            "title": "Implement Real-Time and Background Data Transfer",
+            "description": "Build message sending infrastructure for immediate delivery during active games and background transfer system for reliable data synchronization",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement sendMessage() wrapper with automatic fallback to transferUserInfo when not reachable. Create message priority enum (critical, high, medium, low). Build sendGameUpdate() for real-time score/event updates using sendMessage. Implement sendBulkData() for GPS/sensor data using transferUserInfo. Create message batching system to optimize transfer efficiency. Add completion handlers with retry logic (3 attempts with exponential backoff). Implement didReceiveMessage and didReceiveUserInfo handlers on both platforms. Create message routing system based on message type. Add telemetry for transfer success/failure rates.",
+            "status": "pending",
+            "testStrategy": "Test sendMessage with reachable/unreachable states. Verify automatic fallback to transferUserInfo. Test message batching with various data sizes. Validate retry logic with simulated failures."
+          },
+          {
+            "id": 3,
+            "title": "Build Offline Data Queue with Priority Management",
+            "description": "Create persistent queue system for offline data storage with 7-day retention, 50MB limit, and priority-based management",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement DataQueueManager using Core Data for persistence. Create QueuedMessage entity with fields: id, priority, payload, timestamp, retryCount, compressed. Build enqueue() method with automatic size checking and oldest-first eviction when approaching 50MB limit. Implement 7-day retention policy with daily cleanup job. Create priority-based dequeue algorithm (Critical->High->Medium->Low). Add queue status monitoring (itemCount, totalSize, oldestItem). Implement queue persistence across app launches. Create queue compaction routine to optimize storage. Add telemetry for queue health metrics.",
+            "status": "pending",
+            "testStrategy": "Test queue persistence across app termination. Verify 50MB limit enforcement with large datasets. Test 7-day cleanup with time manipulation. Validate priority-based dequeuing order."
+          },
+          {
+            "id": 4,
+            "title": "Implement Data Compression and Connection-Aware Sync",
+            "description": "Add zlib compression for GPS routes and implement intelligent sync rules based on network connection type",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Integrate zlib compression for GPS coordinate arrays with 60-70% expected compression ratio. Create CompressionManager with compress() and decompress() methods. Implement connection type detection (WiFi/Cellular/None) using NWPathMonitor. Build SyncRulesEngine with connection-based filtering: WiFi (all data), Cellular (critical+high only). Create bandwidth estimation for adaptive sync rates. Implement progressive sync for large datasets. Add sync throttling to prevent battery drain. Create sync status enum (idle, syncing, paused, completed). Build UI indicators showing sync progress and connection status.",
+            "status": "pending",
+            "testStrategy": "Test compression ratios with real GPS data. Verify decompression accuracy with checksums. Test connection type detection accuracy. Validate sync rule enforcement on different networks."
+          },
+          {
+            "id": 5,
+            "title": "Create Sync Status UI and Error Recovery System",
+            "description": "Build user-facing sync status indicators and implement robust error recovery mechanisms for failed transfers",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "Create SyncStatusView component showing real-time sync progress, queue size, and last sync timestamp. Implement circular progress indicator for active syncs. Build connection status badge (green=WiFi, yellow=Cellular, red=Offline). Create sync history log showing last 10 sync operations. Implement user-triggered manual sync with pull-to-refresh. Build error recovery system with exponential backoff (1s, 2s, 4s, 8s, 16s max). Create conflict resolution for simultaneous edits. Implement data integrity validation with checksums. Add sync analytics events for monitoring. Create debug view for troubleshooting sync issues.",
+            "status": "pending",
+            "testStrategy": "Test UI updates with various sync states. Verify error recovery with network interruptions. Test conflict resolution with simultaneous edits. Validate progress indicators accuracy."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Design and Implement Firestore Database Schema",
+        "description": "Create comprehensive Firestore database structure with collections, security rules, and composite indexes for optimal performance.",
+        "details": "Create Firestore collections: users/{userId}, games/{gameId}, groups/{groupId}, leaderboards/{groupId}_{weekId}, achievements/{userId}. Implement data models in Swift matching schema structure. Create Firestore security rules ensuring users can only access their own data, group data readable by members only, proper permission checks for updates. Set up composite indexes: games [userId, startTime DESC], games [userId, mvpScore DESC], groups [memberIds, isPublic], leaderboards [groupId, weekId]. Implement repository pattern for data access. Create Firebase Cloud Storage structure for GPS route data with proper access controls. Implement data validation rules. Set up automatic timestamps and data consistency checks.",
+        "testStrategy": "Test CRUD operations for each collection. Verify security rules prevent unauthorized access. Test composite index performance with sample data. Validate data consistency across related collections. Test Cloud Storage upload/download for GPS routes. Verify proper error handling for permission denied scenarios.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Core Firestore Collections and Data Models",
+            "description": "Create the foundational Firestore collections structure and corresponding Swift data models for users, games, groups, leaderboards, and achievements",
+            "dependencies": [],
+            "details": "Define Firestore collections: users/{userId} with fields (displayName, email, profileImageUrl, stats, achievements, groupIds, createdAt, updatedAt), games/{gameId} with fields (userId, startTime, endTime, duration, distance, avgSpeed, mvpScore, gpsRoute, heartRateData, events), groups/{groupId} with fields (name, description, creatorId, memberIds, inviteCode, isPublic, weeklyChallenge), leaderboards/{groupId}_{weekId} with fields (rankings array with userId, score, gamesPlayed), achievements/{userId} with fields (achievementId, unlockedAt, progress). Create corresponding Swift structs with Codable protocol for seamless Firestore integration. Implement computed properties for derived values and helper methods for data transformation.",
+            "status": "pending",
+            "testStrategy": "Create unit tests for Swift model encoding/decoding, validate all required fields are properly mapped, test computed properties with edge cases"
+          },
+          {
+            "id": 2,
+            "title": "Implement Firestore Security Rules and Access Control",
+            "description": "Create comprehensive security rules ensuring proper authentication, authorization, and data access controls for all collections",
+            "dependencies": [
+              1
+            ],
+            "details": "Write Firestore security rules: users collection - allow read/write only if request.auth.uid == userId, games collection - allow read if request.auth.uid == resource.data.userId or user is in same group, allow write only if request.auth.uid == userId, groups collection - allow read if resource.data.isPublic == true or request.auth.uid in resource.data.memberIds, allow update if request.auth.uid == resource.data.creatorId or updating only own membership, leaderboards - allow read if user is group member, write denied (server-only), achievements - allow read if request.auth.uid == userId, write denied (server-only). Implement field-level validation rules for data types, required fields, and value constraints. Add timestamp validation to prevent backdating.",
+            "status": "pending",
+            "testStrategy": "Use Firebase emulator to test unauthorized access attempts, verify proper permission grants for authorized users, test edge cases like removed group members"
+          },
+          {
+            "id": 3,
+            "title": "Create Composite Indexes for Query Performance",
+            "description": "Define and deploy Firestore composite indexes for optimized query performance on common access patterns",
+            "dependencies": [
+              1
+            ],
+            "details": "Create firestore.indexes.json with composite indexes: games collection - [userId ASC, startTime DESC] for user game history, [userId ASC, mvpScore DESC] for personal best queries, [groupId ASC, startTime DESC] for group game feeds, groups collection - [memberIds ARRAY_CONTAINS, isPublic ASC] for user's groups query, [createdAt DESC] for public group discovery, leaderboards collection - [groupId ASC, weekId DESC] for current/historical leaderboards. Add single-field indexes for frequently filtered fields: games.distance, games.duration, users.displayName. Deploy indexes using Firebase CLI and monitor index usage in Firebase console. Document query patterns that require these indexes.",
+            "status": "pending",
+            "testStrategy": "Execute complex queries using Firebase emulator, measure query performance with sample datasets of 10K+ documents, verify no missing index errors"
+          },
+          {
+            "id": 4,
+            "title": "Build Repository Pattern for Data Access",
+            "description": "Implement repository classes in Swift providing clean abstraction layer for Firestore operations with offline support and caching",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create BaseRepository protocol with generic CRUD operations and error handling. Implement UserRepository, GameRepository, GroupRepository, LeaderboardRepository, and AchievementRepository classes. Add offline persistence configuration with Firestore's enablePersistence(). Implement data caching strategy with memory cache for frequently accessed data. Create custom error types for network failures, permission denied, and data validation errors. Add retry logic with exponential backoff for transient failures. Implement batch operations for efficient multi-document updates. Create Observable wrappers using Combine for real-time data streams. Add transaction support for atomic operations across multiple documents.",
+            "status": "pending",
+            "testStrategy": "Test CRUD operations with mock Firestore, verify offline data persistence, test error handling for various failure scenarios, validate transaction atomicity"
+          },
+          {
+            "id": 5,
+            "title": "Set Up Cloud Storage for GPS Routes and Media",
+            "description": "Configure Firebase Cloud Storage structure for GPS route data and implement secure upload/download functionality with proper access controls",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create Cloud Storage folder structure: /users/{userId}/profile/ for profile images, /games/{gameId}/gps_routes/ for compressed GPS data, /games/{gameId}/media/ for game photos/videos, /groups/{groupId}/media/ for group content. Implement storage security rules matching Firestore permissions. Create GPSRouteCompressor utility using zlib to reduce GPS data size by 70-80%. Implement StorageManager class with methods for uploadGPSRoute(), downloadGPSRoute(), uploadMedia(), getDownloadURL(). Add progress callbacks for large file transfers. Implement automatic cleanup for orphaned files. Set up Cloud Functions trigger to generate thumbnails for uploaded images. Add metadata tags for efficient querying.",
+            "status": "pending",
+            "testStrategy": "Test GPS data compression ratios, verify storage security rules block unauthorized access, test upload/download with various file sizes, validate cleanup of orphaned files"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Develop MVP Score Calculation System",
+        "description": "Implement the MVP score algorithm as Firebase Cloud Functions with weighted metrics for distance, speed, heart rate efficiency, and consistency.",
+        "details": "Create Firebase Function processGameCompletion triggered on game document creation. Implement MVP score calculation with weights: distance (0.3), avgSpeed (0.2), maxSpeed (0.15), heartRateEfficiency (0.2), consistency (0.15). Create normalization functions for each metric (0-100 scale). Implement heart rate efficiency calculation based on age and fitness level. Calculate consistency from split times variation. Update game document with calculated MVP score. Trigger user stats update and leaderboard recalculation. Implement Douglas-Peucker algorithm for GPS route simplification before storage. Add weather data integration for contextual scoring. Create error handling and logging for debugging.",
+        "testStrategy": "Unit test MVP calculation with various game data inputs. Verify score ranges (0-100). Test normalization functions with edge cases. Validate Cloud Function triggers properly on game creation. Test performance with high-load scenarios. Verify GPS route compression effectiveness.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Firebase Function Trigger and Basic Structure",
+            "description": "Set up the Firebase Cloud Function that triggers on game document creation and establish the basic function structure with error handling and logging",
+            "dependencies": [],
+            "details": "Create processGameCompletion function in Backend/functions/src/triggers/. Configure onCreate trigger for games/{gameId} collection. Set up TypeScript interfaces for game data, player metrics, and MVP score result. Implement basic error handling with try-catch blocks and structured logging using Firebase Functions logger. Add function timeout configuration (540 seconds) to handle complex calculations. Create helper function structure for metric calculations.",
+            "status": "pending",
+            "testStrategy": "Write unit tests to verify function triggers correctly on document creation. Test error handling with malformed game data. Verify logging outputs correct structured data. Test timeout handling for long-running calculations."
+          },
+          {
+            "id": 2,
+            "title": "Implement Metric Normalization Functions",
+            "description": "Create normalization functions to convert raw game metrics into standardized 0-100 scale values for MVP score calculation",
+            "dependencies": [
+              1
+            ],
+            "details": "Create normalizeDistance function using logarithmic scale (0-15km range). Implement normalizeSpeed for average speed (0-25 km/h) and max speed (0-35 km/h) with linear scaling. Build normalizeHeartRate function considering age-based max heart rate (220-age) and fitness zones. Create normalizeConsistency using coefficient of variation from split times. Implement edge case handling for outliers and invalid values. Add configurable thresholds for each metric type stored in Firebase Remote Config.",
+            "status": "pending",
+            "testStrategy": "Unit test each normalization function with edge cases (0, negative, extremely high values). Verify all outputs are within 0-100 range. Test with real-world metric ranges from sample game data. Validate age-based heart rate calculations for different age groups."
+          },
+          {
+            "id": 3,
+            "title": "Build MVP Score Calculation Engine",
+            "description": "Implement the weighted MVP score algorithm that combines normalized metrics into a final score",
+            "dependencies": [
+              2
+            ],
+            "details": "Create calculateMVPScore function with configurable weights: distance (0.3), avgSpeed (0.2), maxSpeed (0.15), heartRateEfficiency (0.2), consistency (0.15). Implement heart rate efficiency calculation using percentage of time in optimal zone (60-80% max HR). Calculate consistency score from standard deviation of 5-minute split distances. Add bonus multipliers for exceptional performance (>90th percentile in any metric). Implement score capping at 100 and floor at 0. Create detailed score breakdown object showing contribution of each metric.",
+            "status": "pending",
+            "testStrategy": "Test MVP calculation with various game scenarios (short games, long games, high intensity, steady pace). Verify weight distribution adds up to 1.0. Test edge cases where some metrics are missing. Validate score distribution across large dataset follows expected bell curve."
+          },
+          {
+            "id": 4,
+            "title": "Integrate GPS Route Processing and Weather Context",
+            "description": "Implement Douglas-Peucker algorithm for GPS route compression and integrate weather data for contextual scoring adjustments",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement Douglas-Peucker algorithm to compress GPS routes while maintaining accuracy (epsilon = 5 meters). Create function to reduce GPS points by 70-90% before Cloud Storage upload. Integrate OpenWeatherMap API to fetch weather data at game location/time. Apply weather modifiers to MVP score: temperature penalty outside 15-25°C range, wind speed impact on running metrics, precipitation bonus for playing in rain. Store compressed route in Cloud Storage with reference in game document. Add weather data to game metadata for historical context.",
+            "status": "pending",
+            "testStrategy": "Test GPS compression maintains route shape accuracy within 5-meter tolerance. Verify compression ratio achieves 70%+ reduction. Test weather API integration with rate limiting and error handling. Validate weather modifiers produce reasonable score adjustments (+/- 10%)."
+          },
+          {
+            "id": 5,
+            "title": "Implement Database Updates and Cascade Triggers",
+            "description": "Update game documents with MVP scores and trigger cascading updates to user statistics and group leaderboards",
+            "dependencies": [
+              4
+            ],
+            "details": "Update game document with mvpScore, scoreBreakdown, processedAt timestamp, and compressedRouteUrl. Trigger updateUserStats function to recalculate user's average MVP score, total games, and achievement progress. Implement updateGroupLeaderboards function to recalculate weekly rankings for all user's groups. Add transaction support to ensure atomic updates across collections. Create Cloud Task for asynchronous leaderboard updates to prevent timeout. Implement notification trigger for new personal best scores or leaderboard position changes.",
+            "status": "pending",
+            "testStrategy": "Test atomic transaction updates across game, user, and leaderboard collections. Verify cascading triggers execute in correct order. Test Cloud Task creation and execution for leaderboard updates. Validate notification triggers only for significant events. Test rollback behavior on partial failures."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Build iOS Dashboard and Core Navigation",
+        "description": "Create main iOS app interface with SwiftUI including dashboard, navigation structure, and core UI components following the specified navigation flow.",
+        "details": "Implement TabView-based navigation with Dashboard, History, Groups, and Profile tabs. Create DashboardView showing current week stats, quick game start button, recent activities, and group standings preview. Implement NavigationStack for each tab with proper deep linking support. Create reusable UI components library (cards, buttons, stat displays). Implement MVVM architecture with Combine for reactive updates. Create ViewModels for each major feature. Add pull-to-refresh functionality. Implement loading states and error handling UI. Create custom chart views for statistics using native SwiftUI Charts. Add haptic feedback for interactions. Implement dark mode support.",
+        "testStrategy": "Test navigation flow matches PRD specifications. Verify data updates propagate correctly through Combine publishers. Test UI responsiveness on different iPhone sizes. Validate loading states and error handling. Test deep linking functionality. Verify memory usage stays under 100MB during active use.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create SwiftUI Tab Navigation Structure",
+            "description": "Build the main TabView navigation container with proper tab bar configuration and NavigationStack setup for each tab",
+            "dependencies": [],
+            "details": "Create MainTabView.swift as the root container with TabView containing four tabs: Dashboard, History, Groups, and Profile. Implement custom tab bar appearance with SF Symbols (house.fill, clock.fill, person.3.fill, person.circle.fill). Configure NavigationStack for each tab to enable deep navigation. Add TabBarViewModel to manage selected tab state and handle deep linking coordination. Implement tab badge support for notifications. Configure proper tab bar tint color and appearance for dark/light modes.",
+            "status": "pending",
+            "testStrategy": "Verify all four tabs are accessible and display correct icons. Test NavigationStack push/pop behavior within each tab. Validate tab selection state persistence. Test deep linking to specific tabs."
+          },
+          {
+            "id": 2,
+            "title": "Build Reusable UI Components Library",
+            "description": "Create a comprehensive library of reusable SwiftUI components following the app's design system",
+            "dependencies": [],
+            "details": "Create Components folder with: StatCardView for displaying numeric statistics with title/value/trend, ActionButton with primary/secondary/tertiary styles, LoadingView with skeleton placeholders, ErrorView with retry functionality, PullToRefreshView wrapper, ActivityRowView for recent activities list, GroupStandingCardView for leaderboard preview, ChartContainerView for statistics visualization, HapticButton with customizable feedback levels. Implement ViewModifiers for consistent styling: cardStyle(), primaryButtonStyle(), loadingOverlay(). Create Theme struct with color palette, typography scales, spacing constants, and animation presets.",
+            "status": "pending",
+            "testStrategy": "Create ComponentsPreview.swift showcasing all components in different states. Test components with various data inputs and screen sizes. Verify dark mode appearance for all components."
+          },
+          {
+            "id": 3,
+            "title": "Implement Dashboard View and ViewModel",
+            "description": "Create the main dashboard interface with weekly stats, quick actions, recent activities, and group standings",
+            "dependencies": [],
+            "details": "Create DashboardView with ScrollView containing: WeeklyStatsSection showing games played, total duration, MVP score using StatCardView components. QuickStartSection with prominent 'Start Game' ActionButton and recent partners list. RecentActivitiesSection using LazyVStack with ActivityRowView items, maximum 5 items shown. GroupStandingsSection showing top 3 positions from user's primary group. Implement DashboardViewModel with @Published properties for all data sections, Combine publishers for real-time updates, methods for fetching dashboard data from services, pull-to-refresh functionality with async/await. Add loading states management and error handling with retry logic.",
+            "status": "pending",
+            "testStrategy": "Test dashboard loads within 2 seconds. Verify pull-to-refresh updates all sections. Test error states show appropriate UI. Validate memory usage during scrolling."
+          },
+          {
+            "id": 4,
+            "title": "Create Native SwiftUI Charts for Statistics",
+            "description": "Implement custom chart views using SwiftUI Charts framework for visualizing game statistics and trends",
+            "dependencies": [],
+            "details": "Import Charts framework and create: WeeklyActivityChart showing 7-day bar chart of games played, MVPScoreTrendChart with line graph showing score progression over time, GroupPerformanceChart with horizontal bar chart comparing group members, HeatMapCalendar for monthly activity visualization. Implement ChartViewModel protocol with data transformation methods. Add interactive features: tap to show detailed values, swipe to change time periods, pinch to zoom on line charts. Configure axis labels, grid lines, and custom color gradients. Add accessibility labels for VoiceOver support. Implement smooth animations for data updates using withAnimation.",
+            "status": "pending",
+            "testStrategy": "Test charts render correctly with edge cases (no data, single data point, many data points). Verify interactions work smoothly. Test performance with large datasets (1000+ points)."
+          },
+          {
+            "id": 5,
+            "title": "Implement MVVM Architecture with Combine",
+            "description": "Set up comprehensive MVVM pattern with Combine framework for reactive data flow and state management",
+            "dependencies": [],
+            "details": "Create BaseViewModel protocol with common functionality: loading state management, error handling, cancellable storage. Implement ViewModelFactory for dependency injection. Set up Combine publishers for: user authentication state, real-time game updates, group membership changes, notification badges. Create AppState ObservableObject for global state management. Implement proper memory management with weak self in closures. Add CombineExtensions for common operators: handleEvents for side effects, mapToResult for error handling, shareReplay for multicasting. Configure proper thread handling with receive(on: DispatchQueue.main). Implement ViewModelProtocol conformance for all feature ViewModels.",
+            "status": "pending",
+            "testStrategy": "Test memory leaks using Instruments. Verify publishers emit on main thread. Test state updates propagate to views correctly. Validate cancellables are properly released on deinit."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement Group and Leaderboard Features",
+        "description": "Build social features including group creation, member management, weekly challenges, and real-time leaderboard updates.",
+        "details": "Create GroupManager service for CRUD operations. Implement group creation flow with name, description, privacy settings. Generate unique invite codes for private groups. Build member management UI (invite, remove, leave). Create LeaderboardManager for real-time ranking updates. Implement weekly challenge system with automatic generation. Build leaderboard UI with animations for rank changes. Add badge distribution logic for weekly winners. Implement push notifications for ranking changes using FCM. Create group discovery feature for public groups with location-based search. Add member limit enforcement based on subscription status. Implement group chat preparation (UI only, backend in future).",
+        "testStrategy": "Test group creation and invite code generation. Verify member permissions (creator vs regular member). Test real-time leaderboard updates with multiple users. Validate weekly challenge generation and badge distribution. Test notification delivery for rank changes. Verify subscription-based limitations work correctly.",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Group Data Models and Firebase Service Layer",
+            "description": "Define Swift data models for groups and implement GroupManager service with Firebase integration for CRUD operations",
+            "dependencies": [],
+            "details": "Create Group model with properties: id, name, description, creatorId, memberIds array, inviteCode, isPublic, memberLimit, createdAt, weeklyChallenge. Create GroupMember model with userId, role (creator/member), joinedAt. Implement GroupManager service with methods: createGroup(), updateGroup(), deleteGroup(), generateInviteCode(), joinGroup(), leaveGroup(), removeMember(). Set up Firestore listeners for real-time group updates. Implement invite code generation using 6-character alphanumeric codes with uniqueness validation.",
+            "status": "pending",
+            "testStrategy": "Unit test GroupManager service methods with mock Firestore. Test invite code generation for uniqueness. Verify CRUD operations and member management logic. Test subscription-based member limits."
+          },
+          {
+            "id": 2,
+            "title": "Build Group Creation and Management UI",
+            "description": "Implement SwiftUI views for group creation flow, member management, and group discovery features",
+            "dependencies": [
+              1
+            ],
+            "details": "Create CreateGroupView with form fields for name, description, privacy toggle. Implement GroupDetailView showing members list with role indicators, invite button for creators, leave/remove member options. Build GroupDiscoveryView with search functionality, location-based filtering for public groups, join button. Add InviteView with share sheet for invite codes. Implement proper navigation flow between views. Add loading states and error handling. Apply consistent styling matching app design system.",
+            "status": "pending",
+            "testStrategy": "UI test group creation flow end-to-end. Test member management actions (invite, remove, leave). Verify privacy settings affect group visibility. Test search and filtering in discovery view."
+          },
+          {
+            "id": 3,
+            "title": "Implement Leaderboard System with Real-time Updates",
+            "description": "Create LeaderboardManager service and data models for weekly challenges with automatic ranking calculations",
+            "dependencies": [
+              1
+            ],
+            "details": "Create Leaderboard model with groupId, weekId, rankings array (userId, score, rank, previousRank). Create WeeklyChallenge model with id, groupId, startDate, endDate, type (goals/assists/mvp), isActive. Implement LeaderboardManager with methods: updateUserScore(), calculateRankings(), getWeeklyLeaderboard(), generateWeeklyChallenge(). Set up Firestore listeners for real-time score updates. Implement automatic weekly challenge generation using Cloud Scheduler. Add logic to detect rank changes for notifications.",
+            "status": "pending",
+            "testStrategy": "Test score update calculations and ranking algorithms. Verify real-time updates propagate correctly. Test weekly challenge generation and rotation. Validate rank change detection logic."
+          },
+          {
+            "id": 4,
+            "title": "Design Leaderboard UI with Animations and Badge System",
+            "description": "Build interactive leaderboard views with rank change animations and weekly winner badge distribution",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Create LeaderboardView with animated list showing user rankings, score displays, rank change indicators (up/down arrows). Implement smooth animations for rank changes using SwiftUI animations. Build BadgeView system for weekly winners with different badge designs. Add WeeklyChallengeCard showing current challenge details and time remaining. Implement pull-to-refresh for manual updates. Create LeaderboardHistoryView for past weeks. Add celebration animation for weekly winners.",
+            "status": "pending",
+            "testStrategy": "Test animations perform smoothly on various devices. Verify badge distribution to correct winners. Test pull-to-refresh functionality. Validate historical data display accuracy."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Push Notifications for Ranking Changes",
+            "description": "Implement FCM notifications for leaderboard updates and prepare group chat UI structure",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Set up FCM token management in NotificationManager. Create notification triggers in LeaderboardManager for: rank changes, new weekly challenge, weekly winner announcement. Implement notification payload structure with deep linking to leaderboard. Add notification preferences in user settings (frequency, types). Create GroupChatView UI skeleton with message list, input field, send button (backend integration deferred). Implement proper notification permissions handling. Add badge count updates for unread notifications.",
+            "status": "pending",
+            "testStrategy": "Test notification delivery for various ranking scenarios. Verify deep linking opens correct leaderboard view. Test notification preferences affect delivery. Validate UI-only chat interface displays correctly."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Integrate StoreKit 2 for Premium Subscriptions",
+        "description": "Implement in-app purchase system for premium subscriptions with feature gating, receipt validation, and subscription management.",
+        "details": "Configure subscription products in App Store Connect (monthly and annual tiers). Implement SubscriptionManager using StoreKit 2 APIs. Create PremiumUpsellView for feature-gated content. Implement feature availability checking system. Create Firebase Function for receipt validation with Apple servers. Handle subscription state changes and renewals. Implement restore purchases functionality. Create subscription management UI in profile settings. Add promotional offers support. Implement proper error handling for purchase failures. Create analytics events for conversion tracking. Handle edge cases (refunds, billing issues, grace periods). Add subscription status sync across devices.",
+        "testStrategy": "Test purchase flow in sandbox environment. Verify receipt validation with Apple servers. Test feature gating for premium content. Validate subscription restoration across devices. Test renewal and expiration handling. Verify proper UI updates based on subscription status. Test error scenarios and edge cases.",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure StoreKit Products and App Store Connect",
+            "description": "Set up subscription products in App Store Connect and configure StoreKit 2 product identifiers in the iOS app",
+            "dependencies": [],
+            "details": "Create two auto-renewable subscription products in App Store Connect: 'soccerx_premium_monthly' ($4.99/month) and 'soccerx_premium_annual' ($49.99/year with 17% discount). Configure subscription group 'SoccerX Premium' with rank ordering. Create Product.swift enum with StoreKit 2 product identifiers. Add StoreKit configuration file for local testing. Configure promotional offers and introductory pricing. Set up subscription status URL for server notifications. Add required App Store metadata including subscription descriptions and what's included in premium tier.",
+            "status": "pending",
+            "testStrategy": "Verify products load correctly in StoreKit sandbox environment. Test product metadata retrieval including pricing and descriptions. Validate configuration file works in Xcode simulator."
+          },
+          {
+            "id": 2,
+            "title": "Implement SubscriptionManager with StoreKit 2",
+            "description": "Create core subscription management service using modern StoreKit 2 APIs for purchase handling and state management",
+            "dependencies": [
+              1
+            ],
+            "details": "Create SubscriptionManager.swift as @MainActor singleton using Product.products() for loading. Implement purchase flow with Product.purchase() handling all transaction states. Create Transaction.currentEntitlements monitoring for real-time updates. Implement subscription status checking with Transaction.latest(for:). Add restore purchases using AppStore.sync(). Create SubscriptionState enum (none, active, expired, gracePeriod). Implement transaction verification and finish. Add proper error handling for StoreKitError cases. Create @Published properties for UI binding. Implement subscription tier comparison logic.",
+            "status": "pending",
+            "testStrategy": "Test purchase flow end-to-end in sandbox. Verify transaction updates trigger UI changes. Test restore purchases with different Apple IDs. Validate error handling for network failures and user cancellations."
+          },
+          {
+            "id": 3,
+            "title": "Create Firebase Receipt Validation Function",
+            "description": "Implement server-side receipt validation with Apple's App Store Server API and store subscription status in Firestore",
+            "dependencies": [
+              2
+            ],
+            "details": "Create Firebase Function 'validateSubscriptionReceipt' using App Store Server API v2. Implement JWT token generation for API authentication. Create endpoint to verify transaction with Apple servers. Parse JWS transaction info and validate signature. Store subscription status in Firestore users/{userId}/subscription with fields: status, tier, expiresAt, originalTransactionId, isInGracePeriod. Implement webhook handler for App Store Server Notifications v2 (DID_RENEW, DID_FAIL_TO_RENEW, EXPIRED, REFUND). Add idempotency checks to prevent duplicate processing. Create subscription history tracking. Implement proper error handling and retry logic.",
+            "status": "pending",
+            "testStrategy": "Test receipt validation with sandbox receipts. Verify webhook handling for all notification types. Test subscription status sync to Firestore. Validate JWT signature verification. Test grace period and refund handling."
+          },
+          {
+            "id": 4,
+            "title": "Build Premium Feature Gating System",
+            "description": "Implement feature availability checking and create UI components for premium upsells throughout the app",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Create PremiumFeature enum listing all gated features (unlimitedGames, advancedStats, groupsOver10, exportData, removeAds, customBadges). Implement FeatureGateManager checking subscription status for each feature. Create PremiumUpsellView SwiftUI component with feature comparison table. Build @ViewModifier for wrapping premium content with blur/lock overlay. Implement contextual upsell prompts when users hit limits. Create PaywallView for full-screen subscription offering. Add feature flags in UserDefaults for offline access. Implement graceful degradation for expired subscriptions. Create analytics events for upsell impressions and conversions.",
+            "status": "pending",
+            "testStrategy": "Test feature gating with different subscription states. Verify UI updates immediately after purchase. Test offline feature checking. Validate analytics events fire correctly. Test graceful handling of subscription expiration."
+          },
+          {
+            "id": 5,
+            "title": "Implement Subscription Management UI",
+            "description": "Create comprehensive subscription management interface in user profile with renewal controls and billing history",
+            "dependencies": [
+              2,
+              3,
+              4
+            ],
+            "details": "Create SubscriptionSettingsView in profile showing current plan, next billing date, and management options. Implement subscription details card with tier benefits and pricing. Add 'Manage Subscription' button linking to App Store subscriptions. Create billing history view pulling from Transaction.all. Implement plan upgrade/downgrade UI with proration preview. Add subscription restoration UI with loading states. Create family sharing status indicator. Implement promotional offer redemption flow. Add subscription FAQ section. Create proper loading and error states. Implement subscription expiration countdown for grace period. Add deep linking from notifications to subscription settings.",
+            "status": "pending",
+            "testStrategy": "Test UI with all subscription states including grace period. Verify App Store subscription page opens correctly. Test upgrade/downgrade flows. Validate billing history accuracy. Test promotional offer redemption. Verify deep linking works from various entry points."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Testing Suite and Launch Preparation",
+        "description": "Create comprehensive testing framework, prepare App Store assets, and implement monitoring systems for production launch.",
+        "details": "Set up XCTest framework with unit tests for core logic (MVP calculation, data models, services). Create UI tests for critical user flows (onboarding, game tracking, subscription). Implement performance tests for battery usage and memory consumption. Set up TestFlight with 50 beta testers from soccer group. Prepare App Store listing (screenshots, description, keywords). Create privacy policy and terms of service. Implement Crashlytics for crash reporting. Set up Firebase Analytics with custom events. Create monitoring dashboards for key metrics (DAU, retention, crash rate). Implement A/B testing framework for feature experiments. Add remote configuration for feature flags. Create automated backup strategy for user data. Prepare customer support documentation.",
+        "testStrategy": "Achieve 80% code coverage with unit tests. Run UI tests on multiple device sizes. Verify performance benchmarks (launch < 2s, sync < 5s). Complete TestFlight beta with < 0.5% crash rate. Validate App Store compliance with review guidelines. Test monitoring alerts trigger correctly. Verify backup and restore functionality.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up XCTest framework and unit test structure",
+            "description": "Initialize XCTest framework in the iOS project with proper folder structure for unit tests, configure test targets, and create base test classes for ViewModels, Services, and Models",
+            "dependencies": [],
+            "details": "Create test targets for both iOS and watchOS apps, set up test folder structure mirroring source code organization, configure test schemes in Xcode, create base test classes with common setup/teardown methods, implement test utilities for mocking Firebase services, add test data builders for creating sample objects",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement unit tests for core business logic",
+            "description": "Write comprehensive unit tests for MVP calculation algorithms, data models, game tracking logic, and service layer functions to achieve 80% code coverage target",
+            "dependencies": [
+              1
+            ],
+            "details": "Test MVP score calculation with various game scenarios, validate all data model serialization/deserialization, test game event tracking state machine, verify service layer error handling and retry logic, test offline queue management, validate data transformation between Firebase and Swift models, implement tests for subscription validation logic",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create UI test suite for critical user flows",
+            "description": "Develop XCUITest automation for essential app workflows including onboarding, game tracking, group management, and subscription purchase flows",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement UI tests for Sign in with Apple flow, test complete onboarding process, automate game tracking workflow from start to finish, test group creation and member invitation, verify subscription purchase and restoration, test offline game recording and sync, validate Apple Watch companion app pairing",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement performance testing suite",
+            "description": "Create performance tests to measure app launch time, memory usage, battery consumption, and sync operation efficiency across different scenarios",
+            "dependencies": [
+              1
+            ],
+            "details": "Measure cold launch time targeting < 2 seconds, test memory usage during 90-minute game tracking, monitor battery drain with GPS and heart rate tracking active, test sync performance with varying data sizes, validate background sync efficiency, test performance on older devices (iPhone 12 minimum), measure Firestore query response times",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Set up TestFlight beta program",
+            "description": "Configure TestFlight for beta testing, recruit 50 testers from soccer groups, create testing instructions, and manage feedback collection process",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Configure TestFlight in App Store Connect, create beta testing groups (internal and external), write comprehensive testing instructions document, implement in-app feedback mechanism, set up crash reporting for beta builds, create test scenarios checklist for testers, establish feedback tracking system in project management tool",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Prepare App Store assets and metadata",
+            "description": "Create all required App Store assets including screenshots, app preview video, descriptions, keywords, and promotional text optimized for ASO",
+            "dependencies": [],
+            "details": "Design app icon in all required sizes, create screenshots for iPhone and Apple Watch in multiple sizes, produce 30-second app preview video, write compelling app description and subtitle, research and select optimal keywords for ASO, prepare promotional text and what's new content, create app support URL and marketing website",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Create privacy policy and legal documents",
+            "description": "Draft comprehensive privacy policy, terms of service, and EULA documents covering data collection, user rights, subscription terms, and compliance requirements",
+            "dependencies": [],
+            "details": "Write privacy policy covering Firebase data collection, GPS tracking, health data usage, detail user data rights and deletion procedures, create terms of service for subscription model, draft EULA for app usage restrictions, ensure GDPR and CCPA compliance, add age restriction notices (13+ requirement), create data processing agreement templates",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Integrate Crashlytics for crash reporting",
+            "description": "Implement Firebase Crashlytics SDK for real-time crash reporting, configure crash alerts, and set up dashboard for monitoring app stability",
+            "dependencies": [
+              1
+            ],
+            "details": "Add Crashlytics SDK to both iOS and watchOS targets, configure automatic crash reporting with symbolication, set up real-time alerts for crash rate spikes, create custom crash logs for critical failures, implement breadcrumb logging for debugging, configure crash-free users metric tracking, set up integration with development team notifications",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Implement analytics with custom events",
+            "description": "Set up Firebase Analytics with comprehensive event tracking for user behavior, feature usage, and conversion funnel analysis",
+            "dependencies": [
+              1
+            ],
+            "details": "Configure Firebase Analytics SDK with user properties, implement screen view tracking for all views, create custom events for game tracking actions, track subscription conversion funnel, implement cohort analysis parameters, set up user engagement metrics, create revenue tracking for subscriptions, configure audience segmentation",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Set up monitoring dashboards",
+            "description": "Create comprehensive monitoring dashboards for app performance, user engagement, revenue metrics, and system health using Firebase Console and custom tools",
+            "dependencies": [
+              8,
+              9
+            ],
+            "details": "Configure Firebase Performance Monitoring for app metrics, create custom dashboard for key business metrics, set up real-time user activity monitoring, implement revenue and subscription tracking dashboard, create crash rate and stability monitoring, set up API latency and error rate tracking, configure alerting thresholds for all metrics",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Implement A/B testing framework",
+            "description": "Set up Firebase Remote Config and A/B testing capabilities to optimize onboarding, pricing, and feature adoption through controlled experiments",
+            "dependencies": [
+              9
+            ],
+            "details": "Configure Firebase Remote Config SDK, create feature flags for gradual rollouts, implement A/B test for onboarding flow variations, set up pricing experiment for subscription tiers, create UI variant tests for key features, implement proper analytics tracking for experiments, establish experiment review and decision process",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 12,
+            "title": "Configure remote configuration system",
+            "description": "Implement Firebase Remote Config for dynamic app behavior control, feature toggles, and emergency kill switches without app updates",
+            "dependencies": [
+              11
+            ],
+            "details": "Set up remote config parameters for feature flags, implement minimum app version enforcement, create emergency maintenance mode toggle, configure dynamic subscription pricing, implement rate limiting controls, set up seasonal feature toggles, create configuration caching strategy for offline support",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 13,
+            "title": "Conduct backup and restore testing",
+            "description": "Thoroughly test iCloud backup integration, data restoration scenarios, and migration paths between app versions",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Test iCloud Keychain backup for authentication tokens, verify Core Data iCloud sync for offline games, test subscription restoration after app reinstall, validate user preferences backup and restore, test data migration from beta to production, verify cross-device sync via iCloud, test disaster recovery scenarios",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 14,
+            "title": "Create customer support documentation",
+            "description": "Develop comprehensive support documentation including FAQs, troubleshooting guides, video tutorials, and in-app help system",
+            "dependencies": [
+              6
+            ],
+            "details": "Write FAQ covering common user questions, create troubleshooting guide for sync issues, develop video tutorials for key features, implement in-app contextual help system, create support ticket template system, write guide for subscription management, document Apple Watch pairing process, prepare customer support response templates",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 15,
+            "title": "Prepare App Store review and post-launch plan",
+            "description": "Create App Store review preparation checklist, reviewer notes, demo account, and establish post-launch monitoring and update strategy",
+            "dependencies": [
+              5,
+              6,
+              7,
+              10,
+              13,
+              14
+            ],
+            "details": "Prepare App Store reviewer notes with demo credentials, create review response templates, establish crash rate monitoring (target < 0.5%), set up user review monitoring and response plan, create hotfix deployment procedure, plan first update roadmap based on beta feedback, establish success metrics and KPIs for launch, prepare PR and marketing launch materials",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-19T09:04:33.630Z",
+      "updated": "2025-07-19T10:33:00.974Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

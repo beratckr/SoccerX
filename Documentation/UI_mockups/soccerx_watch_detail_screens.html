@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Watch Detail Screens</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Compact Rounded', 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        /* Screens Container */
+        .screens-container {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        /* Apple Watch Container */
+        .watch-container {
+            width: 368px;
+            height: 448px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Watch Frame */
+        .watch-frame {
+            width: 324px;
+            height: 394px;
+            background: #1a1a1a;
+            border-radius: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        /* Digital Crown */
+        .digital-crown {
+            position: absolute;
+            right: -12px;
+            top: 120px;
+            width: 8px;
+            height: 50px;
+            background: linear-gradient(to bottom, #666, #444, #666);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Side Button */
+        .side-button {
+            position: absolute;
+            right: -10px;
+            top: 200px;
+            width: 6px;
+            height: 35px;
+            background: #333;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Watch Screen */
+        .watch-screen {
+            width: 296px;
+            height: 368px;
+            background: #000;
+            border-radius: 50px;
+            margin: 13px auto;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            padding: 10px 16px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .workout-icon {
+            color: #2ECC71;
+            font-size: 14px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .time {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Screen Label */
+        .screen-label {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Screen 1: Heart Rate Detail */
+        .heart-rate-detail {
+            flex: 1;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart-animation {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: heartbeat 1s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10% { transform: scale(1.2); }
+            20% { transform: scale(1); }
+            30% { transform: scale(1.2); }
+            40% { transform: scale(1); }
+        }
+
+        .current-hr {
+            font-size: 72px;
+            font-weight: 300;
+            color: #FF3B30;
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .hr-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hr-zones-mini {
+            width: 100%;
+            display: flex;
+            height: 60px;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .zone-bar {
+            flex: 1;
+            background: #1a1a1a;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zone-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: height 0.3s ease;
+        }
+
+        .zone-1 { background: #3498DB; }
+        .zone-2 { background: #2ECC71; }
+        .zone-3 { background: #F39C12; }
+        .zone-4 { background: #E74C3C; }
+        .zone-5 { background: #9B59B6; }
+
+        .hr-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .hr-stat-box {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+        }
+
+        .hr-stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .hr-stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Screen 2: Speed & Distance Detail */
+        .speed-detail {
+            flex: 1;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .speed-gauge {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .speed-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from -90deg,
+                #2ECC71 0deg,
+                #2ECC71 calc(var(--speed) * 3.6deg),
+                #1a1a1a calc(var(--speed) * 3.6deg),
+                #1a1a1a 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotate-in 1s ease-out;
+        }
+
+        @keyframes rotate-in {
+            from { transform: rotate(-180deg); opacity: 0; }
+            to { transform: rotate(0deg); opacity: 1; }
+        }
+
+        .speed-inner {
+            width: 150px;
+            height: 150px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .current-speed {
+            font-size: 48px;
+            font-weight: 600;
+            color: #2ECC71;
+            line-height: 1;
+        }
+
+        .speed-unit {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .speed-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* Screen 3: Time Splits */
+        .splits-detail {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .splits-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .splits-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .splits-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .splits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .split-item {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #2a2a2a;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .split-number {
+            font-size: 14px;
+            color: #666;
+            width: 40px;
+        }
+
+        .split-time {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+            text-align: center;
+        }
+
+        .split-diff {
+            font-size: 12px;
+            width: 50px;
+            text-align: right;
+        }
+
+        .split-diff.faster {
+            color: #2ECC71;
+        }
+
+        .split-diff.slower {
+            color: #FF3B30;
+        }
+
+        /* Screen 4: Calories & Effort */
+        .effort-detail {
+            flex: 1;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calories-display {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .calories-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            animation: flame 2s ease-in-out infinite;
+        }
+
+        @keyframes flame {
+            0%, 100% { transform: scale(1) translateY(0); }
+            25% { transform: scale(1.1) translateY(-5px); }
+            75% { transform: scale(0.9) translateY(2px); }
+        }
+
+        .calories-value {
+            font-size: 56px;
+            font-weight: 600;
+            color: #FF9500;
+            margin-bottom: 4px;
+        }
+
+        .calories-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .effort-zones {
+            width: 100%;
+        }
+
+        .effort-title {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .effort-bar {
+            height: 40px;
+            background: #1a1a1a;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .effort-fill {
+            height: 100%;
+            background: linear-gradient(to right, #3498DB, #2ECC71, #F39C12, #E74C3C);
+            width: var(--effort);
+            transition: width 1s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+        }
+
+        .effort-percentage {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .effort-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* Swipe Indicators */
+        .swipe-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #2ECC71;
+            width: 16px;
+            border-radius: 3px;
+        }
+
+        /* Screen Title */
+        .screen-title-wrapper {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .screen-number {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .screen-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2ECC71;
+        }
+    </style>
+</head>
+<body>
+    <div class="screens-container">
+        <!-- Screen 1: Heart Rate Detail -->
+        <div class="watch-container">
+            <div class="screen-title-wrapper">
+                <div class="screen-number">Screen 1</div>
+                <div class="screen-name">Heart Rate Detail</div>
+            </div>
+            <div class="watch-frame">
+                <div class="digital-crown"></div>
+                <div class="side-button"></div>
+                
+                <div class="watch-screen">
+                    <div class="status-bar">
+                        <span class="workout-icon">⚽</span>
+                        <span class="time">9:43</span>
+                    </div>
+
+                    <div class="heart-rate-detail">
+                        <div class="heart-animation">❤️</div>
+                        <div class="current-hr">156</div>
+                        <div class="hr-label">BPM</div>
+
+                        <div class="hr-zones-mini">
+                            <div class="zone-bar">
+                                <div class="zone-fill zone-1" style="height: 10%;"></div>
+                            </div>
+                            <div class="zone-bar">
+                                <div class="zone-fill zone-2" style="height: 25%;"></div>
+                            </div>
+                            <div class="zone-bar">
+                                <div class="zone-fill zone-3" style="height: 45%;"></div>
+                            </div>
+                            <div class="zone-bar">
+                                <div class="zone-fill zone-4" style="height: 70%;"></div>
+                            </div>
+                            <div class="zone-bar">
+                                <div class="zone-fill zone-5" style="height: 20%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="hr-stats">
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">142</div>
+                                <div class="hr-stat-label">Average</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">178</div>
+                                <div class="hr-stat-label">Maximum</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swipe-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Speed & Distance Detail -->
+        <div class="watch-container">
+            <div class="screen-title-wrapper">
+                <div class="screen-number">Screen 2</div>
+                <div class="screen-name">Speed & Distance</div>
+            </div>
+            <div class="watch-frame">
+                <div class="digital-crown"></div>
+                <div class="side-button"></div>
+                
+                <div class="watch-screen">
+                    <div class="status-bar">
+                        <span class="workout-icon">⚽</span>
+                        <span class="time">9:43</span>
+                    </div>
+
+                    <div class="speed-detail">
+                        <div class="speed-gauge">
+                            <div class="speed-circle" style="--speed: 55;">
+                                <div class="speed-inner">
+                                    <div class="current-speed">19.8</div>
+                                    <div class="speed-unit">km/h</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="speed-stats">
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">3.2</div>
+                                <div class="hr-stat-label">Distance km</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">24.5</div>
+                                <div class="hr-stat-label">Max Speed</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">8.2</div>
+                                <div class="hr-stat-label">Avg Speed</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">12</div>
+                                <div class="hr-stat-label">Sprints</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swipe-dots">
+                        <div class="dot"></div>
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Time Splits -->
+        <div class="watch-container">
+            <div class="screen-title-wrapper">
+                <div class="screen-number">Screen 3</div>
+                <div class="screen-name">10min Splits</div>
+            </div>
+            <div class="watch-frame">
+                <div class="digital-crown"></div>
+                <div class="side-button"></div>
+                
+                <div class="watch-screen">
+                    <div class="status-bar">
+                        <span class="workout-icon">⚽</span>
+                        <span class="time">9:43</span>
+                    </div>
+
+                    <div class="splits-detail">
+                        <div class="splits-header">
+                            <div class="splits-title">10min Splits</div>
+                            <div class="splits-subtitle">Distance per interval</div>
+                        </div>
+
+                        <div class="splits-list">
+                            <div class="split-item">
+                                <span class="split-number">10'</span>
+                                <span class="split-time">0.84 km</span>
+                                <span class="split-diff faster">+0.12</span>
+                            </div>
+                            <div class="split-item">
+                                <span class="split-number">20'</span>
+                                <span class="split-time">0.76 km</span>
+                                <span class="split-diff slower">-0.04</span>
+                            </div>
+                            <div class="split-item">
+                                <span class="split-number">30'</span>
+                                <span class="split-time">0.92 km</span>
+                                <span class="split-diff faster">+0.20</span>
+                            </div>
+                            <div class="split-item">
+                                <span class="split-number">40'</span>
+                                <span class="split-time">0.68 km</span>
+                                <span class="split-diff slower">-0.12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swipe-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Calories & Effort -->
+        <div class="watch-container">
+            <div class="screen-title-wrapper">
+                <div class="screen-number">Screen 4</div>
+                <div class="screen-name">Calories & Effort</div>
+            </div>
+            <div class="watch-frame">
+                <div class="digital-crown"></div>
+                <div class="side-button"></div>
+                
+                <div class="watch-screen">
+                    <div class="status-bar">
+                        <span class="workout-icon">⚽</span>
+                        <span class="time">9:43</span>
+                    </div>
+
+                    <div class="effort-detail">
+                        <div class="calories-display">
+                            <div class="calories-icon">🔥</div>
+                            <div class="calories-value">324</div>
+                            <div class="calories-label">Calories</div>
+                        </div>
+
+                        <div class="effort-zones">
+                            <div class="effort-title">Effort Level</div>
+                            <div class="effort-bar">
+                                <div class="effort-fill" style="--effort: 78%;">
+                                    <span class="effort-percentage">78%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="effort-stats">
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">42:15</div>
+                                <div class="hr-stat-label">Active Time</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">156</div>
+                                <div class="hr-stat-label">Avg HR</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">4.8</div>
+                                <div class="hr-stat-label">Cal/min</div>
+                            </div>
+                            <div class="hr-stat-box">
+                                <div class="hr-stat-value">89%</div>
+                                <div class="hr-stat-label">Max Effort</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swipe-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot active"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update heart rate
+            const hrElement = document.querySelector('.current-hr');
+            if (hrElement) {
+                const newHR = 140 + Math.floor(Math.random() * 30);
+                hrElement.textContent = newHR;
+            }
+
+            // Update speed
+            const speedElement = document.querySelector('.current-speed');
+            if (speedElement) {
+                const newSpeed = (15 + Math.random() * 10).toFixed(1);
+                speedElement.textContent = newSpeed;
+            }
+
+            // Update calories
+            const calElement = document.querySelector('.calories-value');
+            if (calElement) {
+                const currentCal = parseInt(calElement.textContent);
+                calElement.textContent = currentCal + Math.floor(Math.random() * 3);
+            }
+        }, 2000);
+
+        // Animate zone bars
+        window.addEventListener('load', () => {
+            const zoneFills = document.querySelectorAll('.zone-fill');
+            zoneFills.forEach((fill, index) => {
+                setTimeout(() => {
+                    fill.style.transition = 'height 1s ease-out';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

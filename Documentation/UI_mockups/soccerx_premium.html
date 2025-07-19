@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Premium Background */
+        .premium-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B6B 100%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .premium-glow {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 47px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            position: relative;
+            z-index: 50;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: transparent;
+            position: relative;
+            z-index: 50;
+        }
+
+        .close-button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            scroll-behavior: smooth;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .premium-icon-large {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 24px;
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #999;
+            line-height: 1.4;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #2a2a2a;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feature-card:hover {
+            background: #222;
+            transform: translateX(4px);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.4;
+        }
+
+        .feature-badge {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .comparison-table {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .comparison-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 16px;
+        }
+
+        .comparison-header-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .comparison-header-title:first-child {
+            text-align: left;
+        }
+
+        .plan-free {
+            color: #666;
+        }
+
+        .plan-premium {
+            color: #FFD700;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(42, 42, 42, 0.5);
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-feature {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .comparison-check {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .check-yes {
+            color: #2ECC71;
+        }
+
+        .check-no {
+            color: #666;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            margin-bottom: 100px;
+        }
+
+        .pricing-options {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .pricing-card {
+            flex: 1;
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid #2a2a2a;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.selected {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .save-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #FF3B30;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .pricing-period {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .pricing-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 4px;
+        }
+
+        .pricing-interval {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Subscribe Button */
+        .subscribe-button {
+            width: 100%;
+            height: 56px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .subscribe-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .subscribe-button:active {
+            transform: translateY(0);
+        }
+
+        /* Trial Badge */
+        .trial-badge {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trial-icon {
+            font-size: 24px;
+        }
+
+        .trial-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .trial-text strong {
+            color: #2ECC71;
+        }
+
+        /* Terms Section */
+        .terms-section {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        .terms-link {
+            color: #FFD700;
+            text-decoration: none;
+        }
+
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .subscribe-button.loading .loading-spinner {
+            display: block;
+        }
+
+        .subscribe-button.loading .button-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .success-checkmark.show {
+            display: block;
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <div class="premium-background"></div>
+            <div class="premium-glow"></div>
+            
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Navigation Header -->
+            <div class="nav-header">
+                <button class="close-button" onclick="closeModal()">×</button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Hero Section -->
+                <div class="hero-section">
+                    <div class="premium-icon-large">👑</div>
+                    <h1 class="hero-title">SoccerX Premium</h1>
+                    <p class="hero-subtitle">Unlock your full potential with advanced analytics and exclusive features</p>
+                </div>
+
+                <!-- Features Section -->
+                <div class="features-section">
+                    <div class="feature-card">
+                        <div class="feature-icon">🗺️</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Heat Maps</h3>
+                            <p class="feature-description">Visualize your movement patterns and field coverage during games</p>
+                            <span class="feature-badge">Most Popular</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Advanced Analytics</h3>
+                            <p class="feature-description">Deep dive into performance metrics with pro-level insights</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">♾️</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Unlimited History</h3>
+                            <p class="feature-description">Access all your games forever, not just the last 5</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Unlimited Groups</h3>
+                            <p class="feature-description">Join as many groups as you want without restrictions</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">Trend Analysis</h3>
+                            <p class="feature-description">Track your improvement over time with detailed progress charts</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Section -->
+                <div class="comparison-section">
+                    <h2 class="section-title">Compare Plans</h2>
+                    <div class="comparison-table">
+                        <div class="comparison-header">
+                            <div class="comparison-header-title">Features</div>
+                            <div class="comparison-header-title plan-free">Free</div>
+                            <div class="comparison-header-title plan-premium">Premium</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-feature">Basic game tracking</div>
+                            <div class="comparison-check check-yes">✓</div>
+                            <div class="comparison-check check-yes">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-feature">Game history</div>
+                            <div class="comparison-check check-no">Last 5</div>
+                            <div class="comparison-check check-yes">Unlimited</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-feature">Heat maps</div>
+                            <div class="comparison-check check-no">–</div>
+                            <div class="comparison-check check-yes">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-feature">Groups</div>
+                            <div class="comparison-check check-no">1</div>
+                            <div class="comparison-check check-yes">Unlimited</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-feature">Export data</div>
+                            <div class="comparison-check check-no">–</div>
+                            <div class="comparison-check check-yes">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-feature">Priority support</div>
+                            <div class="comparison-check check-no">–</div>
+                            <div class="comparison-check check-yes">✓</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Section -->
+                <div class="pricing-section">
+                    <h2 class="section-title">Choose Your Plan</h2>
+                    
+                    <!-- Trial Badge -->
+                    <div class="trial-badge">
+                        <span class="trial-icon">🎉</span>
+                        <span class="trial-text"><strong>7-day free trial</strong> • Cancel anytime • No commitment</span>
+                    </div>
+
+                    <div class="pricing-options">
+                        <div class="pricing-card" onclick="selectPlan('monthly')">
+                            <div class="pricing-period">Monthly</div>
+                            <div class="pricing-amount">$4.99</div>
+                            <div class="pricing-interval">per month</div>
+                        </div>
+                        <div class="pricing-card selected" onclick="selectPlan('yearly')">
+                            <div class="save-badge">Save 20%</div>
+                            <div class="pricing-period">Yearly</div>
+                            <div class="pricing-amount">$47.99</div>
+                            <div class="pricing-interval">per year</div>
+                        </div>
+                    </div>
+
+                    <button class="subscribe-button" onclick="subscribe()">
+                        <span class="button-text">Start Free Trial</span>
+                        <span class="loading-spinner"></span>
+                    </button>
+
+                    <div class="terms-section">
+                        <p>
+                            By subscribing, you agree to our 
+                            <a href="#" class="terms-link">Terms of Service</a> and 
+                            <a href="#" class="terms-link">Privacy Policy</a>
+                        </p>
+                        <p>
+                            Subscription automatically renews unless canceled at least 24 hours before the end of the current period.
+                        </p>
+                    </div>
+
+                    <div class="success-checkmark" id="successCheck">
+                        <svg width="60" height="60" viewBox="0 0 60 60">
+                            <circle cx="30" cy="30" r="28" fill="none" stroke="#2ECC71" stroke-width="4"/>
+                            <path d="M18 30 L26 38 L42 22" fill="none" stroke="#2ECC71" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Plan selection
+        let selectedPlan = 'yearly';
+        
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            if (plan === 'monthly') {
+                cards[0].classList.add('selected');
+            } else {
+                cards[1].classList.add('selected');
+            }
+        }
+
+        // Subscribe function
+        function subscribe() {
+            const button = document.querySelector('.subscribe-button');
+            button.classList.add('loading');
+            
+            // Simulate API call
+            setTimeout(() => {
+                button.classList.remove('loading');
+                button.style.display = 'none';
+                
+                // Show success animation
+                const successCheck = document.getElementById('successCheck');
+                successCheck.classList.add('show');
+                
+                // Redirect after delay
+                setTimeout(() => {
+                    closeModal();
+                }, 2000);
+            }, 2000);
+        }
+
+        // Close modal
+        function closeModal() {
+            console.log('Closing premium modal...');
+            // In real app, would dismiss the modal
+        }
+
+        // Animate features on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateX(0)';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        // Observe feature cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const features = document.querySelectorAll('.feature-card');
+            features.forEach(feature => {
+                observer.observe(feature);
+            });
+        });
+
+        // Add parallax effect
+        const mainContent = document.querySelector('.main-content');
+        const premiumGlow = document.querySelector('.premium-glow');
+        
+        mainContent.addEventListener('scroll', () => {
+            const scrolled = mainContent.scrollTop;
+            premiumGlow.style.transform = `rotate(${scrolled * 0.1}deg)`;
+        });
+
+        // Track pricing selection
+        function trackPricingSelection() {
+            console.log(`Selected plan: ${selectedPlan}`);
+            // In real app, would track analytics
+        }
+    </script>
+</body>
+</html>

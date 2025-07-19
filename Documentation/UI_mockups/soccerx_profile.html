@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 47px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px 16px;
+            background: #0a0a0a;
+        }
+
+        .page-title {
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .settings-button {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .settings-button:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+            scroll-behavior: smooth;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            padding: 0 20px 30px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.4);
+        }
+
+        .edit-avatar-icon {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            background: #2ECC71;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 3px solid #0a0a0a;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .member-since {
+            font-size: 14px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* Premium Banner */
+        .premium-banner {
+            margin: 0 20px 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideIn 0.7s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .premium-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .premium-icon {
+            font-size: 40px;
+        }
+
+        .premium-info {
+            flex: 1;
+        }
+
+        .premium-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .premium-subtitle {
+            font-size: 14px;
+            color: #FFD700;
+        }
+
+        .premium-arrow {
+            font-size: 20px;
+            color: #FFD700;
+        }
+
+        /* Lifetime Stats */
+        .lifetime-stats {
+            padding: 0 20px 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2a2a;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            background: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .stat-card.primary {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(39, 174, 96, 0.1) 100%);
+            border-color: rgba(46, 204, 113, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Achievements */
+        .achievements-section {
+            padding: 0 20px 30px;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .achievement-badge {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px 8px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .achievement-badge:hover {
+            background: #222;
+            transform: translateY(-2px);
+        }
+
+        .achievement-badge.unlocked {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(39, 174, 96, 0.1) 100%);
+            border-color: rgba(46, 204, 113, 0.3);
+        }
+
+        .achievement-badge.locked {
+            opacity: 0.5;
+        }
+
+        .achievement-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+            filter: grayscale(100%);
+        }
+
+        .achievement-badge.unlocked .achievement-icon {
+            filter: none;
+        }
+
+        .achievement-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+        }
+
+        .achievement-badge.unlocked .achievement-name {
+            color: #fff;
+        }
+
+        .achievement-new {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: #FF3B30;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        /* Personal Records */
+        .records-section {
+            padding: 0 20px 30px;
+        }
+
+        .record-item {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+
+        .record-item:hover {
+            background: #222;
+            transform: translateX(4px);
+        }
+
+        .record-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .record-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2ECC71;
+        }
+
+        .record-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Menu Items */
+        .menu-section {
+            padding: 0 20px 30px;
+        }
+
+        .menu-item {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: #222;
+            transform: translateX(4px);
+        }
+
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            background: #2a2a2a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .menu-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .menu-arrow {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .menu-item.danger {
+            border-color: rgba(255, 59, 48, 0.3);
+        }
+
+        .menu-item.danger .menu-text {
+            color: #FF3B30;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background: rgba(22, 22, 22, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+            position: relative;
+        }
+
+        .tab-icon {
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .tab-label {
+            font-size: 11px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .tab-item.active .tab-icon {
+            color: #2ECC71;
+            transform: scale(1.1);
+        }
+
+        .tab-item.active .tab-label {
+            color: #2ECC71;
+        }
+
+        /* Premium Badge on Tab */
+        .premium-tab-badge {
+            position: absolute;
+            top: 4px;
+            right: 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Navigation Header -->
+            <div class="nav-header">
+                <h1 class="page-title">Profile</h1>
+                <button class="settings-button" onclick="openSettings()">⚙️</button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar" onclick="editAvatar()">
+                        <span>🙋‍♂️</span>
+                        <div class="edit-avatar-icon">📷</div>
+                    </div>
+                    <h2 class="profile-name">Alex Thompson</h2>
+                    <p class="profile-email">alex.thompson@email.com</p>
+                    <div class="member-since">
+                        <span>📅</span>
+                        <span>Member since January 2024</span>
+                    </div>
+                </div>
+
+                <!-- Premium Banner -->
+                <div class="premium-banner" onclick="upgradeToPremium()">
+                    <div class="premium-icon">👑</div>
+                    <div class="premium-info">
+                        <div class="premium-title">SoccerX Premium</div>
+                        <div class="premium-subtitle">Unlock heatmaps, advanced stats & more</div>
+                    </div>
+                    <div class="premium-arrow">→</div>
+                </div>
+
+                <!-- Lifetime Stats -->
+                <div class="lifetime-stats">
+                    <h3 class="section-title">Lifetime Stats</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card primary">
+                            <div class="stat-icon">⚽</div>
+                            <div class="stat-value">47</div>
+                            <div class="stat-label">Total Games</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📏</div>
+                            <div class="stat-value">312.4</div>
+                            <div class="stat-label">Total km</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-value">52h 14m</div>
+                            <div class="stat-label">Play Time</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-value">24,847</div>
+                            <div class="stat-label">Calories</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💯</div>
+                            <div class="stat-value">82</div>
+                            <div class="stat-label">Avg MVP Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="achievements-section">
+                    <h3 class="section-title">Achievements</h3>
+                    <div class="achievements-grid">
+                        <div class="achievement-badge unlocked">
+                            <div class="achievement-icon">🎯</div>
+                            <div class="achievement-name">First Game</div>
+                        </div>
+                        <div class="achievement-badge unlocked">
+                            <div class="achievement-icon">🏃</div>
+                            <div class="achievement-name">5K Club</div>
+                        </div>
+                        <div class="achievement-badge unlocked">
+                            <div class="achievement-icon">⚡</div>
+                            <div class="achievement-name">Speed Demon</div>
+                            <div class="achievement-new"></div>
+                        </div>
+                        <div class="achievement-badge unlocked">
+                            <div class="achievement-icon">🔥</div>
+                            <div class="achievement-name">Streak Week</div>
+                        </div>
+                        <div class="achievement-badge locked">
+                            <div class="achievement-icon">💯</div>
+                            <div class="achievement-name">Century</div>
+                        </div>
+                        <div class="achievement-badge locked">
+                            <div class="achievement-icon">🏆</div>
+                            <div class="achievement-name">Champion</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Records -->
+                <div class="records-section">
+                    <h3 class="section-title">Personal Records</h3>
+                    <div class="record-item">
+                        <div class="record-icon">📏</div>
+                        <div class="record-info">
+                            <div class="record-title">Longest Distance</div>
+                            <div class="record-value">8.7 km</div>
+                        </div>
+                        <div class="record-date">June 15, 2024</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-icon">⚡</div>
+                        <div class="record-info">
+                            <div class="record-title">Fastest Sprint</div>
+                            <div class="record-value">28.4 km/h</div>
+                        </div>
+                        <div class="record-date">July 8, 2024</div>
+                    </div>
+                    <div class="record-item">
+                        <div class="record-icon">⏱️</div>
+                        <div class="record-info">
+                            <div class="record-title">Longest Game</div>
+                            <div class="record-value">94 minutes</div>
+                        </div>
+                        <div class="record-date">May 22, 2024</div>
+                    </div>
+                </div>
+
+                <!-- Menu Items -->
+                <div class="menu-section">
+                    <div class="menu-item" onclick="openExportData()">
+                        <div class="menu-icon">📊</div>
+                        <span class="menu-text">Export My Data</span>
+                        <span class="menu-arrow">→</span>
+                    </div>
+                    <div class="menu-item" onclick="openPrivacy()">
+                        <div class="menu-icon">🔒</div>
+                        <span class="menu-text">Privacy Settings</span>
+                        <span class="menu-arrow">→</span>
+                    </div>
+                    <div class="menu-item" onclick="openHelp()">
+                        <div class="menu-icon">❓</div>
+                        <span class="menu-text">Help & Support</span>
+                        <span class="menu-arrow">→</span>
+                    </div>
+                    <div class="menu-item" onclick="openAbout()">
+                        <div class="menu-icon">ℹ️</div>
+                        <span class="menu-text">About SoccerX</span>
+                        <span class="menu-arrow">→</span>
+                    </div>
+                    <div class="menu-item danger" onclick="signOut()">
+                        <div class="menu-icon">🚪</div>
+                        <span class="menu-text">Sign Out</span>
+                        <span class="menu-arrow">→</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <div class="tab-item" onclick="selectTab(0)">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-label">Home</span>
+                </div>
+                <div class="tab-item" onclick="selectTab(1)">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-label">History</span>
+                </div>
+                <div class="tab-item" onclick="selectTab(2)">
+                    <span class="tab-icon">👥</span>
+                    <span class="tab-label">Groups</span>
+                </div>
+                <div class="tab-item active" onclick="selectTab(3)">
+                    <span class="tab-icon">👤</span>
+                    <span class="tab-label">Profile</span>
+                    <div class="premium-tab-badge">PRO</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab selection
+        function selectTab(index) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+        }
+
+        // Profile actions
+        function editAvatar() {
+            console.log('Opening avatar editor...');
+        }
+
+        function openSettings() {
+            console.log('Opening settings...');
+        }
+
+        function upgradeToPremium() {
+            console.log('Opening premium subscription...');
+        }
+
+        function openExportData() {
+            console.log('Exporting user data...');
+        }
+
+        function openPrivacy() {
+            console.log('Opening privacy settings...');
+        }
+
+        function openHelp() {
+            console.log('Opening help center...');
+        }
+
+        function openAbout() {
+            console.log('Opening about page...');
+        }
+
+        function signOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                console.log('Signing out...');
+            }
+        }
+
+        // Animate elements on load
+        window.addEventListener('load', () => {
+            // Stagger animation for stat cards
+            const cards = document.querySelectorAll('.stat-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.4s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Animate achievements
+            const achievements = document.querySelectorAll('.achievement-badge');
+            achievements.forEach((badge, index) => {
+                badge.style.opacity = '0';
+                badge.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    badge.style.transition = 'all 0.4s ease-out';
+                    badge.style.opacity = '1';
+                    badge.style.transform = 'scale(1)';
+                }, 50 * index);
+            });
+        });
+
+        // Pull to refresh
+        let startY = 0;
+        const mainContent = document.querySelector('.main-content');
+        
+        mainContent.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+        
+        mainContent.addEventListener('touchmove', (e) => {
+            const currentY = e.touches[0].clientY;
+            const diff = currentY - startY;
+            
+            if (diff > 100 && mainContent.scrollTop === 0) {
+                console.log('Pull to refresh triggered');
+                // Would refresh profile data
+            }
+        });
+    </script>
+</body>
+</html>

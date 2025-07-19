@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Game Paused</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Compact Rounded', 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Apple Watch Container */
+        .watch-container {
+            width: 368px;
+            height: 448px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Watch Frame */
+        .watch-frame {
+            width: 324px;
+            height: 394px;
+            background: #1a1a1a;
+            border-radius: 60px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        /* Digital Crown */
+        .digital-crown {
+            position: absolute;
+            right: -12px;
+            top: 120px;
+            width: 8px;
+            height: 50px;
+            background: linear-gradient(to bottom, #666, #444, #666);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Side Button */
+        .side-button {
+            position: absolute;
+            right: -10px;
+            top: 200px;
+            width: 6px;
+            height: 35px;
+            background: #333;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        /* Watch Screen */
+        .watch-screen {
+            width: 296px;
+            height: 368px;
+            background: #000;
+            border-radius: 50px;
+            margin: 13px auto;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            padding: 10px 16px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .pause-icon {
+            color: #FF9F0A;
+            font-size: 14px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .time {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Paused Header */
+        .paused-header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .paused-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #FF9F0A;
+            margin-bottom: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pause-duration {
+            font-size: 48px;
+            font-weight: 300;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -1px;
+        }
+
+        .pause-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Current Stats Summary */
+        .stats-summary {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #2a2a2a;
+            width: 100%;
+            animation: slideIn 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Control Buttons */
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            animation: fadeIn 0.6s ease-out 0.4s both;
+        }
+
+        .control-button {
+            width: 100%;
+            height: 56px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .control-button:active {
+            transform: scale(0.95);
+        }
+
+        .control-button.resume {
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            border: none;
+            color: white;
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .control-button.resume:active {
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+        }
+
+        .control-button.end {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: #FF3B30;
+            color: #FF3B30;
+        }
+
+        .control-button.end:active {
+            background: rgba(255, 59, 48, 0.3);
+        }
+
+        /* Halftime Suggestion */
+        .halftime-suggestion {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 159, 10, 0.1);
+            border: 1px solid rgba(255, 159, 10, 0.3);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            animation: slideUp 0.6s ease-out 0.6s both;
+            display: none;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .halftime-suggestion.visible {
+            display: block;
+        }
+
+        .suggestion-text {
+            font-size: 12px;
+            color: #FF9F0A;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-button {
+            background: rgba(255, 159, 10, 0.2);
+            border: 1px solid #FF9F0A;
+            border-radius: 12px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #FF9F0A;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-button:active {
+            background: rgba(255, 159, 10, 0.3);
+            transform: scale(0.95);
+        }
+
+        /* Haptic Feedback */
+        .haptic-feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(255, 159, 10, 0.4), transparent);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .haptic-feedback.active {
+            animation: haptic 0.3s ease-out;
+        }
+
+        @keyframes haptic {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        /* Breathing Animation for Resume Button */
+        .breathing-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 2px solid rgba(46, 204, 113, 0.3);
+            pointer-events: none;
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.6; }
+        }
+
+        /* Auto-resume Timer */
+        .auto-resume-timer {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 26, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #999;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .auto-resume-timer.visible {
+            display: block;
+        }
+
+        .timer-text {
+            color: #FF9F0A;
+            font-weight: 600;
+        }
+
+        /* Water Break Reminder */
+        .water-reminder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(58, 150, 217, 0.1);
+            border-radius: 16px;
+            font-size: 12px;
+            color: #3A96D9;
+            animation: fadeIn 0.6s ease-out 1s both;
+        }
+
+        .water-icon {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="watch-container">
+        <div class="watch-frame">
+            <div class="digital-crown"></div>
+            <div class="side-button"></div>
+            
+            <div class="watch-screen">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <span class="pause-icon">⏸</span>
+                    <span class="time">9:55</span>
+                </div>
+
+                <!-- Auto-resume Timer -->
+                <div class="auto-resume-timer" id="autoResumeTimer">
+                    Auto-resume in <span class="timer-text" id="resumeCountdown">15</span>s
+                </div>
+
+                <!-- Main Content -->
+                <div class="main-content">
+                    <!-- Paused Header -->
+                    <div class="paused-header">
+                        <h1 class="paused-title">Game Paused</h1>
+                        <div class="pause-duration" id="pauseDuration">2:34</div>
+                        <div class="pause-label">Pause Duration</div>
+                    </div>
+
+                    <!-- Current Stats Summary -->
+                    <div class="stats-summary">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">25:42</div>
+                                <div class="stat-label">Game Time</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">3.2</div>
+                                <div class="stat-label">km</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">148</div>
+                                <div class="stat-label">Avg HR</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Water Break Reminder -->
+                    <div class="water-reminder">
+                        <span class="water-icon">💧</span>
+                        <span>Stay hydrated!</span>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div class="controls-section">
+                        <button class="control-button resume" onclick="resumeGame()">
+                            <span>▶️</span>
+                            <span>Resume Game</span>
+                        </button>
+                        <button class="control-button end" onclick="endGame()">
+                            <span>⏹</span>
+                            <span>End Game</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Halftime Suggestion -->
+                <div class="halftime-suggestion" id="halftimeSuggestion">
+                    <div class="suggestion-text">Looks like halftime?</div>
+                    <button class="suggestion-button" onclick="markHalftime()">Mark as Halftime</button>
+                </div>
+
+                <!-- Breathing Ring -->
+                <div class="breathing-ring"></div>
+
+                <!-- Haptic Feedback -->
+                <div class="haptic-feedback" id="hapticFeedback"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pause state
+        let pauseStartTime = Date.now();
+        let pauseDuration = 0;
+        let autoResumeTimeout;
+        let autoResumeCountdown = 15;
+
+        // Update pause duration
+        setInterval(updatePauseDuration, 1000);
+
+        function updatePauseDuration() {
+            pauseDuration = Math.floor((Date.now() - pauseStartTime) / 1000);
+            const minutes = Math.floor(pauseDuration / 60);
+            const seconds = pauseDuration % 60;
+            document.getElementById('pauseDuration').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Show halftime suggestion after 10 minutes
+            if (pauseDuration === 600) {
+                showHalftimeSuggestion();
+            }
+
+            // Auto-resume warning after 14 minutes
+            if (pauseDuration === 840) {
+                showAutoResumeTimer();
+            }
+        }
+
+        // Show halftime suggestion
+        function showHalftimeSuggestion() {
+            const suggestion = document.getElementById('halftimeSuggestion');
+            suggestion.classList.add('visible');
+            triggerHaptic();
+        }
+
+        // Mark as halftime
+        function markHalftime() {
+            const suggestion = document.getElementById('halftimeSuggestion');
+            suggestion.classList.remove('visible');
+            triggerHaptic();
+            console.log('Marked as halftime break');
+            
+            // Disable auto-resume for halftime
+            clearTimeout(autoResumeTimeout);
+            hideAutoResumeTimer();
+        }
+
+        // Auto-resume timer
+        function showAutoResumeTimer() {
+            const timer = document.getElementById('autoResumeTimer');
+            timer.classList.add('visible');
+            
+            autoResumeCountdown = 15;
+            updateAutoResumeCountdown();
+            
+            // Double haptic warning
+            triggerHaptic();
+            setTimeout(triggerHaptic, 200);
+        }
+
+        function updateAutoResumeCountdown() {
+            const countdownEl = document.getElementById('resumeCountdown');
+            countdownEl.textContent = autoResumeCountdown;
+            
+            if (autoResumeCountdown > 0) {
+                autoResumeCountdown--;
+                autoResumeTimeout = setTimeout(updateAutoResumeCountdown, 1000);
+                
+                // Haptic feedback on last 3 seconds
+                if (autoResumeCountdown <= 3) {
+                    triggerHaptic();
+                }
+            } else {
+                // Auto-resume the game
+                resumeGame();
+            }
+        }
+
+        function hideAutoResumeTimer() {
+            const timer = document.getElementById('autoResumeTimer');
+            timer.classList.remove('visible');
+            clearTimeout(autoResumeTimeout);
+        }
+
+        // Control functions
+        function resumeGame() {
+            // Triple haptic for resume
+            triggerHaptic();
+            setTimeout(triggerHaptic, 150);
+            setTimeout(triggerHaptic, 300);
+            
+            console.log('Resuming game after', pauseDuration, 'seconds');
+            // In real app, would return to active game screen
+        }
+
+        function endGame() {
+            // Confirmation required
+            if (!this.confirmEnd) {
+                this.confirmEnd = true;
+                triggerHaptic();
+                
+                // Change button appearance
+                const button = event.target.closest('.control-button');
+                button.style.background = 'rgba(255, 59, 48, 0.4)';
+                button.innerHTML = '<span>⏹</span><span>Tap Again to End</span>';
+                
+                setTimeout(() => {
+                    this.confirmEnd = false;
+                    button.style.background = '';
+                    button.innerHTML = '<span>⏹</span><span>End Game</span>';
+                }, 3000);
+            } else {
+                // Double haptic for end
+                triggerHaptic();
+                setTimeout(triggerHaptic, 200);
+                
+                console.log('Ending game');
+                // In real app, would show game complete screen
+            }
+        }
+
+        // Haptic feedback
+        function triggerHaptic() {
+            const haptic = document.getElementById('hapticFeedback');
+            haptic.classList.remove('active');
+            
+            setTimeout(() => {
+                haptic.classList.add('active');
+            }, 10);
+        }
+
+        // Digital Crown to scroll stats
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            // In real app, could scroll through more detailed stats
+            console.log('Digital Crown rotation:', e.deltaY);
+        });
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.querySelector('.time').textContent = `${hours}:${minutes}`;
+        }
+
+        setInterval(updateTime, 60000);
+        updateTime();
+
+        // Detect wrist down (simulate with timeout)
+        let wristDownTimer;
+        
+        function detectWristDown() {
+            wristDownTimer = setTimeout(() => {
+                // In real app, would detect actual wrist position
+                console.log('Wrist down detected - keeping screen active during pause');
+            }, 30000);
+        }
+
+        function resetWristTimer() {
+            clearTimeout(wristDownTimer);
+            detectWristDown();
+        }
+
+        document.addEventListener('touchstart', resetWristTimer);
+        detectWristDown();
+
+        // Long press to lock
+        let longPressTimer;
+        const resumeButton = document.querySelector('.control-button.resume');
+
+        resumeButton.addEventListener('touchstart', () => {
+            longPressTimer = setTimeout(() => {
+                console.log('Screen locked - prevents accidental resume');
+                triggerHaptic();
+            }, 1000);
+        });
+
+        resumeButton.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        });
+    </script>
+</body>
+</html>

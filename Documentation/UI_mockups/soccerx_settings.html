@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 47px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0a0a0a;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            color: #2ECC71;
+            font-size: 20px;
+            padding: 8px;
+            margin: -8px 0 -8px -8px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-button:hover {
+            opacity: 0.7;
+        }
+
+        .nav-title {
+            flex: 1;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .spacer {
+            width: 40px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Settings Sections */
+        .settings-section {
+            margin-bottom: 32px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            padding: 0 20px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Settings Items */
+        .settings-group {
+            background: #1a1a1a;
+            margin: 0 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+        }
+
+        .setting-item {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item:hover {
+            background: #222;
+        }
+
+        .setting-item:active {
+            background: #2a2a2a;
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .setting-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(46, 204, 113, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .setting-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .setting-value {
+            font-size: 15px;
+            color: #666;
+            margin-right: 4px;
+        }
+
+        .setting-arrow {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 52px;
+            height: 32px;
+            background: #333;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #2ECC71;
+        }
+
+        .toggle-knob {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        /* Segmented Control */
+        .segmented-control {
+            background: #0a0a0a;
+            border-radius: 8px;
+            padding: 2px;
+            display: flex;
+            font-size: 13px;
+        }
+
+        .segment-option {
+            flex: 1;
+            padding: 6px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .segment-option.active {
+            background: #2a2a2a;
+            color: #fff;
+        }
+
+        /* Account Card */
+        .account-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .account-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .account-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .account-info {
+            flex: 1;
+        }
+
+        .account-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .account-email {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .account-arrow {
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* Version Info */
+        .version-info {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .app-version {
+            margin-bottom: 4px;
+        }
+
+        .copyright {
+            color: #444;
+        }
+
+        /* Danger Zone */
+        .danger-section {
+            margin-top: 40px;
+        }
+
+        .danger-item .setting-icon {
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .danger-item .setting-title {
+            color: #FF3B30;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .modal-message {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button.cancel {
+            background: #2a2a2a;
+            color: #fff;
+        }
+
+        .modal-button.confirm {
+            background: #FF3B30;
+            color: #fff;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Navigation Header -->
+            <div class="nav-header">
+                <button class="back-button" onclick="goBack()">←</button>
+                <span class="nav-title">Settings</span>
+                <div class="spacer"></div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Account Section -->
+                <div class="account-card" onclick="openAccountSettings()">
+                    <div class="account-avatar">🙋‍♂️</div>
+                    <div class="account-info">
+                        <div class="account-name">Alex Thompson</div>
+                        <div class="account-email">alex.thompson@email.com</div>
+                    </div>
+                    <span class="account-arrow">→</span>
+                </div>
+
+                <!-- General Settings -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3 class="section-title">General</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="openUnitsSettings()">
+                            <div class="setting-left">
+                                <div class="setting-icon">📏</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Units</div>
+                                    <div class="setting-subtitle">Distance and speed measurements</div>
+                                </div>
+                            </div>
+                            <span class="setting-value">Metric</span>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">🌍</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Language</div>
+                                    <div class="setting-subtitle">App display language</div>
+                                </div>
+                            </div>
+                            <span class="setting-value">English</span>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">📅</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Week Starts On</div>
+                                    <div class="setting-subtitle">For weekly summaries</div>
+                                </div>
+                            </div>
+                            <div class="segmented-control">
+                                <button class="segment-option" onclick="selectWeekStart('sunday')">Sun</button>
+                                <button class="segment-option active" onclick="selectWeekStart('monday')">Mon</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Tracking -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Game Tracking</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">📍</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">High Accuracy GPS</div>
+                                    <div class="setting-subtitle">Better tracking, more battery usage</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">⏸️</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Auto-Pause</div>
+                                    <div class="setting-subtitle">Pause when not moving</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">🎯</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Sprint Threshold</div>
+                                    <div class="setting-subtitle">Speed to count as sprint</div>
+                                </div>
+                            </div>
+                            <span class="setting-value">20 km/h</span>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Notifications</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">🏆</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Weekly Challenges</div>
+                                    <div class="setting-subtitle">New challenge alerts</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">👥</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Group Activities</div>
+                                    <div class="setting-subtitle">When teammates play games</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">📈</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Personal Records</div>
+                                    <div class="setting-subtitle">New achievements</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">💬</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Marketing</div>
+                                    <div class="setting-subtitle">Tips and offers</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Privacy</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">👁️</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Public Profile</div>
+                                    <div class="setting-subtitle">Others can see your stats</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">📊</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Share Analytics</div>
+                                    <div class="setting-subtitle">Help improve SoccerX</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item" onclick="openPrivacyPolicy()">
+                            <div class="setting-left">
+                                <div class="setting-icon">📄</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Privacy Policy</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apple Watch -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Apple Watch</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="toggleSetting(this)">
+                            <div class="setting-left">
+                                <div class="setting-icon">⌚</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Haptic Feedback</div>
+                                    <div class="setting-subtitle">Vibrations during games</div>
+                                </div>
+                            </div>
+                            <div class="toggle-switch active">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-left">
+                                <div class="setting-icon">🔆</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Display During Game</div>
+                                    <div class="setting-subtitle">What to show on watch face</div>
+                                </div>
+                            </div>
+                            <span class="setting-value">All Stats</span>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Support</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item" onclick="openHelp()">
+                            <div class="setting-left">
+                                <div class="setting-icon">❓</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Help Center</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                        <div class="setting-item" onclick="contactSupport()">
+                            <div class="setting-left">
+                                <div class="setting-icon">💬</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Contact Support</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                        <div class="setting-item" onclick="rateApp()">
+                            <div class="setting-left">
+                                <div class="setting-icon">⭐</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Rate SoccerX</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="settings-section danger-section">
+                    <div class="section-header">
+                        <h3 class="section-title" style="color: #FF3B30;">Danger Zone</h3>
+                    </div>
+                    <div class="settings-group">
+                        <div class="setting-item danger-item" onclick="clearCache()">
+                            <div class="setting-left">
+                                <div class="setting-icon">🗑️</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Clear Cache</div>
+                                    <div class="setting-subtitle">Free up storage space</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                        <div class="setting-item danger-item" onclick="deleteAccount()">
+                            <div class="setting-left">
+                                <div class="setting-icon">⚠️</div>
+                                <div class="setting-info">
+                                    <div class="setting-title">Delete Account</div>
+                                    <div class="setting-subtitle">Permanently remove all data</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">→</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version Info -->
+                <div class="version-info">
+                    <div class="app-version">SoccerX v1.0.0 (Build 47)</div>
+                    <div class="copyright">© 2024 SoccerX Inc.</div>
+                </div>
+            </div>
+
+            <!-- Delete Account Modal -->
+            <div class="modal-overlay" id="deleteModal">
+                <div class="modal-content">
+                    <h3 class="modal-title">Delete Account?</h3>
+                    <p class="modal-message">
+                        This will permanently delete your account and all your game data. This action cannot be undone.
+                    </p>
+                    <div class="modal-buttons">
+                        <button class="modal-button cancel" onclick="closeModal()">Cancel</button>
+                        <button class="modal-button confirm" onclick="confirmDelete()">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function goBack() {
+            console.log('Navigating back to profile...');
+        }
+
+        // Toggle settings
+        function toggleSetting(element) {
+            const toggle = element.querySelector('.toggle-switch');
+            if (toggle) {
+                toggle.classList.toggle('active');
+                console.log('Setting toggled:', element.querySelector('.setting-title').textContent);
+            }
+        }
+
+        // Week start selection
+        function selectWeekStart(day) {
+            const options = document.querySelectorAll('.segment-option');
+            options.forEach(option => {
+                option.classList.remove('active');
+                if (option.textContent.toLowerCase().includes(day.substring(0, 3))) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        // Settings navigation
+        function openAccountSettings() {
+            console.log('Opening account settings...');
+        }
+
+        function openUnitsSettings() {
+            console.log('Opening units settings...');
+        }
+
+        function openPrivacyPolicy() {
+            console.log('Opening privacy policy...');
+        }
+
+        function openHelp() {
+            console.log('Opening help center...');
+        }
+
+        function contactSupport() {
+            console.log('Opening support contact...');
+        }
+
+        function rateApp() {
+            console.log('Opening App Store for rating...');
+        }
+
+        function clearCache() {
+            if (confirm('Clear all cached data?')) {
+                console.log('Clearing cache...');
+                alert('Cache cleared successfully');
+            }
+        }
+
+        // Delete account
+        function deleteAccount() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('active');
+        }
+
+        function confirmDelete() {
+            console.log('Deleting account...');
+            closeModal();
+            // In real app, would process account deletion
+            alert('Account deletion request submitted');
+        }
+
+        // Animate sections on load
+        window.addEventListener('load', () => {
+            const sections = document.querySelectorAll('.settings-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    section.style.transition = 'all 0.4s ease-out';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+
+        // Handle setting changes
+        document.querySelectorAll('.setting-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Visual feedback
+                this.style.background = '#2a2a2a';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

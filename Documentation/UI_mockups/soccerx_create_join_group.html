@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerX - Create or Join Group</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .iphone-container {
+            width: 390px;
+            height: 844px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 47px;
+            border: 12px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .notch {
+            width: 164px;
+            height: 31px;
+            background: #1a1a1a;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 47px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: #0a0a0a;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 24px;
+            padding: 8px;
+            margin: -8px 0 -8px -8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            color: #999;
+            transform: scale(1.1);
+        }
+
+        .nav-title {
+            flex: 1;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .spacer {
+            width: 40px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Segmented Control */
+        .segmented-control {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 4px;
+            display: flex;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .segment-button {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .segment-button.active {
+            background: #2ECC71;
+            color: #000;
+        }
+
+        /* Form Sections */
+        .form-section {
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 52px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2ECC71;
+            background: #222;
+        }
+
+        .form-input::placeholder {
+            color: #666;
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 16px;
+            color: #fff;
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2ECC71;
+            background: #222;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .toggle-label {
+            flex: 1;
+        }
+
+        .toggle-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .toggle-description {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .toggle-switch {
+            width: 52px;
+            height: 32px;
+            background: #333;
+            border-radius: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #2ECC71;
+        }
+
+        .toggle-knob {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        /* Invite Code Input */
+        .code-input-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            background: #1a1a1a;
+            border: 2px solid #2a2a2a;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #2ECC71;
+            background: #222;
+            transform: scale(1.05);
+        }
+
+        .code-input.filled {
+            border-color: #2ECC71;
+        }
+
+        /* OR Divider */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 32px 0;
+            gap: 16px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: #2a2a2a;
+        }
+
+        .divider-text {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Public Groups List */
+        .public-groups-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .group-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .group-card {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #2a2a2a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .group-card:hover {
+            background: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .group-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .group-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .join-button-small {
+            background: #2ECC71;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .join-button-small:hover {
+            background: #27AE60;
+            transform: translateY(-1px);
+        }
+
+        .group-info {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .group-info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Primary Button */
+        .primary-button {
+            width: 100%;
+            height: 56px;
+            background: #2ECC71;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .primary-button:hover {
+            background: #27AE60;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
+        }
+
+        .primary-button:active {
+            transform: translateY(0);
+        }
+
+        .primary-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .primary-button.loading .loading-spinner {
+            display: block;
+        }
+
+        .primary-button.loading .button-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            animation: slideIn 0.4s ease-out;
+            display: none;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-icon {
+            font-size: 24px;
+        }
+
+        .success-text {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Character Counter */
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning {
+            color: #FF9500;
+        }
+
+        .char-counter.error {
+            color: #FF3B30;
+        }
+    </style>
+</head>
+<body>
+    <div class="iphone-container">
+        <div class="notch"></div>
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div>9:41</div>
+                <div class="status-icons">
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <!-- Navigation Header -->
+            <div class="nav-header">
+                <button class="close-button" onclick="closeModal()">×</button>
+                <span class="nav-title">Create or Join Group</span>
+                <div class="spacer"></div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Segmented Control -->
+                <div class="segmented-control">
+                    <button class="segment-button active" onclick="switchMode('create')">Create Group</button>
+                    <button class="segment-button" onclick="switchMode('join')">Join Group</button>
+                </div>
+
+                <!-- Create Group Section -->
+                <div id="create-section" class="form-section active">
+                    <div class="section-header">
+                        <h1 class="section-title">Create a New Group</h1>
+                        <p class="section-subtitle">Start your own soccer community and invite friends to compete</p>
+                    </div>
+
+                    <form onsubmit="createGroup(event)">
+                        <div class="form-group">
+                            <label class="form-label">Group Name</label>
+                            <input type="text" class="form-input" id="groupName" placeholder="e.g., Weekend Warriors" maxlength="30" oninput="updateCharCount()">
+                            <div class="char-counter" id="nameCounter">0/30</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" id="groupDescription" placeholder="Tell members what your group is about..." maxlength="150" oninput="updateCharCount()"></textarea>
+                            <div class="char-counter" id="descCounter">0/150</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-input" id="groupLocation" placeholder="e.g., Austin, TX">
+                        </div>
+
+                        <div class="toggle-group" onclick="togglePrivacy()">
+                            <div class="toggle-label">
+                                <div class="toggle-title">Public Group</div>
+                                <div class="toggle-description">Anyone can find and join your group</div>
+                            </div>
+                            <div class="toggle-switch active" id="privacyToggle">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+
+                        <div class="toggle-group" onclick="toggleWeeklyChallenge()">
+                            <div class="toggle-label">
+                                <div class="toggle-title">Weekly Challenges</div>
+                                <div class="toggle-description">Auto-generate weekly competitions</div>
+                            </div>
+                            <div class="toggle-switch active" id="challengeToggle">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="primary-button">
+                            <span class="button-text">Create Group</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Join Group Section -->
+                <div id="join-section" class="form-section">
+                    <div class="section-header">
+                        <h1 class="section-title">Join a Group</h1>
+                        <p class="section-subtitle">Enter an invite code or browse public groups</p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div class="success-message" id="successMessage">
+                        <span class="success-icon">✅</span>
+                        <span class="success-text">Successfully joined the group!</span>
+                    </div>
+
+                    <!-- Invite Code Section -->
+                    <div class="form-group">
+                        <label class="form-label">Enter Invite Code</label>
+                        <div class="code-input-container">
+                            <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 0)">
+                            <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 1)">
+                            <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 2)">
+                            <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 3)">
+                            <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 4)">
+                            <input type="text" class="code-input" maxlength="1" oninput="handleCodeInput(this, 5)">
+                        </div>
+                        <button class="primary-button" onclick="joinWithCode()">
+                            <span class="button-text">Join with Code</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                    </div>
+
+                    <!-- OR Divider -->
+                    <div class="or-divider">
+                        <div class="divider-line"></div>
+                        <span class="divider-text">OR</span>
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <!-- Public Groups -->
+                    <div>
+                        <h3 class="public-groups-header">Browse Public Groups</h3>
+                        <div class="group-list">
+                            <div class="group-card" onclick="viewGroupDetails('austin-pickup')">
+                                <div class="group-card-header">
+                                    <div>
+                                        <div class="group-name">Austin Pickup Games</div>
+                                    </div>
+                                    <button class="join-button-small" onclick="joinPublicGroup(event, 'austin-pickup')">Join</button>
+                                </div>
+                                <div class="group-info">
+                                    <div class="group-info-item">
+                                        <span>📍</span>
+                                        <span>2.1 mi away</span>
+                                    </div>
+                                    <div class="group-info-item">
+                                        <span>👥</span>
+                                        <span>87 members</span>
+                                    </div>
+                                    <div class="group-info-item">
+                                        <span>🔥</span>
+                                        <span>24 active</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group-card" onclick="viewGroupDetails('5k-champions')">
+                                <div class="group-card-header">
+                                    <div>
+                                        <div class="group-name">5K Champions</div>
+                                    </div>
+                                    <button class="join-button-small" onclick="joinPublicGroup(event, '5k-champions')">Join</button>
+                                </div>
+                                <div class="group-info">
+                                    <div class="group-info-item">
+                                        <span>🏆</span>
+                                        <span>Challenge Group</span>
+                                    </div>
+                                    <div class="group-info-item">
+                                        <span>👥</span>
+                                        <span>234 members</span>
+                                    </div>
+                                    <div class="group-info-item">
+                                        <span>📏</span>
+                                        <span>5km min</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group-card" onclick="viewGroupDetails('morning-runners')">
+                                <div class="group-card-header">
+                                    <div>
+                                        <div class="group-name">Morning Runners ATX</div>
+                                    </div>
+                                    <button class="join-button-small" onclick="joinPublicGroup(event, 'morning-runners')">Join</button>
+                                </div>
+                                <div class="group-info">
+                                    <div class="group-info-item">
+                                        <span>📍</span>
+                                        <span>3.5 mi away</span>
+                                    </div>
+                                    <div class="group-info-item">
+                                        <span>👥</span>
+                                        <span>45 members</span>
+                                    </div>
+                                    <div class="group-info-item">
+                                        <span>⏰</span>
+                                        <span>6 AM games</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mode switching
+        function switchMode(mode) {
+            const buttons = document.querySelectorAll('.segment-button');
+            const sections = document.querySelectorAll('.form-section');
+            
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                if (button.textContent.toLowerCase().includes(mode)) {
+                    button.classList.add('active');
+                }
+            });
+
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            if (mode === 'create') {
+                document.getElementById('create-section').classList.add('active');
+            } else {
+                document.getElementById('join-section').classList.add('active');
+            }
+        }
+
+        // Character counter
+        function updateCharCount() {
+            const nameInput = document.getElementById('groupName');
+            const descInput = document.getElementById('groupDescription');
+            const nameCounter = document.getElementById('nameCounter');
+            const descCounter = document.getElementById('descCounter');
+
+            // Name counter
+            const nameLength = nameInput.value.length;
+            nameCounter.textContent = `${nameLength}/30`;
+            nameCounter.classList.toggle('warning', nameLength > 25);
+            nameCounter.classList.toggle('error', nameLength >= 30);
+
+            // Description counter
+            const descLength = descInput.value.length;
+            descCounter.textContent = `${descLength}/150`;
+            descCounter.classList.toggle('warning', descLength > 130);
+            descCounter.classList.toggle('error', descLength >= 150);
+        }
+
+        // Toggle switches
+        function togglePrivacy() {
+            const toggle = document.getElementById('privacyToggle');
+            toggle.classList.toggle('active');
+        }
+
+        function toggleWeeklyChallenge() {
+            const toggle = document.getElementById('challengeToggle');
+            toggle.classList.toggle('active');
+        }
+
+        // Create group
+        function createGroup(event) {
+            event.preventDefault();
+            const button = event.target.querySelector('.primary-button');
+            button.classList.add('loading');
+
+            // Simulate API call
+            setTimeout(() => {
+                button.classList.remove('loading');
+                alert('Group created successfully!');
+                closeModal();
+            }, 1500);
+        }
+
+        // Handle code input
+        function handleCodeInput(input, index) {
+            const value = input.value.toUpperCase();
+            input.value = value;
+
+            if (value) {
+                input.classList.add('filled');
+                // Move to next input
+                const inputs = document.querySelectorAll('.code-input');
+                if (index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            } else {
+                input.classList.remove('filled');
+            }
+
+            // Check if all inputs are filled
+            const allInputs = document.querySelectorAll('.code-input');
+            const allFilled = Array.from(allInputs).every(input => input.value.length > 0);
+            const joinButton = document.querySelector('#join-section .primary-button');
+            joinButton.disabled = !allFilled;
+        }
+
+        // Handle backspace
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                const activeElement = document.activeElement;
+                if (activeElement.classList.contains('code-input') && !activeElement.value) {
+                    const inputs = Array.from(document.querySelectorAll('.code-input'));
+                    const currentIndex = inputs.indexOf(activeElement);
+                    if (currentIndex > 0) {
+                        inputs[currentIndex - 1].focus();
+                        inputs[currentIndex - 1].value = '';
+                        inputs[currentIndex - 1].classList.remove('filled');
+                    }
+                }
+            }
+        });
+
+        // Join with code
+        function joinWithCode() {
+            const button = event.target.closest('.primary-button');
+            button.classList.add('loading');
+
+            // Get code from inputs
+            const inputs = document.querySelectorAll('.code-input');
+            const code = Array.from(inputs).map(input => input.value).join('');
+
+            // Simulate API call
+            setTimeout(() => {
+                button.classList.remove('loading');
+                
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                successMessage.classList.add('show');
+                
+                // Clear inputs
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.classList.remove('filled');
+                });
+                
+                // Hide success message after delay
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                    closeModal();
+                }, 2000);
+            }, 1000);
+        }
+
+        // Join public group
+        function joinPublicGroup(event, groupId) {
+            event.stopPropagation();
+            const button = event.target;
+            button.textContent = 'Joining...';
+            button.style.background = '#666';
+
+            setTimeout(() => {
+                button.textContent = 'Joined ✓';
+                button.style.background = '#27AE60';
+                
+                setTimeout(() => {
+                    closeModal();
+                }, 1000);
+            }, 1000);
+        }
+
+        // View group details
+        function viewGroupDetails(groupId) {
+            console.log(`Viewing details for group: ${groupId}`);
+            // In real app, would show group preview
+        }
+
+        // Close modal
+        function closeModal() {
+            console.log('Closing modal...');
+            // In real app, would dismiss the modal
+        }
+
+        // Auto-focus first input
+        window.addEventListener('load', () => {
+            document.getElementById('groupName').focus();
+        });
+    </script>
+</body>
+</html>
