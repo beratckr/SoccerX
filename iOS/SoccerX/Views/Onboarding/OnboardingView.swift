@@ -88,5 +88,5 @@ struct OnboardingView: View {
 
 #Preview {
     OnboardingView()
-        .environmentObject(AuthenticationService())
+        .environmentObject(AuthenticationService.shared)
 }

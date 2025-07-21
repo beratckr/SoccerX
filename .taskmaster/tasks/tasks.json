@@ -404,7 +404,7 @@
           2,
           4
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -412,7 +412,7 @@
             "description": "Build the main TabView navigation container with proper tab bar configuration and NavigationStack setup for each tab",
             "dependencies": [],
             "details": "Create MainTabView.swift as the root container with TabView containing four tabs: Dashboard, History, Groups, and Profile. Implement custom tab bar appearance with SF Symbols (house.fill, clock.fill, person.3.fill, person.circle.fill). Configure NavigationStack for each tab to enable deep navigation. Add TabBarViewModel to manage selected tab state and handle deep linking coordination. Implement tab badge support for notifications. Configure proper tab bar tint color and appearance for dark/light modes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify all four tabs are accessible and display correct icons. Test NavigationStack push/pop behavior within each tab. Validate tab selection state persistence. Test deep linking to specific tabs."
           },
           {
@@ -421,7 +421,7 @@
             "description": "Create a comprehensive library of reusable SwiftUI components following the app's design system",
             "dependencies": [],
             "details": "Create Components folder with: StatCardView for displaying numeric statistics with title/value/trend, ActionButton with primary/secondary/tertiary styles, LoadingView with skeleton placeholders, ErrorView with retry functionality, PullToRefreshView wrapper, ActivityRowView for recent activities list, GroupStandingCardView for leaderboard preview, ChartContainerView for statistics visualization, HapticButton with customizable feedback levels. Implement ViewModifiers for consistent styling: cardStyle(), primaryButtonStyle(), loadingOverlay(). Create Theme struct with color palette, typography scales, spacing constants, and animation presets.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create ComponentsPreview.swift showcasing all components in different states. Test components with various data inputs and screen sizes. Verify dark mode appearance for all components."
           },
           {
@@ -430,7 +430,7 @@
             "description": "Create the main dashboard interface with weekly stats, quick actions, recent activities, and group standings",
             "dependencies": [],
             "details": "Create DashboardView with ScrollView containing: WeeklyStatsSection showing games played, total duration, MVP score using StatCardView components. QuickStartSection with prominent 'Start Game' ActionButton and recent partners list. RecentActivitiesSection using LazyVStack with ActivityRowView items, maximum 5 items shown. GroupStandingsSection showing top 3 positions from user's primary group. Implement DashboardViewModel with @Published properties for all data sections, Combine publishers for real-time updates, methods for fetching dashboard data from services, pull-to-refresh functionality with async/await. Add loading states management and error handling with retry logic.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test dashboard loads within 2 seconds. Verify pull-to-refresh updates all sections. Test error states show appropriate UI. Validate memory usage during scrolling."
           },
           {
@@ -439,7 +439,7 @@
             "description": "Implement custom chart views using SwiftUI Charts framework for visualizing game statistics and trends",
             "dependencies": [],
             "details": "Import Charts framework and create: WeeklyActivityChart showing 7-day bar chart of games played, MVPScoreTrendChart with line graph showing score progression over time, GroupPerformanceChart with horizontal bar chart comparing group members, HeatMapCalendar for monthly activity visualization. Implement ChartViewModel protocol with data transformation methods. Add interactive features: tap to show detailed values, swipe to change time periods, pinch to zoom on line charts. Configure axis labels, grid lines, and custom color gradients. Add accessibility labels for VoiceOver support. Implement smooth animations for data updates using withAnimation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test charts render correctly with edge cases (no data, single data point, many data points). Verify interactions work smoothly. Test performance with large datasets (1000+ points)."
           },
           {
@@ -448,7 +448,7 @@
             "description": "Set up comprehensive MVVM pattern with Combine framework for reactive data flow and state management",
             "dependencies": [],
             "details": "Create BaseViewModel protocol with common functionality: loading state management, error handling, cancellable storage. Implement ViewModelFactory for dependency injection. Set up Combine publishers for: user authentication state, real-time game updates, group membership changes, notification badges. Create AppState ObservableObject for global state management. Implement proper memory management with weak self in closures. Add CombineExtensions for common operators: handleEvents for side effects, mapToResult for error handling, shareReplay for multicasting. Configure proper thread handling with receive(on: DispatchQueue.main). Implement ViewModelProtocol conformance for all feature ViewModels.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test memory leaks using Instruments. Verify publishers emit on main thread. Test state updates propagate to views correctly. Validate cancellables are properly released on deinit."
           }
         ]
@@ -464,7 +464,7 @@
           6,
           7
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -472,7 +472,7 @@
             "description": "Define Swift data models for groups and implement GroupManager service with Firebase integration for CRUD operations",
             "dependencies": [],
             "details": "Create Group model with properties: id, name, description, creatorId, memberIds array, inviteCode, isPublic, memberLimit, createdAt, weeklyChallenge. Create GroupMember model with userId, role (creator/member), joinedAt. Implement GroupManager service with methods: createGroup(), updateGroup(), deleteGroup(), generateInviteCode(), joinGroup(), leaveGroup(), removeMember(). Set up Firestore listeners for real-time group updates. Implement invite code generation using 6-character alphanumeric codes with uniqueness validation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test GroupManager service methods with mock Firestore. Test invite code generation for uniqueness. Verify CRUD operations and member management logic. Test subscription-based member limits."
           },
           {
@@ -483,7 +483,7 @@
               1
             ],
             "details": "Create CreateGroupView with form fields for name, description, privacy toggle. Implement GroupDetailView showing members list with role indicators, invite button for creators, leave/remove member options. Build GroupDiscoveryView with search functionality, location-based filtering for public groups, join button. Add InviteView with share sheet for invite codes. Implement proper navigation flow between views. Add loading states and error handling. Apply consistent styling matching app design system.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "UI test group creation flow end-to-end. Test member management actions (invite, remove, leave). Verify privacy settings affect group visibility. Test search and filtering in discovery view."
           },
           {
@@ -494,7 +494,7 @@
               1
             ],
             "details": "Create Leaderboard model with groupId, weekId, rankings array (userId, score, rank, previousRank). Create WeeklyChallenge model with id, groupId, startDate, endDate, type (goals/assists/mvp), isActive. Implement LeaderboardManager with methods: updateUserScore(), calculateRankings(), getWeeklyLeaderboard(), generateWeeklyChallenge(). Set up Firestore listeners for real-time score updates. Implement automatic weekly challenge generation using Cloud Scheduler. Add logic to detect rank changes for notifications.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test score update calculations and ranking algorithms. Verify real-time updates propagate correctly. Test weekly challenge generation and rotation. Validate rank change detection logic."
           },
           {
@@ -506,7 +506,7 @@
               3
             ],
             "details": "Create LeaderboardView with animated list showing user rankings, score displays, rank change indicators (up/down arrows). Implement smooth animations for rank changes using SwiftUI animations. Build BadgeView system for weekly winners with different badge designs. Add WeeklyChallengeCard showing current challenge details and time remaining. Implement pull-to-refresh for manual updates. Create LeaderboardHistoryView for past weeks. Add celebration animation for weekly winners.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test animations perform smoothly on various devices. Verify badge distribution to correct winners. Test pull-to-refresh functionality. Validate historical data display accuracy."
           },
           {
@@ -518,7 +518,7 @@
               4
             ],
             "details": "Set up FCM token management in NotificationManager. Create notification triggers in LeaderboardManager for: rank changes, new weekly challenge, weekly winner announcement. Implement notification payload structure with deep linking to leaderboard. Add notification preferences in user settings (frequency, types). Create GroupChatView UI skeleton with message list, input field, send button (backend integration deferred). Implement proper notification permissions handling. Add badge count updates for unread notifications.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test notification delivery for various ranking scenarios. Verify deep linking opens correct leaderboard view. Test notification preferences affect delivery. Validate UI-only chat interface displays correctly."
           }
         ]

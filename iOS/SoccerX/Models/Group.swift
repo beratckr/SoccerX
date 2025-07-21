@@ -102,7 +102,7 @@ struct Leaderboard: Codable, Identifiable {
     }
 }
 
-struct LeaderboardEntry: Codable, Identifiable {
+struct LeaderboardEntry: Codable, Identifiable, Equatable {
     let userId: String
     var displayName: String
     var profileImageUrl: String?
@@ -125,6 +125,15 @@ struct LeaderboardEntry: Codable, Identifiable {
 }
 
 // MARK: - Group Member Model (for detailed member info)
+struct MemberStats: Codable {
+    let weeklyGames: Int
+    let weeklyDistance: Double
+    let weeklyMVPAverage: Double
+    let allTimeGames: Int
+    let allTimeDistance: Double
+    let currentStreak: Int
+}
+
 struct GroupMember: Codable {
     let userId: String
     let displayName: String
@@ -138,15 +147,6 @@ struct GroupMember: Codable {
         case admin = "admin"
         case member = "member"
     }
-}
-
-struct MemberStats: Codable {
-    let weeklyGames: Int
-    let weeklyDistance: Double
-    let weeklyMVPAverage: Double
-    let allTimeGames: Int
-    let allTimeDistance: Double
-    let currentStreak: Int
 }
 
 // MARK: - Firestore Extensions

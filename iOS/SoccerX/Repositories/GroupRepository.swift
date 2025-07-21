@@ -300,6 +300,7 @@ enum GroupError: Error, LocalizedError {
     case notAuthorized
     case cannotKickCreator
     case invalidInviteCode
+    case invalidGroupData
     
     var errorDescription: String? {
         switch self {
@@ -313,6 +314,8 @@ enum GroupError: Error, LocalizedError {
             return "Cannot kick the group creator"
         case .invalidInviteCode:
             return "Invalid invite code"
+        case .invalidGroupData:
+            return "Invalid group data"
         }
     }
 }

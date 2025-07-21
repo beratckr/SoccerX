@@ -120,61 +120,7 @@ struct ErrorView: View {
     }
 }
 
-struct EmptyStateView: View {
-    let title: String
-    let message: String
-    let icon: String
-    let actionTitle: String?
-    let action: (() -> Void)?
-    
-    init(
-        title: String,
-        message: String,
-        icon: String,
-        actionTitle: String? = nil,
-        action: (() -> Void)? = nil
-    ) {
-        self.title = title
-        self.message = message
-        self.icon = icon
-        self.actionTitle = actionTitle
-        self.action = action
-    }
-    
-    var body: some View {
-        VStack(spacing: 24) {
-            Image(systemName: icon)
-                .font(.system(size: 64, weight: .ultraLight))
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                
-                Text(message)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
-            
-            if let actionTitle = actionTitle, let action = action {
-                Button(actionTitle) {
-                    action()
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 16)
-                .background(.green)
-                .cornerRadius(12)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(24)
-    }
-}
+// Note: EmptyStateView is defined in EmptyStateView.swift
 
 #Preview {
     TabView {

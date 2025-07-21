@@ -210,5 +210,5 @@ struct DeepLinkDestination {
 
 #Preview {
     MainTabView()
-        .environmentObject(AuthenticationService())
+        .environmentObject(AuthenticationService.shared)
 }

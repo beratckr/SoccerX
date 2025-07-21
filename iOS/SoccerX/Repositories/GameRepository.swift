@@ -173,6 +173,10 @@ class GameRepository: BaseRepository<Game> {
         return fetch(query: query)
     }
     
+    func getUserGamesInDateRange(uid: String, startDate: Date, endDate: Date) -> AnyPublisher<[Game], RepositoryError> {
+        return getGamesByDateRange(uid: uid, startDate: startDate, endDate: endDate)
+    }
+    
     func getGameStatistics(uid: String) -> AnyPublisher<GameStatistics, RepositoryError> {
         getUserGames(uid: uid, limit: 1000)
             .map { games in

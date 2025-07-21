@@ -45,7 +45,7 @@ struct DashboardView: View {
         .task {
             await viewModel.loadDashboardData(for: authService.currentUser)
         }
-        .onChange(of: authService.currentUser?.uid) { _ in
+        .onChange(of: authService.currentUser?.uid) { oldValue, newValue in
             Task {
                 await viewModel.loadDashboardData(for: authService.currentUser)
             }
@@ -128,7 +128,7 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeaderView(
                 title: "Last Game",
-                action: viewModel.lastGame != nil ? NavigationAction(text: "View All") {
+                action: viewModel.lastGame != nil ? SectionAction(text: "View All") {
                     // TODO: Navigate to history
                 } : nil
             )
@@ -189,7 +189,7 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeaderView(
                 title: "This Week",
-                action: NavigationAction(text: "View More") {
+                action: SectionAction(text: "View More") {
                     // TODO: Navigate to detailed stats
                 }
             )
@@ -206,7 +206,7 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             SectionHeaderView(
                 title: "Performance Trends",
-                action: NavigationAction(text: "View All") {
+                action: SectionAction(text: "View All") {
                     // TODO: Navigate to detailed charts
                 }
             )
@@ -307,7 +307,7 @@ struct DashboardView: View {
             if let firstGroup = viewModel.userGroups.first {
                 SectionHeaderView(
                     title: firstGroup.name,
-                    action: NavigationAction(text: "See All") {
+                    action: SectionAction(text: "See All") {
                         // TODO: Navigate to full leaderboard
                     }
                 )
@@ -316,7 +316,7 @@ struct DashboardView: View {
             } else {
                 SectionHeaderView(
                     title: "Join a Group",
-                    action: NavigationAction(text: "Browse") {
+                    action: SectionAction(text: "Browse") {
                         // TODO: Navigate to groups
                     }
                 )
@@ -475,6 +475,6 @@ struct DashboardView: View {
 
 #Preview {
     DashboardView()
-        .environmentObject(AuthenticationService())
+        .environmentObject(AuthenticationService.shared)
         .preferredColorScheme(.dark)
 }

@@ -7,6 +7,7 @@ struct User: Codable, Identifiable, Equatable {
     var displayName: String
     var email: String
     var profileImageUrl: String?
+    var fcmToken: String?
     var stats: UserStats
     var achievements: [String] // Achievement IDs
     var groupIds: [String]
@@ -80,6 +81,10 @@ extension User {
         
         if let profileImageUrl = profileImageUrl {
             data["profileImageUrl"] = profileImageUrl
+        }
+        
+        if let fcmToken = fcmToken {
+            data["fcmToken"] = fcmToken
         }
         
         if createdAt == nil {

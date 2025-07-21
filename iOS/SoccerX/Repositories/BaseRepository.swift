@@ -57,8 +57,7 @@ class BaseRepository<T: Codable & Identifiable> {
         
         // Configure offline persistence
         let settings = FirestoreSettings()
-        settings.isPersistenceEnabled = true
-        settings.cacheSizeBytes = FirestoreCacheSizeUnlimited
+        settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
         db.settings = settings
     }
     
@@ -89,7 +88,7 @@ class BaseRepository<T: Codable & Identifiable> {
                     }
                 } else {
                     // Generate new ID
-                    let ref = self.collection.addDocument(data: data) { error in
+                    let _ = self.collection.addDocument(data: data) { error in
                         if let error = error {
                             promise(.failure(self.mapError(error)))
                         } else {

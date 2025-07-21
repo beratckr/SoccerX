@@ -372,6 +372,6 @@ struct EditProfileView: View {
 
 #Preview {
     ProfileView()
-        .environmentObject(AuthenticationService())
+        .environmentObject(AuthenticationService.shared)
         .preferredColorScheme(.dark)
 }

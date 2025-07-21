@@ -146,42 +146,7 @@ struct CompactHeaderView: View {
     }
 }
 
-struct SectionHeaderView: View {
-    let title: String
-    let action: NavigationAction?
-    
-    init(title: String, action: NavigationAction? = nil) {
-        self.title = title
-        self.action = action
-    }
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
-            
-            Spacer()
-            
-            if let action = action {
-                Button(action: action.action) {
-                    if let icon = action.icon {
-                        Image(systemName: icon)
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.green)
-                    } else if let text = action.text {
-                        Text(text)
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.green)
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-    }
-}
+// Note: SectionHeaderView is defined in SectionHeaderView.swift
 
 struct ProfileHeaderView: View {
     let name: String
@@ -332,7 +297,7 @@ struct SearchHeaderView: View {
         
         SectionHeaderView(
             title: "Recent Games",
-            action: NavigationAction(text: "See All") {
+            action: SectionAction(text: "See All") {
                 print("See All tapped")
             }
         )

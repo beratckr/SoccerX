@@ -77,5 +77,5 @@ struct TabBarView: View {
 
 #Preview {
     TabBarView()
-        .environmentObject(AuthenticationService())
+        .environmentObject(AuthenticationService.shared)
 }

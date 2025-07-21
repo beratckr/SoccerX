@@ -1,0 +1,72 @@
+{
+  "configurations" : [
+    {
+      "id" : "DEFAULT",
+      "name" : "Default Configuration",
+      "options" : {
+        "codeCoverage" : {
+          "targets" : [
+            {
+              "containerPath" : "container:SoccerX.xcodeproj",
+              "identifier" : "SoccerX",
+              "name" : "SoccerX"
+            }
+          ]
+        },
+        "testExecutionOrdering" : "random",
+        "threadSanitizerEnabled" : true,
+        "environmentVariableEntries" : [
+          {
+            "key" : "FIREBASE_EMULATOR",
+            "value" : "true"
+          }
+        ]
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : true,
+    "testTimeoutsEnabled" : true,
+    "maximumTestExecutionTimeAllowance" : 60
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:SoccerX.xcodeproj",
+        "identifier" : "SoccerXTests",
+        "name" : "SoccerXTests"
+      },
+      "testGroups" : [
+        {
+          "name" : "Model Tests",
+          "testCases" : [
+            "UserTests",
+            "GameTests", 
+            "GroupTests"
+          ]
+        },
+        {
+          "name" : "Service Tests",
+          "testCases" : [
+            "AuthenticationServiceTests",
+            "GroupManagerTests",
+            "LeaderboardManagerTests"
+          ]
+        },
+        {
+          "name" : "ViewModel Tests",
+          "testCases" : [
+            "DashboardViewModelTests"
+          ]
+        },
+        {
+          "name" : "Bug Detection",
+          "testCases" : [
+            "BugDetectionTests"
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : 1
+}

@@ -6,6 +6,8 @@ import CryptoKit
 import Combine
 
 class AuthenticationService: NSObject, ObservableObject {
+    static let shared = AuthenticationService()
+    
     @Published var isAuthenticated = false
     @Published var currentUser: User?
     @Published var isLoading = false
@@ -16,7 +18,7 @@ class AuthenticationService: NSObject, ObservableObject {
     private let userRepository = UserRepository()
     private var cancellables = Set<AnyCancellable>()
     
-    override init() {
+    private override init() {
         super.init()
         checkAuthenticationStatus()
     }

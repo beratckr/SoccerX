@@ -35,10 +35,10 @@ struct HistoryView: View {
         .onAppear {
             loadGames()
         }
-        .onChange(of: authService.currentUser) { _ in
+        .onChange(of: authService.currentUser) { oldValue, newValue in
             loadGames()
         }
-        .onChange(of: selectedFilter) { _ in
+        .onChange(of: selectedFilter) { oldValue, newValue in
             loadGames()
         }
     }

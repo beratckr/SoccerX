@@ -55,7 +55,7 @@ struct GroupsView: View {
         .onAppear {
             loadGroups()
         }
-        .onChange(of: authService.currentUser) { _ in
+        .onChange(of: authService.currentUser) { oldValue, newValue in
             loadGroups()
         }
         .sheet(isPresented: $showingCreateGroup) {
@@ -369,60 +369,7 @@ struct GroupLeaderboardCard: View {
     }
 }
 
-// MARK: - Placeholder Views
-struct CreateGroupView: View {
-    @Environment(\.presentationMode) var presentationMode
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                Text("Create Group Feature")
-                    .font(.title)
-                    .padding()
-                
-                Text("Coming Soon...")
-                    .foregroundColor(.secondary)
-            }
-            .navigationTitle("Create Group")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                }
-            }
-        }
-        .preferredColorScheme(.dark)
-    }
-}
-
-struct JoinGroupView: View {
-    @Environment(\.presentationMode) var presentationMode
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                Text("Join Group Feature")
-                    .font(.title)
-                    .padding()
-                
-                Text("Coming Soon...")
-                    .foregroundColor(.secondary)
-            }
-            .navigationTitle("Join Group")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                }
-            }
-        }
-        .preferredColorScheme(.dark)
-    }
-}
+// CreateGroupView and JoinGroupView are now in separate files
 
 
 #Preview {
