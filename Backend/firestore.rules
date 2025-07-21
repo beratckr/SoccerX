@@ -1,36 +1,142 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection - users can read/write their own data
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isGroupMember(groupId) {
+      return isAuthenticated() && 
+             request.auth.uid in resource.data.memberIds;
+    }
+    
+    function isGroupCreator(groupId) {
+      return isAuthenticated() && 
+             request.auth.uid == resource.data.creatorId;
+    }
+    
+    // Users collection
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Users can read and write their own data
+      allow read, write: if isOwner(userId);
+      
+      // Allow reading basic profile info for group members (for leaderboards)
+      allow read: if isAuthenticated();
     }
     
-    // Groups collection - members can read, creators can write
-    match /groups/{groupId} {
-      allow read: if request.auth != null && 
-        request.auth.uid in resource.data.members;
-      allow write: if request.auth != null && 
-        request.auth.uid == resource.data.createdBy;
-      allow create: if request.auth != null;
-    }
-    
-    // Games collection - group members can read, any group member can write
+    // Games collection
     match /games/{gameId} {
-      allow read: if request.auth != null && 
-        request.auth.uid in get(/databases/$(database)/documents/groups/$(resource.data.groupId)).data.members;
-      allow write: if request.auth != null && 
-        request.auth.uid in get(/databases/$(database)/documents/groups/$(resource.data.groupId)).data.members;
-      allow create: if request.auth != null;
+      // Users can read their own games
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == resource.data.userId;
+      
+      // Users can read games from group members
+      allow read: if isAuthenticated() && 
+                     resource.data.groupIds.size() > 0 &&
+                     exists(/databases/$(database)/documents/groups/$(resource.data.groupIds[0])) &&
+                     request.auth.uid in get(/databases/$(database)/documents/groups/$(resource.data.groupIds[0])).data.memberIds;
+      
+      // Users can only create/update their own games
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.userId &&
+                       validateGameData();
+      
+      allow update: if isAuthenticated() && 
+                       request.auth.uid == resource.data.userId &&
+                       validateGameUpdate();
+      
+      // No delete allowed (for data integrity)
+      allow delete: if false;
+      
+      function validateGameData() {
+        return request.resource.data.keys().hasAll(['userId', 'isCompleted']) &&
+               request.resource.data.userId is string &&
+               request.resource.data.isCompleted is bool &&
+               request.resource.data.duration >= 0 &&
+               request.resource.data.distance >= 0;
+      }
+      
+      function validateGameUpdate() {
+        return request.resource.data.userId == resource.data.userId && // Can't change owner
+               validateGameData();
+      }
     }
     
-    // Public read-only collections (if any)
-    match /public/{document=**} {
-      allow read: if true;
+    // Groups collection
+    match /groups/{groupId} {
+      // Anyone can read public groups
+      allow read: if resource.data.isPublic == true;
+      
+      // Group members can read group data
+      allow read: if isGroupMember(groupId);
+      
+      // Authenticated users can create groups
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == request.resource.data.creatorId &&
+                       validateGroupData();
+      
+      // Only group creator can update group settings
+      allow update: if isGroupCreator(groupId) && 
+                       validateGroupUpdate();
+      
+      // Members can update their own membership status
+      allow update: if isAuthenticated() && 
+                       isValidMembershipUpdate();
+      
+      // Only creator can delete group
+      allow delete: if isGroupCreator(groupId);
+      
+      function validateGroupData() {
+        return request.resource.data.keys().hasAll(['name', 'creatorId', 'memberIds', 'inviteCode', 'isPublic']) &&
+               request.resource.data.name is string &&
+               request.resource.data.name.size() > 0 &&
+               request.resource.data.memberIds is list &&
+               request.resource.data.creatorId in request.resource.data.memberIds &&
+               request.resource.data.inviteCode is string &&
+               request.resource.data.inviteCode.size() == 6;
+      }
+      
+      function validateGroupUpdate() {
+        return request.resource.data.creatorId == resource.data.creatorId && // Can't change creator
+               validateGroupData();
+      }
+      
+      function isValidMembershipUpdate() {
+        let oldMembers = resource.data.memberIds;
+        let newMembers = request.resource.data.memberIds;
+        let userAdded = request.auth.uid in newMembers && !(request.auth.uid in oldMembers);
+        let userRemoved = request.auth.uid in oldMembers && !(request.auth.uid in newMembers);
+        
+        return (userAdded || userRemoved) && 
+               // Only membership change, nothing else
+               request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'updatedAt']);
+      }
+    }
+    
+    // Leaderboards collection - read only for group members, write only by server
+    match /leaderboards/{leaderboardId} {
+      allow read: if isAuthenticated() && 
+                     exists(/databases/$(database)/documents/groups/$(resource.data.groupId)) &&
+                     request.auth.uid in get(/databases/$(database)/documents/groups/$(resource.data.groupId)).data.memberIds;
+      
+      // Only server functions can write leaderboards
       allow write: if false;
     }
     
-    // Default deny all other access
+    // User achievements - users can read their own, write only by server
+    match /achievements/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Only server functions can update achievements
+    }
+    
+    // Default deny all other documents
     match /{document=**} {
       allow read, write: if false;
     }

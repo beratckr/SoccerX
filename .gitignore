@@ -131,3 +131,14 @@ $RECYCLE.BIN/
 *.p12
 *.p8
 *.mobileprovision
+
+# iOS temporary files and scripts
+iOS/*.py
+iOS/*.rb
+iOS/*.sh
+iOS/*.log
+iOS/watchos-config/
+iOS/TASK*.md
+iOS/WATCHOS_*.md
+iOS/SoccerX.xcodeproj/project.pbxproj.backup
+iOS/Package.resolved

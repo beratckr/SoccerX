@@ -7,6 +7,9 @@ struct SoccerXApp: App {
     
     init() {
         FirebaseApp.configure()
+        
+        // Initialize Watch connectivity
+        _ = WatchConnectivityManager.shared
     }
     
     var body: some Scene {

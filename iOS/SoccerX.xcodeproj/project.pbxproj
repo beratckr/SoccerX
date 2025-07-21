@@ -3,43 +3,115 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3D1A1F1E2C1234567890001 /* App/SoccerXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F1D2C1234567890001 /* App/SoccerXApp.swift */; };
-		3D1A1F202C1234567890002 /* Views/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F1F2C1234567890002 /* Views/ContentView.swift */; };
 		3D1A1F222C1234567890003 /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D1A1F212C1234567890003 /* Resources/Assets.xcassets */; };
 		3D1A1F252C1234567890004 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D1A1F242C1234567890004 /* Preview Assets.xcassets */; };
 		3D1A1F2C2C1234567890005 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D1A1F2B2C1234567890005 /* GoogleService-Info.plist */; };
-		3D1A1F2E2C1234567890007 /* Services/AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F2D2C1234567890007 /* Services/AuthenticationService.swift */; };
-		3D1A1F302C1234567890008 /* Views/Onboarding/OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F2F2C1234567890008 /* Views/Onboarding/OnboardingView.swift */; };
-		3D1A1F322C1234567890009 /* Views/Dashboard/DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F312C1234567890009 /* Views/Dashboard/DashboardView.swift */; };
-		3D1A1F342C1234567890010 /* Views/TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F332C1234567890010 /* Views/TabBarView.swift */; };
-		3D1A1F362C1234567890011 /* Views/History/HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F352C1234567890011 /* Views/History/HistoryView.swift */; };
-		3D1A1F382C1234567890012 /* Views/Groups/GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F372C1234567890012 /* Views/Groups/GroupsView.swift */; };
-		3D1A1F3A2C1234567890013 /* Views/Profile/ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A1F392C1234567890013 /* Views/Profile/ProfileView.swift */; };
 		DC50A9C52E2BBBBD00A6EDFE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DC50A9C42E2BBBBD00A6EDFE /* FirebaseAuth */; };
 		DC50A9C72E2BBBBD00A6EDFE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DC50A9C62E2BBBBD00A6EDFE /* FirebaseFirestore */; };
 		DC50A9C92E2BBBBD00A6EDFE /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = DC50A9C82E2BBBBD00A6EDFE /* FirebaseFunctions */; };
+		DC9E7DA32E2DCA2100A8625F /* SoccerW Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = DC9E7D962E2DCA2000A8625F /* SoccerW Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DC9E7DDC2E2DCDF900A8625F /* StatChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC52E2DCDF900A8625F /* StatChartView.swift */; };
+		DC9E7DDD2E2DCDF900A8625F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DD82E2DCDF900A8625F /* ContentView.swift */; };
+		DC9E7DDE2E2DCDF900A8625F /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DDA2E2DCDF900A8625F /* TabBarView.swift */; };
+		DC9E7DDF2E2DCDF900A8625F /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DD62E2DCDF900A8625F /* ProfileView.swift */; };
+		DC9E7DE02E2DCDF900A8625F /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC12E2DCDF900A8625F /* DashboardViewModel.swift */; };
+		DC9E7DE12E2DCDF900A8625F /* GameRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DB42E2DCDF900A8625F /* GameRepository.swift */; };
+		DC9E7DE22E2DCDF900A8625F /* NavigationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC92E2DCDF900A8625F /* NavigationHeaderView.swift */; };
+		DC9E7DE32E2DCDF900A8625F /* PerformanceChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC42E2DCDF900A8625F /* PerformanceChartView.swift */; };
+		DC9E7DE42E2DCDF900A8625F /* TabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC22E2DCDF900A8625F /* TabBarViewModel.swift */; };
+		DC9E7DE52E2DCDF900A8625F /* BaseRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DB32E2DCDF900A8625F /* BaseRepository.swift */; };
+		DC9E7DE62E2DCDF900A8625F /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DCF2E2DCDF900A8625F /* GroupsView.swift */; };
+		DC9E7DE72E2DCDF900A8625F /* UserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DB62E2DCDF900A8625F /* UserRepository.swift */; };
+		DC9E7DE82E2DCDF900A8625F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DD32E2DCDF900A8625F /* OnboardingView.swift */; };
+		DC9E7DE92E2DCDF900A8625F /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DD12E2DCDF900A8625F /* HistoryView.swift */; };
+		DC9E7DEA2E2DCDF900A8625F /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DAC2E2DCDF900A8625F /* Achievement.swift */; };
+		DC9E7DEB2E2DCDF900A8625F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DD92E2DCDF900A8625F /* MainTabView.swift */; };
+		DC9E7DEC2E2DCDF900A8625F /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DCC2E2DCDF900A8625F /* DashboardView.swift */; };
+		DC9E7DED2E2DCDF900A8625F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DAF2E2DCDF900A8625F /* User.swift */; };
+		DC9E7DEE2E2DCDF900A8625F /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DBC2E2DCDF900A8625F /* WatchConnectivityManager.swift */; };
+		DC9E7DEF2E2DCDF900A8625F /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DAD2E2DCDF900A8625F /* Game.swift */; };
+		DC9E7DF02E2DCDF900A8625F /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC72E2DCDF900A8625F /* ActionButton.swift */; };
+		DC9E7DF12E2DCDF900A8625F /* GroupRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DB52E2DCDF900A8625F /* GroupRepository.swift */; };
+		DC9E7DF22E2DCDF900A8625F /* SoccerXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DAA2E2DCDF900A8625F /* SoccerXApp.swift */; };
+		DC9E7DF32E2DCDF900A8625F /* StatCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DCA2E2DCDF900A8625F /* StatCardView.swift */; };
+		DC9E7DF42E2DCDF900A8625F /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DBB2E2DCDF900A8625F /* AuthenticationService.swift */; };
+		DC9E7DF52E2DCDF900A8625F /* LoadingErrorViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DC82E2DCDF900A8625F /* LoadingErrorViews.swift */; };
+		DC9E7DF62E2DCDF900A8625F /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DAE2E2DCDF900A8625F /* Group.swift */; };
+		DC9E7DF72E2DCDF900A8625F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9E7DBF2E2DCDF900A8625F /* Extensions.swift */; };
+		DC9E7DF82E2DCDF900A8625F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC9E7DB12E2DCDF900A8625F /* Preview Assets.xcassets */; };
+		DC9E7DF92E2DCDF900A8625F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC9E7DB92E2DCDF900A8625F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DC9E7DA12E2DCA2100A8625F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3D1A1F122C1234567890016 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DC9E7D952E2DCA2000A8625F;
+			remoteInfo = "SoccerW Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DC9E7C2B2E2DC52300A8625F /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				DC9E7DA32E2DCA2100A8625F /* SoccerW Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3D1A1F1A2C1234567890000 /* SoccerX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoccerX.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D1A1F1D2C1234567890001 /* App/SoccerXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/SoccerXApp.swift; sourceTree = "<group>"; };
-		3D1A1F1F2C1234567890002 /* Views/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ContentView.swift; sourceTree = "<group>"; };
 		3D1A1F212C1234567890003 /* Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
 		3D1A1F242C1234567890004 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		3D1A1F2B2C1234567890005 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3D1A1F2C2C1234567890006 /* SoccerX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SoccerX.entitlements; sourceTree = "<group>"; };
-		3D1A1F2D2C1234567890007 /* Services/AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/AuthenticationService.swift; sourceTree = "<group>"; };
-		3D1A1F2F2C1234567890008 /* Views/Onboarding/OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Onboarding/OnboardingView.swift; sourceTree = "<group>"; };
-		3D1A1F312C1234567890009 /* Views/Dashboard/DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Dashboard/DashboardView.swift; sourceTree = "<group>"; };
-		3D1A1F332C1234567890010 /* Views/TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/TabBarView.swift; sourceTree = "<group>"; };
-		3D1A1F352C1234567890011 /* Views/History/HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/History/HistoryView.swift; sourceTree = "<group>"; };
-		3D1A1F372C1234567890012 /* Views/Groups/GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Groups/GroupsView.swift; sourceTree = "<group>"; };
-		3D1A1F392C1234567890013 /* Views/Profile/ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Profile/ProfileView.swift; sourceTree = "<group>"; };
+		DC9E7D962E2DCA2000A8625F /* SoccerW Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SoccerW Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC9E7DAA2E2DCDF900A8625F /* SoccerXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoccerXApp.swift; sourceTree = "<group>"; };
+		DC9E7DAC2E2DCDF900A8625F /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		DC9E7DAD2E2DCDF900A8625F /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		DC9E7DAE2E2DCDF900A8625F /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		DC9E7DAF2E2DCDF900A8625F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		DC9E7DB12E2DCDF900A8625F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		DC9E7DB32E2DCDF900A8625F /* BaseRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseRepository.swift; sourceTree = "<group>"; };
+		DC9E7DB42E2DCDF900A8625F /* GameRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRepository.swift; sourceTree = "<group>"; };
+		DC9E7DB52E2DCDF900A8625F /* GroupRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupRepository.swift; sourceTree = "<group>"; };
+		DC9E7DB62E2DCDF900A8625F /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
+		DC9E7DB92E2DCDF900A8625F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DC9E7DBB2E2DCDF900A8625F /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
+		DC9E7DBC2E2DCDF900A8625F /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
+		DC9E7DBF2E2DCDF900A8625F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		DC9E7DC12E2DCDF900A8625F /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		DC9E7DC22E2DCDF900A8625F /* TabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModel.swift; sourceTree = "<group>"; };
+		DC9E7DC42E2DCDF900A8625F /* PerformanceChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceChartView.swift; sourceTree = "<group>"; };
+		DC9E7DC52E2DCDF900A8625F /* StatChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatChartView.swift; sourceTree = "<group>"; };
+		DC9E7DC72E2DCDF900A8625F /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
+		DC9E7DC82E2DCDF900A8625F /* LoadingErrorViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingErrorViews.swift; sourceTree = "<group>"; };
+		DC9E7DC92E2DCDF900A8625F /* NavigationHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationHeaderView.swift; sourceTree = "<group>"; };
+		DC9E7DCA2E2DCDF900A8625F /* StatCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatCardView.swift; sourceTree = "<group>"; };
+		DC9E7DCC2E2DCDF900A8625F /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		DC9E7DCF2E2DCDF900A8625F /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
+		DC9E7DD12E2DCDF900A8625F /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		DC9E7DD32E2DCDF900A8625F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		DC9E7DD62E2DCDF900A8625F /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		DC9E7DD82E2DCDF900A8625F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		DC9E7DD92E2DCDF900A8625F /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		DC9E7DDA2E2DCDF900A8625F /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DC9E7D972E2DCA2000A8625F /* SoccerW Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "SoccerW Watch App"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		3D1A1F172C1234567890007 /* Frameworks */ = {
@@ -52,6 +124,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DC9E7D932E2DCA2000A8625F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -59,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				3D1A1F1C2C1234567890009 /* SoccerX */,
+				DC9E7D972E2DCA2000A8625F /* SoccerW Watch App */,
 				3D1A1F1B2C1234567890010 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				3D1A1F1A2C1234567890000 /* SoccerX.app */,
+				DC9E7D962E2DCA2000A8625F /* SoccerW Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -74,16 +155,16 @@
 		3D1A1F1C2C1234567890009 /* SoccerX */ = {
 			isa = PBXGroup;
 			children = (
+				DC9E7DAB2E2DCDF900A8625F /* App */,
+				DC9E7DB02E2DCDF900A8625F /* Models */,
+				DC9E7DB22E2DCDF900A8625F /* Preview Content */,
+				DC9E7DB72E2DCDF900A8625F /* Repositories */,
+				DC9E7DBA2E2DCDF900A8625F /* Resources */,
+				DC9E7DBD2E2DCDF900A8625F /* Services */,
+				DC9E7DC02E2DCDF900A8625F /* Utils */,
+				DC9E7DC32E2DCDF900A8625F /* ViewModels */,
+				DC9E7DDB2E2DCDF900A8625F /* Views */,
 				3D1A1F2C2C1234567890006 /* SoccerX.entitlements */,
-				3D1A1F1D2C1234567890001 /* App/SoccerXApp.swift */,
-				3D1A1F1F2C1234567890002 /* Views/ContentView.swift */,
-				3D1A1F2D2C1234567890007 /* Services/AuthenticationService.swift */,
-				3D1A1F332C1234567890010 /* Views/TabBarView.swift */,
-				3D1A1F2F2C1234567890008 /* Views/Onboarding/OnboardingView.swift */,
-				3D1A1F312C1234567890009 /* Views/Dashboard/DashboardView.swift */,
-				3D1A1F352C1234567890011 /* Views/History/HistoryView.swift */,
-				3D1A1F372C1234567890012 /* Views/Groups/GroupsView.swift */,
-				3D1A1F392C1234567890013 /* Views/Profile/ProfileView.swift */,
 				3D1A1F212C1234567890003 /* Resources/Assets.xcassets */,
 				3D1A1F2B2C1234567890005 /* GoogleService-Info.plist */,
 				3D1A1F232C1234567890011 /* Preview Content */,
@@ -94,9 +175,190 @@
 		3D1A1F232C1234567890011 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				3D1A1F242C1234567890004 /* Preview Content/Preview Assets.xcassets */,
+				3D1A1F242C1234567890004 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		DC9E7DAB2E2DCDF900A8625F /* App */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DAA2E2DCDF900A8625F /* SoccerXApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		DC9E7DB02E2DCDF900A8625F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DAC2E2DCDF900A8625F /* Achievement.swift */,
+				DC9E7DAD2E2DCDF900A8625F /* Game.swift */,
+				DC9E7DAE2E2DCDF900A8625F /* Group.swift */,
+				DC9E7DAF2E2DCDF900A8625F /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		DC9E7DB22E2DCDF900A8625F /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DB12E2DCDF900A8625F /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		DC9E7DB72E2DCDF900A8625F /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DB32E2DCDF900A8625F /* BaseRepository.swift */,
+				DC9E7DB42E2DCDF900A8625F /* GameRepository.swift */,
+				DC9E7DB52E2DCDF900A8625F /* GroupRepository.swift */,
+				DC9E7DB62E2DCDF900A8625F /* UserRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		DC9E7DB82E2DCDF900A8625F /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		DC9E7DBA2E2DCDF900A8625F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DB82E2DCDF900A8625F /* Fonts */,
+				DC9E7DB92E2DCDF900A8625F /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		DC9E7DBD2E2DCDF900A8625F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DBB2E2DCDF900A8625F /* AuthenticationService.swift */,
+				DC9E7DBC2E2DCDF900A8625F /* WatchConnectivityManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		DC9E7DBE2E2DCDF900A8625F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		DC9E7DC02E2DCDF900A8625F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DBE2E2DCDF900A8625F /* Extensions */,
+				DC9E7DBF2E2DCDF900A8625F /* Extensions.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		DC9E7DC32E2DCDF900A8625F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DC12E2DCDF900A8625F /* DashboardViewModel.swift */,
+				DC9E7DC22E2DCDF900A8625F /* TabBarViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		DC9E7DC62E2DCDF900A8625F /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DC42E2DCDF900A8625F /* PerformanceChartView.swift */,
+				DC9E7DC52E2DCDF900A8625F /* StatChartView.swift */,
+			);
+			path = Charts;
+			sourceTree = "<group>";
+		};
+		DC9E7DCB2E2DCDF900A8625F /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DC62E2DCDF900A8625F /* Charts */,
+				DC9E7DC72E2DCDF900A8625F /* ActionButton.swift */,
+				DC9E7DC82E2DCDF900A8625F /* LoadingErrorViews.swift */,
+				DC9E7DC92E2DCDF900A8625F /* NavigationHeaderView.swift */,
+				DC9E7DCA2E2DCDF900A8625F /* StatCardView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		DC9E7DCD2E2DCDF900A8625F /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DCC2E2DCDF900A8625F /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		DC9E7DCE2E2DCDF900A8625F /* GameTracking */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = GameTracking;
+			sourceTree = "<group>";
+		};
+		DC9E7DD02E2DCDF900A8625F /* Groups */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DCF2E2DCDF900A8625F /* GroupsView.swift */,
+			);
+			path = Groups;
+			sourceTree = "<group>";
+		};
+		DC9E7DD22E2DCDF900A8625F /* History */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DD12E2DCDF900A8625F /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		DC9E7DD42E2DCDF900A8625F /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DD32E2DCDF900A8625F /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		DC9E7DD52E2DCDF900A8625F /* Premium */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Premium;
+			sourceTree = "<group>";
+		};
+		DC9E7DD72E2DCDF900A8625F /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DD62E2DCDF900A8625F /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		DC9E7DDB2E2DCDF900A8625F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				DC9E7DCB2E2DCDF900A8625F /* Components */,
+				DC9E7DCD2E2DCDF900A8625F /* Dashboard */,
+				DC9E7DCE2E2DCDF900A8625F /* GameTracking */,
+				DC9E7DD02E2DCDF900A8625F /* Groups */,
+				DC9E7DD22E2DCDF900A8625F /* History */,
+				DC9E7DD42E2DCDF900A8625F /* Onboarding */,
+				DC9E7DD52E2DCDF900A8625F /* Premium */,
+				DC9E7DD72E2DCDF900A8625F /* Profile */,
+				DC9E7DD82E2DCDF900A8625F /* ContentView.swift */,
+				DC9E7DD92E2DCDF900A8625F /* MainTabView.swift */,
+				DC9E7DDA2E2DCDF900A8625F /* TabBarView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -109,10 +371,12 @@
 				3D1A1F162C1234567890014 /* Sources */,
 				3D1A1F172C1234567890007 /* Frameworks */,
 				3D1A1F182C1234567890015 /* Resources */,
+				DC9E7C2B2E2DC52300A8625F /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DC9E7DA22E2DCA2100A8625F /* PBXTargetDependency */,
 			);
 			name = SoccerX;
 			packageProductDependencies = (
@@ -124,6 +388,28 @@
 			productReference = 3D1A1F1A2C1234567890000 /* SoccerX.app */;
 			productType = "com.apple.product-type.application";
 		};
+		DC9E7D952E2DCA2000A8625F /* SoccerW Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC9E7DA42E2DCA2100A8625F /* Build configuration list for PBXNativeTarget "SoccerW Watch App" */;
+			buildPhases = (
+				DC9E7D922E2DCA2000A8625F /* Sources */,
+				DC9E7D932E2DCA2000A8625F /* Frameworks */,
+				DC9E7D942E2DCA2000A8625F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DC9E7D972E2DCA2000A8625F /* SoccerW Watch App */,
+			);
+			name = "SoccerW Watch App";
+			packageProductDependencies = (
+			);
+			productName = "SoccerW Watch App";
+			productReference = DC9E7D962E2DCA2000A8625F /* SoccerW Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -131,11 +417,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1540;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					3D1A1F192C1234567890012 = {
 						CreatedOnToolsVersion = 15.4;
+					};
+					DC9E7D952E2DCA2000A8625F = {
+						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
@@ -156,6 +445,7 @@
 			projectRoot = "";
 			targets = (
 				3D1A1F192C1234567890012 /* SoccerX */,
+				DC9E7D952E2DCA2000A8625F /* SoccerW Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -167,7 +457,16 @@
 			files = (
 				3D1A1F252C1234567890004 /* Preview Assets.xcassets in Resources */,
 				3D1A1F222C1234567890003 /* Resources/Assets.xcassets in Resources */,
+				DC9E7DF82E2DCDF900A8625F /* Preview Assets.xcassets in Resources */,
+				DC9E7DF92E2DCDF900A8625F /* Assets.xcassets in Resources */,
 				3D1A1F2C2C1234567890005 /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC9E7D942E2DCA2000A8625F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,19 +477,53 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D1A1F202C1234567890002 /* Views/ContentView.swift in Sources */,
-				3D1A1F1E2C1234567890001 /* App/SoccerXApp.swift in Sources */,
-				3D1A1F2E2C1234567890007 /* Services/AuthenticationService.swift in Sources */,
-				3D1A1F342C1234567890010 /* Views/TabBarView.swift in Sources */,
-				3D1A1F302C1234567890008 /* Views/Onboarding/OnboardingView.swift in Sources */,
-				3D1A1F322C1234567890009 /* Views/Dashboard/DashboardView.swift in Sources */,
-				3D1A1F362C1234567890011 /* Views/History/HistoryView.swift in Sources */,
-				3D1A1F382C1234567890012 /* Views/Groups/GroupsView.swift in Sources */,
-				3D1A1F3A2C1234567890013 /* Views/Profile/ProfileView.swift in Sources */,
+				DC9E7DDC2E2DCDF900A8625F /* StatChartView.swift in Sources */,
+				DC9E7DDD2E2DCDF900A8625F /* ContentView.swift in Sources */,
+				DC9E7DDE2E2DCDF900A8625F /* TabBarView.swift in Sources */,
+				DC9E7DDF2E2DCDF900A8625F /* ProfileView.swift in Sources */,
+				DC9E7DE02E2DCDF900A8625F /* DashboardViewModel.swift in Sources */,
+				DC9E7DE12E2DCDF900A8625F /* GameRepository.swift in Sources */,
+				DC9E7DE22E2DCDF900A8625F /* NavigationHeaderView.swift in Sources */,
+				DC9E7DE32E2DCDF900A8625F /* PerformanceChartView.swift in Sources */,
+				DC9E7DE42E2DCDF900A8625F /* TabBarViewModel.swift in Sources */,
+				DC9E7DE52E2DCDF900A8625F /* BaseRepository.swift in Sources */,
+				DC9E7DE62E2DCDF900A8625F /* GroupsView.swift in Sources */,
+				DC9E7DE72E2DCDF900A8625F /* UserRepository.swift in Sources */,
+				DC9E7DE82E2DCDF900A8625F /* OnboardingView.swift in Sources */,
+				DC9E7DE92E2DCDF900A8625F /* HistoryView.swift in Sources */,
+				DC9E7DEA2E2DCDF900A8625F /* Achievement.swift in Sources */,
+				DC9E7DEB2E2DCDF900A8625F /* MainTabView.swift in Sources */,
+				DC9E7DEC2E2DCDF900A8625F /* DashboardView.swift in Sources */,
+				DC9E7DED2E2DCDF900A8625F /* User.swift in Sources */,
+				DC9E7DEE2E2DCDF900A8625F /* WatchConnectivityManager.swift in Sources */,
+				DC9E7DEF2E2DCDF900A8625F /* Game.swift in Sources */,
+				DC9E7DF02E2DCDF900A8625F /* ActionButton.swift in Sources */,
+				DC9E7DF12E2DCDF900A8625F /* GroupRepository.swift in Sources */,
+				DC9E7DF22E2DCDF900A8625F /* SoccerXApp.swift in Sources */,
+				DC9E7DF32E2DCDF900A8625F /* StatCardView.swift in Sources */,
+				DC9E7DF42E2DCDF900A8625F /* AuthenticationService.swift in Sources */,
+				DC9E7DF52E2DCDF900A8625F /* LoadingErrorViews.swift in Sources */,
+				DC9E7DF62E2DCDF900A8625F /* Group.swift in Sources */,
+				DC9E7DF72E2DCDF900A8625F /* Extensions.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC9E7D922E2DCA2000A8625F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DC9E7DA22E2DCA2100A8625F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DC9E7D952E2DCA2000A8625F /* SoccerW Watch App */;
+			targetProxy = DC9E7DA12E2DCA2100A8625F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3D1A1F262C1234567890018 /* Debug */ = {
@@ -376,6 +709,68 @@
 			};
 			name = Release;
 		};
+		DC9E7DA52E2DCA2100A8625F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SoccerW Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = GZ3BD6SJ48;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = SoccerW;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.soccerx.app;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.soccerx.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Debug;
+		};
+		DC9E7DA62E2DCA2100A8625F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"SoccerW Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = GZ3BD6SJ48;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = SoccerW;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.soccerx.app;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.soccerx.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -393,6 +788,15 @@
 			buildConfigurations = (
 				3D1A1F292C1234567890020 /* Debug */,
 				3D1A1F2A2C1234567890021 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC9E7DA42E2DCA2100A8625F /* Build configuration list for PBXNativeTarget "SoccerW Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DC9E7DA52E2DCA2100A8625F /* Debug */,
+				DC9E7DA62E2DCA2100A8625F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

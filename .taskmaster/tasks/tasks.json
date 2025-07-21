@@ -77,7 +77,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -85,7 +85,7 @@
             "description": "Set up Sign in with Apple entitlement in Xcode project settings and configure Firebase Authentication provider for Apple sign-in support",
             "dependencies": [],
             "details": "Add Sign in with Apple capability in project settings under Signing & Capabilities. Enable Apple provider in Firebase Console Authentication settings. Add AuthenticationServices framework to project. Configure associated domains for webcredentials. Update Info.plist with required Apple sign-in keys. Create service identifier in Apple Developer portal if needed. Add Firebase Auth SDK to project dependencies via Swift Package Manager.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify capability appears in entitlements file. Confirm Firebase Console shows Apple provider enabled. Test framework import compiles successfully."
           },
           {
@@ -94,7 +94,7 @@
             "description": "Create a singleton service class that handles all authentication operations using Firebase Auth and manages authentication state with Combine publishers",
             "dependencies": [],
             "details": "Create AuthenticationManager class as ObservableObject singleton. Implement @Published properties for authState, currentUser, and isAuthenticated. Set up Firebase Auth state listener in init(). Create signInWithApple() method using ASAuthorizationController. Implement credential exchange with Firebase Auth. Add error handling enum for authentication failures. Create Combine publishers for auth state changes. Implement automatic token refresh logic.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test auth state publisher emissions. Mock Firebase Auth responses. Test error handling for various failure scenarios. Verify singleton behavior."
           },
           {
@@ -103,7 +103,7 @@
             "description": "Build the sign-in interface following Apple HIG with secure token storage in iOS Keychain for session persistence",
             "dependencies": [],
             "details": "Design SignInView with SignInWithAppleButton following HIG specifications. Implement ASAuthorizationControllerDelegate methods. Create KeychainManager for secure token storage using Security framework. Store Firebase auth tokens and refresh tokens securely. Implement 30-day session persistence by storing session expiry date. Add loading states and error alerts. Create smooth transition animations to main app view upon successful authentication.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "UI test Sign in with Apple button appearance and tap behavior. Test Keychain read/write operations. Verify session persistence across app launches. Test 30-day expiration logic."
           },
           {
@@ -112,7 +112,7 @@
             "description": "Add biometric authentication for app access and create initial user document structure in Firestore upon first sign-in",
             "dependencies": [],
             "details": "Implement BiometricAuthManager using LocalAuthentication framework. Add Face ID/Touch ID permission in Info.plist. Create toggle in settings for biometric lock preference. Store preference in UserDefaults. Implement biometric check on app launch if enabled. Create Firestore user document with initial structure: uid, email, displayName, createdAt, lastLoginAt, preferences object, statistics object. Handle document creation only on first sign-in. Update lastLoginAt on subsequent logins.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test biometric prompt on various devices. Verify Firestore document creation with correct structure. Test preference persistence. Validate biometric fallback to passcode."
           },
           {
@@ -121,7 +121,7 @@
             "description": "Implement comprehensive sign-out functionality with local data cleanup and graceful error handling for all authentication scenarios",
             "dependencies": [],
             "details": "Create signOut() method in AuthenticationManager that calls Firebase Auth signOut. Clear all Keychain stored tokens and credentials. Reset all @Published properties to initial state. Clear any cached user data from memory. Implement UserDefaults cleanup for user preferences. Create comprehensive error handling for network failures, invalid credentials, user cancellation, and Apple ID issues. Display user-friendly error messages with retry options. Add analytics tracking for auth events.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test complete data cleanup after sign-out. Verify no user data persists in Keychain or UserDefaults. Test each error scenario with appropriate UI feedback. Validate analytics events fire correctly."
           }
         ]
@@ -136,7 +136,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -144,7 +144,7 @@
             "description": "Set up HealthKit capabilities and permissions for the watchOS app, configure Core Motion access, and create the necessary Info.plist entries for health data access",
             "dependencies": [],
             "details": "Add HealthKit capability to watchOS target in Xcode. Create HealthKitManager class to handle authorization requests for activeEnergyBurned, heartRate, distanceWalkingRunning, and workout data. Configure Info.plist with NSHealthShareUsageDescription and NSHealthUpdateUsageDescription. Set up Core Motion entitlements for CMMotionActivityManager and CMPedometer access. Create permission request flow that triggers on first app launch. Implement fallback handling if permissions are denied.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test permission flows on real Apple Watch device. Verify all requested health data types are properly authorized. Test app behavior when permissions are denied. Validate that permission strings appear correctly in system dialogs."
           },
           {
@@ -153,7 +153,7 @@
             "description": "Create the core WorkoutManager class that manages HKWorkoutSession for soccer activity type, handles workout lifecycle, and coordinates data collection from various sensors",
             "dependencies": [],
             "details": "Create WorkoutManager class as ObservableObject for SwiftUI integration. Configure HKWorkoutSession with activityType: .soccer and locationType: .outdoor. Implement workout state management (preparing, running, paused, stopped). Set up HKWorkoutBuilder for accumulating workout data. Create delegate methods for session state changes. Implement pause/resume functionality with proper session handling. Add pre-game countdown timer (configurable 5-60 seconds). Create error handling for session failures. Implement background mode configuration for continuous tracking.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test workout session lifecycle on physical Apple Watch. Verify background execution continues when app is not in foreground. Test pause/resume maintains data continuity. Validate countdown timer accuracy. Monitor memory usage during long sessions."
           },
           {
@@ -162,7 +162,7 @@
             "description": "Implement LocationManager with dynamic GPS accuracy based on movement patterns and create motion detection system using Core Motion for enhanced activity recognition",
             "dependencies": [],
             "details": "Create LocationManager class implementing CLLocationManagerDelegate. Implement adaptive GPS accuracy switching: use kCLLocationAccuracyBest when speed > 2 m/s (active play), kCLLocationAccuracyNearestTenMeters when speed < 0.5 m/s (standing), kCLLocationAccuracyHundredMeters during paused state. Set up CMMotionActivityManager to detect running, walking, stationary states. Create movement pattern analyzer combining GPS speed and motion data. Implement location filtering to remove GPS jitter. Set distance filter dynamically (5m for active, 20m for low activity). Create speed calculation with smoothing algorithm. Add altitude tracking for field elevation changes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Field test GPS accuracy switching during actual soccer play. Measure battery impact of different accuracy modes. Test motion detection accuracy for soccer-specific movements. Verify location updates continue in background."
           },
           {
@@ -171,7 +171,7 @@
             "description": "Develop the GameDataPoint structure for 5-second interval data collection and implement intelligent battery optimization by adjusting sensor update frequencies based on activity level",
             "dependencies": [],
             "details": "Create GameDataPoint struct with timestamp, location (lat/lng), speed, distance, heartRate, calories, and activityLevel properties. Implement 5-second aggregation timer that collects and averages sensor data. Create BatteryOptimizationManager that monitors device battery level and activity patterns. Implement sensor frequency adjustments: High activity (HR: 1Hz, GPS: 1Hz, Motion: 5Hz), Medium activity (HR: 0.5Hz, GPS: 0.5Hz, Motion: 2Hz), Low activity (HR: 0.2Hz, GPS: 0.1Hz, Motion: 1Hz). Add data buffering for efficient batch processing. Create rolling window calculations for real-time stats. Implement data compression for storage efficiency.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Measure actual battery consumption over 2-hour sessions (target < 10% drain). Test sensor frequency switching responsiveness. Verify data aggregation accuracy. Monitor CPU usage during peak activity. Test data integrity after compression."
           },
           {
@@ -180,7 +180,7 @@
             "description": "Create the watchOS SwiftUI views for live tracking display and implement local data persistence for offline game recording with automatic sync queuing",
             "dependencies": [],
             "details": "Build main tracking view showing elapsed time, distance, current/avg/max speed, heart rate, and calories. Create detailed views accessible via digital crown: HeartRateDetailView with zones and efficiency, SpeedDetailView with pace chart, SplitsView showing 10-minute intervals, CaloriesDetailView with burn rate. Implement Core Data stack for local storage with GameSession and DataPoint entities. Create offline persistence manager that stores up to 7 days or 50MB of game data. Build sync queue system marking data for upload when iPhone connection restored. Add visual indicators for GPS signal strength and heart rate connection. Implement haptic feedback for milestone achievements.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test UI responsiveness during active tracking. Verify offline data persists across app restarts. Test sync queue behavior when storage limits reached. Validate UI updates match sensor data frequency. Test haptic feedback timing and intensity."
           }
         ]
@@ -195,7 +195,7 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -267,7 +267,7 @@
         "dependencies": [
           2
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -275,7 +275,7 @@
             "description": "Create the foundational Firestore collections structure and corresponding Swift data models for users, games, groups, leaderboards, and achievements",
             "dependencies": [],
             "details": "Define Firestore collections: users/{userId} with fields (displayName, email, profileImageUrl, stats, achievements, groupIds, createdAt, updatedAt), games/{gameId} with fields (userId, startTime, endTime, duration, distance, avgSpeed, mvpScore, gpsRoute, heartRateData, events), groups/{groupId} with fields (name, description, creatorId, memberIds, inviteCode, isPublic, weeklyChallenge), leaderboards/{groupId}_{weekId} with fields (rankings array with userId, score, gamesPlayed), achievements/{userId} with fields (achievementId, unlockedAt, progress). Create corresponding Swift structs with Codable protocol for seamless Firestore integration. Implement computed properties for derived values and helper methods for data transformation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create unit tests for Swift model encoding/decoding, validate all required fields are properly mapped, test computed properties with edge cases"
           },
           {
@@ -286,7 +286,7 @@
               1
             ],
             "details": "Write Firestore security rules: users collection - allow read/write only if request.auth.uid == userId, games collection - allow read if request.auth.uid == resource.data.userId or user is in same group, allow write only if request.auth.uid == userId, groups collection - allow read if resource.data.isPublic == true or request.auth.uid in resource.data.memberIds, allow update if request.auth.uid == resource.data.creatorId or updating only own membership, leaderboards - allow read if user is group member, write denied (server-only), achievements - allow read if request.auth.uid == userId, write denied (server-only). Implement field-level validation rules for data types, required fields, and value constraints. Add timestamp validation to prevent backdating.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Use Firebase emulator to test unauthorized access attempts, verify proper permission grants for authorized users, test edge cases like removed group members"
           },
           {
@@ -297,7 +297,7 @@
               1
             ],
             "details": "Create firestore.indexes.json with composite indexes: games collection - [userId ASC, startTime DESC] for user game history, [userId ASC, mvpScore DESC] for personal best queries, [groupId ASC, startTime DESC] for group game feeds, groups collection - [memberIds ARRAY_CONTAINS, isPublic ASC] for user's groups query, [createdAt DESC] for public group discovery, leaderboards collection - [groupId ASC, weekId DESC] for current/historical leaderboards. Add single-field indexes for frequently filtered fields: games.distance, games.duration, users.displayName. Deploy indexes using Firebase CLI and monitor index usage in Firebase console. Document query patterns that require these indexes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Execute complex queries using Firebase emulator, measure query performance with sample datasets of 10K+ documents, verify no missing index errors"
           },
           {
@@ -309,7 +309,7 @@
               2
             ],
             "details": "Create BaseRepository protocol with generic CRUD operations and error handling. Implement UserRepository, GameRepository, GroupRepository, LeaderboardRepository, and AchievementRepository classes. Add offline persistence configuration with Firestore's enablePersistence(). Implement data caching strategy with memory cache for frequently accessed data. Create custom error types for network failures, permission denied, and data validation errors. Add retry logic with exponential backoff for transient failures. Implement batch operations for efficient multi-document updates. Create Observable wrappers using Combine for real-time data streams. Add transaction support for atomic operations across multiple documents.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test CRUD operations with mock Firestore, verify offline data persistence, test error handling for various failure scenarios, validate transaction atomicity"
           },
           {
@@ -321,7 +321,7 @@
               2
             ],
             "details": "Create Cloud Storage folder structure: /users/{userId}/profile/ for profile images, /games/{gameId}/gps_routes/ for compressed GPS data, /games/{gameId}/media/ for game photos/videos, /groups/{groupId}/media/ for group content. Implement storage security rules matching Firestore permissions. Create GPSRouteCompressor utility using zlib to reduce GPS data size by 70-80%. Implement StorageManager class with methods for uploadGPSRoute(), downloadGPSRoute(), uploadMedia(), getDownloadURL(). Add progress callbacks for large file transfers. Implement automatic cleanup for orphaned files. Set up Cloud Functions trigger to generate thumbnails for uploaded images. Add metadata tags for efficient querying.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test GPS data compression ratios, verify storage security rules block unauthorized access, test upload/download with various file sizes, validate cleanup of orphaned files"
           }
         ]
@@ -336,7 +336,7 @@
         "dependencies": [
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -785,7 +785,7 @@
     ],
     "metadata": {
       "created": "2025-07-19T09:04:33.630Z",
-      "updated": "2025-07-19T10:56:30.092Z",
+      "updated": "2025-07-19T22:29:09.336Z",
       "description": "Tasks for master context"
     }
   }

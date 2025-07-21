@@ -1,197 +1,370 @@
 import SwiftUI
+import Combine
+import Charts
+import FirebaseFirestore
 
 struct DashboardView: View {
     @EnvironmentObject var authService: AuthenticationService
-    @State private var currentDate = Date()
+    @StateObject private var viewModel = DashboardViewModel()
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Header Section
-                    headerSection
-                    
-                    // Start Game Button
-                    startGameSection
-                    
-                    // Last Game Summary
-                    lastGameSection
-                    
-                    // Weekly Stats
-                    weeklyStatsSection
-                    
-                    // Group Leaderboard Preview
-                    leaderboardSection
-                    
-                    Spacer(minLength: 100) // Bottom padding for tab bar
+            ZStack {
+                Color.black.ignoresSafeArea()
+                
+                if viewModel.isLoading && viewModel.recentGames.isEmpty {
+                    LoadingView(message: "Loading dashboard...", style: .soccer)
+                } else if let errorMessage = viewModel.errorMessage {
+                    ErrorView(
+                        title: "Failed to load",
+                        message: errorMessage,
+                        retryAction: {
+                            Task {
+                                await viewModel.refreshData(for: authService.currentUser)
+                            }
+                        }
+                    )
+                } else {
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 24) {
+                            headerSection
+                            quickActionsSection
+                            lastGameSection
+                            weeklyStatsSection
+                            performanceChartSection
+                            groupsSection
+                            
+                            Spacer(minLength: 100) // Bottom padding for tab bar
+                        }
+                        .padding(.horizontal, 20)
+                    }
                 }
             }
-            .background(Color.black)
             .navigationBarHidden(true)
         }
-        .onAppear {
-            updateCurrentDate()
+        .task {
+            await viewModel.loadDashboardData(for: authService.currentUser)
+        }
+        .onChange(of: authService.currentUser?.uid) { _ in
+            Task {
+                await viewModel.loadDashboardData(for: authService.currentUser)
+            }
+        }
+        .refreshable {
+            await viewModel.refreshData(for: authService.currentUser)
         }
     }
     
     // MARK: - Header Section
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(greetingText)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            
-            Text(dateText)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.top, 20)
-        .padding(.bottom, 30)
+        NavigationHeaderView(
+            title: viewModel.greetingText,
+            subtitle: userName + " • " + viewModel.dateText
+        )
     }
     
-    // MARK: - Start Game Section
-    private var startGameSection: some View {
-        VStack(spacing: 0) {
-            Button(action: startGame) {
-                VStack(spacing: 8) {
-                    Text("⚽")
-                        .font(.system(size: 48))
-                    
-                    Text("Start Game")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                    
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(Color.green)
-                            .frame(width: 6, height: 6)
-                        
-                        Text("Apple Watch Connected")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
+    // MARK: - Quick Actions Section
+    private var quickActionsSection: some View {
+        VStack(spacing: 16) {
+            // Start Game Button
+            ActionButton(
+                "Start Game",
+                icon: "play.fill",
+                style: .primary,
+                size: .extraLarge
+            ) {
+                Task {
+                    await viewModel.startGame()
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 120)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.green, Color.green.opacity(0.8)]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .cornerRadius(24)
             }
-            .buttonStyle(ScaleButtonStyle())
+            .disabled(viewModel.isStartingGame)
+            .overlay(
+                startGameOverlay,
+                alignment: .bottom
+            )
+            
+            // Secondary Actions
+            HStack(spacing: 12) {
+                ActionButton(
+                    "Join Game",
+                    icon: "person.2",
+                    style: .outline,
+                    size: .medium
+                ) {
+                    // TODO: Navigate to join game
+                }
+                
+                ActionButton(
+                    "Quick Stats",
+                    icon: "chart.bar",
+                    style: .ghost,
+                    size: .medium
+                ) {
+                    // TODO: Navigate to detailed stats
+                }
+            }
         }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 30)
+    }
+    
+    private var startGameOverlay: some View {
+        VStack {
+            Spacer()
+            
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(viewModel.watchConnectionStatus.color)
+                    .frame(width: 6, height: 6)
+                
+                Text(viewModel.watchConnectionStatus.displayText)
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            .padding(.bottom, 8)
+        }
     }
     
     // MARK: - Last Game Section
     private var lastGameSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Last Game")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
+            SectionHeaderView(
+                title: "Last Game",
+                action: viewModel.lastGame != nil ? NavigationAction(text: "View All") {
+                    // TODO: Navigate to history
+                } : nil
+            )
             
-            Button(action: viewGameDetails) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Wednesday, July 16 • 6:30 PM")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    HStack(spacing: 20) {
-                        statItem(value: "5.2", label: "km")
-                        statItem(value: "68", label: "mins")
-                        statItem(value: "85", label: "MVP Score")
+            if let lastGame = viewModel.lastGame {
+                lastGameCard(lastGame)
+            } else {
+                EmptyStateView(
+                    title: "No games yet",
+                    message: "Start your first game to see your progress here.",
+                    icon: "soccerball",
+                    actionTitle: "Start Game",
+                    action: {
+                        Task {
+                            await viewModel.startGame()
+                        }
                     }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(20)
-                .background(Color(.systemGray6).opacity(0.1))
-                .cornerRadius(20)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color(.systemGray5).opacity(0.2), lineWidth: 1)
+                )
+                .frame(height: 200)
+            }
+        }
+    }
+    
+    private func lastGameCard(_ game: Game) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(formatGameDate(game.startTime))
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            HStack(spacing: 20) {
+                statItem(
+                    value: String(format: "%.1f", game.distance),
+                    label: "km"
+                )
+                
+                statItem(
+                    value: formatDuration(game.duration),
+                    label: "mins"
+                )
+                
+                statItem(
+                    value: String(format: "%.1f", game.mvpScore ?? 0),
+                    label: "MVP Score"
                 )
             }
-            .buttonStyle(ScaleButtonStyle())
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 30)
+        .padding(20)
+        .background(Color(.systemGray6).opacity(0.1))
+        .cornerRadius(16)
+        .onTapGesture {
+            // TODO: Navigate to game details
+        }
     }
     
     // MARK: - Weekly Stats Section
     private var weeklyStatsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("This Week")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
+            SectionHeaderView(
+                title: "This Week",
+                action: NavigationAction(text: "View More") {
+                    // TODO: Navigate to detailed stats
+                }
+            )
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
-                weeklyStatCard(icon: "🏃", value: "2", description: "Games Played")
-                weeklyStatCard(icon: "📏", value: "10.8", description: "Total km")
-                weeklyStatCard(icon: "⚡", value: "24.5", description: "Max Speed km/h")
-                weeklyStatCard(icon: "🔥", value: "842", description: "Calories Burned")
-            }
+            StatCardGridView(
+                stats: viewModel.weeklyStatCards,
+                columns: 2
+            )
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 30)
     }
     
-    // MARK: - Leaderboard Section
-    private var leaderboardSection: some View {
+    // MARK: - Performance Chart Section
+    private var performanceChartSection: some View {
         VStack(alignment: .leading, spacing: 16) {
+            SectionHeaderView(
+                title: "Performance Trends",
+                action: NavigationAction(text: "View All") {
+                    // TODO: Navigate to detailed charts
+                }
+            )
+            
+            if viewModel.recentGames.isEmpty {
+                emptyChartView
+            } else {
+                performanceChart
+            }
+        }
+    }
+    
+    private var emptyChartView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "chart.line.uptrend.xyaxis")
+                .font(.system(size: 32))
+                .foregroundColor(.secondary)
+            
+            Text("No performance data yet")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text("Complete a few games to see your progress trends")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 180)
+        .background(Color(.systemGray6).opacity(0.1))
+        .cornerRadius(16)
+    }
+    
+    private var performanceChart: some View {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Austin Sunday League")
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                Text("Weekly Distance")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
                     .foregroundColor(.white)
                 
                 Spacer()
                 
-                Button("See all") {
-                    // Navigate to full leaderboard
-                }
-                .font(.subheadline)
-                .foregroundColor(.green)
+                Text("\(String(format: "%.1f", weeklyTotalDistance)) km total")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
             
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 8) {
-                    Text("🏆")
-                    Text("This Week's Leaderboard")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+            Chart(chartData) { point in
+                LineMark(
+                    x: .value("Day", point.x),
+                    y: .value("Distance", point.y)
+                )
+                .foregroundStyle(.green.gradient)
+                .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
                 
-                VStack(spacing: 12) {
-                    leaderboardRow(rank: "1", rankColor: .yellow, name: "Mike Johnson", stats: "3 games • 156 avg HR", distance: "18.2 km")
-                    leaderboardRow(rank: "2", rankColor: .gray, name: "Sarah Chen", stats: "3 games • 148 avg HR", distance: "16.5 km")
-                    leaderboardRow(rank: "3", rankColor: .orange, name: "You", stats: "2 games • 152 avg HR", distance: "10.8 km", isCurrentUser: true)
-                    leaderboardRow(rank: "4", rankColor: .secondary, name: "James Wilson", stats: "2 games • 144 avg HR", distance: "9.4 km")
+                PointMark(
+                    x: .value("Day", point.x),
+                    y: .value("Distance", point.y)
+                )
+                .foregroundStyle(.green)
+                .symbolSize(25)
+            }
+            .frame(height: 120)
+            .chartXAxis {
+                AxisMarks(values: .automatic(desiredCount: 5)) { value in
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                        .foregroundStyle(.secondary.opacity(0.3))
+                    AxisValueLabel()
+                        .foregroundStyle(.secondary)
                 }
             }
-            .padding(20)
-            .background(Color(.systemGray6).opacity(0.1))
-            .cornerRadius(20)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color(.systemGray5).opacity(0.2), lineWidth: 1)
-            )
+            .chartYAxis {
+                AxisMarks(position: .leading) { value in
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                        .foregroundStyle(.secondary.opacity(0.3))
+                    AxisValueLabel {
+                        if let doubleValue = value.as(Double.self) {
+                            Text("\(String(format: "%.1f", doubleValue))")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+            .chartBackground { _ in
+                Rectangle()
+                    .fill(.clear)
+            }
+        }
+        .padding(20)
+        .background(Color(.systemGray6).opacity(0.1))
+        .cornerRadius(16)
+    }
+    
+    // MARK: - Groups Section
+    private var groupsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if let firstGroup = viewModel.userGroups.first {
+                SectionHeaderView(
+                    title: firstGroup.name,
+                    action: NavigationAction(text: "See All") {
+                        // TODO: Navigate to full leaderboard
+                    }
+                )
+                
+                leaderboardCard
+            } else {
+                SectionHeaderView(
+                    title: "Join a Group",
+                    action: NavigationAction(text: "Browse") {
+                        // TODO: Navigate to groups
+                    }
+                )
+                
+                joinGroupCard
+            }
+        }
+    }
+    
+    private var leaderboardCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Text("🏆")
+                Text("This Week's Leaderboard")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            VStack(spacing: 12) {
+                ForEach(viewModel.leaderboardData.prefix(3)) { entry in
+                    leaderboardRow(entry)
+                }
+            }
+        }
+        .padding(20)
+        .background(Color(.systemGray6).opacity(0.1))
+        .cornerRadius(16)
+    }
+    
+    private var joinGroupCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Join groups to compete with friends and see leaderboards!")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            ActionButton(
+                "Find Groups",
+                icon: "person.3",
+                style: .primary,
+                size: .medium
+            ) {
+                // TODO: Navigate to groups discovery
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 30)
+        .padding(20)
+        .background(Color(.systemGray6).opacity(0.1))
+        .cornerRadius(16)
     }
     
     // MARK: - Helper Views
@@ -209,120 +382,99 @@ struct DashboardView: View {
         }
     }
     
-    private func weeklyStatCard(icon: String, value: String, description: String) -> some View {
+    private func leaderboardRow(_ entry: DashboardLeaderboardEntry) -> some View {
         HStack(spacing: 12) {
-            Text(icon)
-                .font(.title2)
-                .frame(width: 40, height: 40)
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(12)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(value)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding(16)
-        .background(Color(.systemGray6).opacity(0.1))
-        .cornerRadius(16)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color(.systemGray5).opacity(0.2), lineWidth: 1)
-        )
-    }
-    
-    private func leaderboardRow(rank: String, rankColor: Color, name: String, stats: String, distance: String, isCurrentUser: Bool = false) -> some View {
-        HStack(spacing: 12) {
-            Text(rank)
+            Text("\(entry.rank)")
                 .font(.headline)
                 .fontWeight(.semibold)
-                .foregroundColor(rankColor)
+                .foregroundColor(entry.rankColor)
                 .frame(width: 24)
             
-            Text(isCurrentUser ? "🙋‍♂️" : "👤")
+            Text(entry.isCurrentUser ? "🙋‍♂️" : "👤")
                 .font(.title2)
                 .frame(width: 36, height: 36)
                 .background(Color(.systemGray5).opacity(0.3))
                 .cornerRadius(18)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(name)
+                Text(entry.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                 
-                Text(stats)
+                Text(entry.displayStats)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             
             Spacer()
             
-            Text(distance)
+            Text(entry.displayDistance)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(.green)
         }
-        .padding(.horizontal, isCurrentUser ? 12 : 0)
-        .padding(.vertical, isCurrentUser ? 8 : 0)
-        .background(isCurrentUser ? Color.green.opacity(0.1) : Color.clear)
+        .padding(.horizontal, entry.isCurrentUser ? 12 : 0)
+        .padding(.vertical, entry.isCurrentUser ? 8 : 0)
+        .background(entry.isCurrentUser ? Color.green.opacity(0.1) : Color.clear)
         .cornerRadius(12)
     }
     
     // MARK: - Computed Properties
-    private var greetingText: String {
-        let hour = Calendar.current.component(.hour, from: currentDate)
-        let name = authService.currentUser?.displayName ?? "Champion"
+    private var userName: String {
+        authService.currentUser?.displayName ?? "Champion"
+    }
+    
+    private var chartData: [ChartDataPoint] {
+        let calendar = Calendar.current
+        let now = Date()
         
-        switch hour {
-        case 5..<12:
-            return "Good morning, \(name)!"
-        case 12..<18:
-            return "Good afternoon, \(name)!"
-        default:
-            return "Good evening, \(name)!"
+        // Create last 7 days
+        let days = (0..<7).compactMap { dayOffset in
+            calendar.date(byAdding: .day, value: -dayOffset, to: now)
+        }.reversed()
+        
+        return days.map { date in
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "E" // Mon, Tue, etc.
+            let dayName = dayFormatter.string(from: date)
+            
+            // Find games for this day
+            let dayGames = viewModel.recentGames.filter { game in
+                guard let gameDate = game.startTime?.dateValue() else { return false }
+                return calendar.isDate(gameDate, inSameDayAs: date)
+            }
+            
+            let totalDistance = dayGames.reduce(0) { $0 + $1.distance }
+            
+            return ChartDataPoint(x: dayName, y: totalDistance)
         }
     }
     
-    private var dateText: String {
+    private var weeklyTotalDistance: Double {
+        return chartData.reduce(0) { $0 + $1.y }
+    }
+    
+    // MARK: - Helper Methods
+    private func formatGameDate(_ timestamp: FirebaseFirestore.Timestamp?) -> String {
+        guard let timestamp = timestamp else { return "No date" }
+        let date = timestamp.dateValue()
         let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMMM d"
-        return formatter.string(from: currentDate)
+        formatter.dateFormat = "EEEE, MMMM d • h:mm a"
+        return formatter.string(from: date)
     }
     
-    // MARK: - Actions
-    private func updateCurrentDate() {
-        currentDate = Date()
-    }
-    
-    private func startGame() {
-        // TODO: Navigate to game tracking
-        print("Starting new game...")
-    }
-    
-    private func viewGameDetails() {
-        // TODO: Navigate to game details
-        print("Viewing game details...")
+    private func formatDuration(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        return "\(minutes)"
     }
 }
 
-// MARK: - Custom Button Style
-struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
-    }
-}
+// MARK: - Supporting Types
+// ChartDataPoint is now imported from StatChartView
 
 #Preview {
     DashboardView()
+        .environmentObject(AuthenticationService())
+        .preferredColorScheme(.dark)
 }

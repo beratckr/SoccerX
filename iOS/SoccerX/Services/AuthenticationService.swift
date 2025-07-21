@@ -3,6 +3,7 @@ import SwiftUI
 import AuthenticationServices
 import FirebaseAuth
 import CryptoKit
+import Combine
 
 class AuthenticationService: NSObject, ObservableObject {
     @Published var isAuthenticated = false
@@ -12,6 +13,8 @@ class AuthenticationService: NSObject, ObservableObject {
     
     // Unhashed nonce for Apple Sign In
     private var currentNonce: String?
+    private let userRepository = UserRepository()
+    private var cancellables = Set<AnyCancellable>()
     
     override init() {
         super.init()
@@ -19,13 +22,38 @@ class AuthenticationService: NSObject, ObservableObject {
     }
     
     func checkAuthenticationStatus() {
-        if let user = Auth.auth().currentUser {
-            self.currentUser = user
-            self.isAuthenticated = true
+        if let firebaseUser = Auth.auth().currentUser {
+            // Load user from Firestore
+            loadUserFromFirestore(uid: firebaseUser.uid)
         } else {
             self.isAuthenticated = false
             self.currentUser = nil
         }
+    }
+    
+    private func loadUserFromFirestore(uid: String) {
+        isLoading = true
+        userRepository.getCurrentUser(uid: uid)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] (completion: Subscribers.Completion<RepositoryError>) in
+                    self?.isLoading = false
+                    if case .failure(let error) = completion {
+                        self?.errorMessage = "Failed to load user: \(error.localizedDescription)"
+                    }
+                },
+                receiveValue: { [weak self] (user: User?) in
+                    if let user = user {
+                        self?.currentUser = user
+                        self?.isAuthenticated = true
+                    } else {
+                        // User document doesn't exist, this shouldn't happen after sign-in
+                        self?.isAuthenticated = false
+                        self?.currentUser = nil
+                    }
+                }
+            )
+            .store(in: &cancellables)
     }
     
     func signInWithApple() {
@@ -70,18 +98,93 @@ class AuthenticationService: NSObject, ObservableObject {
         // Sign in with Firebase Auth directly
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
             DispatchQueue.main.async {
-                self?.isLoading = false
-                
                 if let error = error {
+                    self?.isLoading = false
                     self?.errorMessage = "Authentication failed: \(error.localizedDescription)"
                     return
                 }
                 
-                self?.currentUser = authResult?.user
-                self?.isAuthenticated = true
-                self?.errorMessage = nil
+                guard let authResult = authResult else {
+                    self?.isLoading = false
+                    self?.errorMessage = "No authentication result received"
+                    return
+                }
+                
+                // Create or update user document in Firestore
+                self?.createOrUpdateUserDocument(
+                    firebaseUser: authResult.user,
+                    appleUser: user
+                )
             }
         }
+    }
+    
+    private func createOrUpdateUserDocument(firebaseUser: FirebaseAuth.User, appleUser: ASAuthorizationAppleIDCredential) {
+        // First check if user already exists
+        userRepository.getCurrentUser(uid: firebaseUser.uid)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] (completion: Subscribers.Completion<RepositoryError>) in
+                    if case .failure(let error) = completion {
+                        print("Error checking existing user: \(error)")
+                        // Continue with creating new user
+                        self?.createNewUserDocument(firebaseUser: firebaseUser, appleUser: appleUser)
+                    }
+                },
+                receiveValue: { [weak self] (existingUser: User?) in
+                    if let existingUser = existingUser {
+                        // User exists, just set the current user and authenticate
+                        self?.currentUser = existingUser
+                        self?.isAuthenticated = true
+                        self?.isLoading = false
+                        self?.errorMessage = nil
+                    } else {
+                        // User doesn't exist, create new user document
+                        self?.createNewUserDocument(firebaseUser: firebaseUser, appleUser: appleUser)
+                    }
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    private func createNewUserDocument(firebaseUser: FirebaseAuth.User, appleUser: ASAuthorizationAppleIDCredential) {
+        // Create display name from Apple ID credential
+        let displayName: String
+        if let fullName = appleUser.fullName {
+            let firstName = fullName.givenName ?? ""
+            let lastName = fullName.familyName ?? ""
+            displayName = "\(firstName) \(lastName)".trimmingCharacters(in: .whitespaces)
+        } else {
+            displayName = firebaseUser.email?.components(separatedBy: "@").first ?? "Soccer Player"
+        }
+        
+        // Create new User object using the convenience initializer
+        var newUser = User(
+            uid: firebaseUser.uid,
+            email: firebaseUser.email ?? "",
+            displayName: displayName.isEmpty ? "Soccer Player" : displayName
+        )
+        
+        // Set the document ID
+        newUser.id = firebaseUser.uid
+        
+        // Save to Firestore
+        userRepository.create(newUser)
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] (completion: Subscribers.Completion<RepositoryError>) in
+                    self?.isLoading = false
+                    if case .failure(let error) = completion {
+                        self?.errorMessage = "Failed to create user: \(error.localizedDescription)"
+                    }
+                },
+                receiveValue: { [weak self] (createdUser: User) in
+                    self?.currentUser = createdUser
+                    self?.isAuthenticated = true
+                    self?.errorMessage = nil
+                }
+            )
+            .store(in: &cancellables)
     }
 }
 

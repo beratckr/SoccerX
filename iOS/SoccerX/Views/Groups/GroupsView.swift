@@ -1,10 +1,18 @@
 import SwiftUI
+import Combine
+import FirebaseFirestore
 
 struct GroupsView: View {
+    @EnvironmentObject var authService: AuthenticationService
     @State private var selectedTab: GroupTab = .myGroups
     @State private var showingCreateGroup = false
     @State private var showingJoinGroup = false
-    @State private var groups: [SoccerGroup] = mockGroups
+    @State private var groups: [Group] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    
+    private let groupRepository = GroupRepository()
+    @State private var cancellables = Set<AnyCancellable>()
     
     enum GroupTab: String, CaseIterable {
         case myGroups = "My Groups"
@@ -44,6 +52,12 @@ struct GroupsView: View {
             }
             .preferredColorScheme(.dark)
         }
+        .onAppear {
+            loadGroups()
+        }
+        .onChange(of: authService.currentUser) { _ in
+            loadGroups()
+        }
         .sheet(isPresented: $showingCreateGroup) {
             CreateGroupView()
         }
@@ -78,31 +92,110 @@ struct GroupsView: View {
     
     private var myGroupsContent: some View {
         ScrollView {
-            LazyVStack(spacing: 16) {
-                ForEach(groups) { group in
-                    GroupCard(group: group)
+            if isLoading {
+                ProgressView("Loading groups...")
+                    .foregroundColor(.white)
+                    .padding(.top, 50)
+            } else if groups.isEmpty {
+                VStack(spacing: 16) {
+                    Text("👥")
+                        .font(.system(size: 48))
+                    Text("No groups yet")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    Text("Join or create a group to compete with friends!")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Create Group") {
+                        showingCreateGroup = true
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(Color.green)
+                    .foregroundColor(.black)
+                    .fontWeight(.semibold)
+                    .cornerRadius(12)
+                    .padding(.top, 8)
                 }
+                .padding(.top, 50)
+            } else {
+                LazyVStack(spacing: 16) {
+                    ForEach(groups) { group in
+                        GroupCard(group: group)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 100) // Bottom padding for tab bar
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 100) // Bottom padding for tab bar
         }
     }
     
     private var leaderboardsContent: some View {
         ScrollView {
-            LazyVStack(spacing: 20) {
-                ForEach(groups) { group in
-                    GroupLeaderboardCard(group: group)
+            if isLoading {
+                ProgressView("Loading leaderboards...")
+                    .foregroundColor(.white)
+                    .padding(.top, 50)
+            } else if groups.isEmpty {
+                VStack(spacing: 16) {
+                    Text("🏆")
+                        .font(.system(size: 48))
+                    Text("No leaderboards")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    Text("Join groups to see leaderboards and compete!")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
+                .padding(.top, 50)
+            } else {
+                LazyVStack(spacing: 20) {
+                    ForEach(groups) { group in
+                        GroupLeaderboardCard(group: group)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 100) // Bottom padding for tab bar
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 100) // Bottom padding for tab bar
         }
+    }
+    
+    // MARK: - Data Loading
+    private func loadGroups() {
+        guard let currentUser = authService.currentUser else { return }
+        
+        isLoading = true
+        errorMessage = nil
+        
+        groupRepository.getUserGroups(uid: currentUser.uid)
+            .sink(
+                receiveCompletion: { completion in
+                    DispatchQueue.main.async {
+                        isLoading = false
+                    }
+                    if case .failure(let error) = completion {
+                        DispatchQueue.main.async {
+                            errorMessage = "Failed to load groups: \(error.localizedDescription)"
+                        }
+                    }
+                },
+                receiveValue: { groups in
+                    DispatchQueue.main.async {
+                        self.groups = groups
+                    }
+                }
+            )
+            .store(in: &cancellables)
     }
 }
 
 struct GroupCard: View {
-    let group: SoccerGroup
+    let group: Group
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -114,7 +207,7 @@ struct GroupCard: View {
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                     
-                    Text("\(group.memberCount) members")
+                    Text("\(group.memberIds.count) members")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -139,24 +232,32 @@ struct GroupCard: View {
                 }
             }
             
-            // Stats
-            HStack(spacing: 20) {
-                statItem(label: "Your Rank", value: "#\(group.yourRank)")
-                statItem(label: "This Week", value: "\(group.yourWeeklyDistance) km")
-                statItem(label: "Total Games", value: "\(group.totalGames)")
+            // Description
+            if let description = group.description, !description.isEmpty {
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
             }
             
-            // Recent Activity
-            if !group.recentActivity.isEmpty {
+            // Stats
+            HStack(spacing: 20) {
+                statItem(label: "Members", value: "\(group.memberIds.count)/\(group.maxMembers)")
+                statItem(label: "Visibility", value: group.isPublic ? "Public" : "Private")
+                statItem(label: "Created", value: formattedDate(group.createdAt))
+            }
+            
+            // Weekly Challenge
+            if let challenge = group.weeklyChallenge {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Recent Activity")
+                    Text("Weekly Challenge")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
                     
-                    Text(group.recentActivity)
+                    Text(challenge.title)
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.green)
                         .lineLimit(2)
                 }
             }
@@ -168,6 +269,13 @@ struct GroupCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color(.systemGray5).opacity(0.2), lineWidth: 1)
         )
+    }
+    
+    private func formattedDate(_ timestamp: FirebaseFirestore.Timestamp?) -> String {
+        guard let timestamp = timestamp else { return "Unknown" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: timestamp.dateValue())
     }
     
     private func statItem(label: String, value: String) -> some View {
@@ -185,7 +293,7 @@ struct GroupCard: View {
 }
 
 struct GroupLeaderboardCard: View {
-    let group: SoccerGroup
+    let group: Group
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -205,14 +313,9 @@ struct GroupLeaderboardCard: View {
             }
             
             VStack(spacing: 12) {
-                ForEach(Array(group.topPlayers.enumerated()), id: \.offset) { index, player in
-                    leaderboardRow(
-                        rank: index + 1,
-                        name: player.name,
-                        distance: player.weeklyDistance,
-                        isCurrentUser: player.isCurrentUser
-                    )
-                }
+                // Placeholder leaderboard since we don't have real leaderboard data yet
+                leaderboardRow(rank: 1, name: "Top Player", distance: 0.0, isCurrentUser: false)
+                leaderboardRow(rank: 2, name: "You", distance: 0.0, isCurrentUser: true)
             }
         }
         .padding(20)
@@ -321,55 +424,6 @@ struct JoinGroupView: View {
     }
 }
 
-// MARK: - Mock Data
-struct SoccerGroup: Identifiable {
-    let id = UUID()
-    let name: String
-    let memberCount: Int
-    let yourRank: Int
-    let yourWeeklyDistance: Double
-    let totalGames: Int
-    let recentActivity: String
-    let isPremium: Bool
-    let topPlayers: [GroupPlayer]
-}
-
-struct GroupPlayer {
-    let name: String
-    let weeklyDistance: Double
-    let isCurrentUser: Bool
-}
-
-let mockGroups: [SoccerGroup] = [
-    SoccerGroup(
-        name: "Austin Sunday League",
-        memberCount: 24,
-        yourRank: 3,
-        yourWeeklyDistance: 10.8,
-        totalGames: 15,
-        recentActivity: "Mike Johnson completed a game • 2h ago",
-        isPremium: true,
-        topPlayers: [
-            GroupPlayer(name: "Mike Johnson", weeklyDistance: 18.2, isCurrentUser: false),
-            GroupPlayer(name: "Sarah Chen", weeklyDistance: 16.5, isCurrentUser: false),
-            GroupPlayer(name: "You", weeklyDistance: 10.8, isCurrentUser: true)
-        ]
-    ),
-    SoccerGroup(
-        name: "Weekend Warriors",
-        memberCount: 12,
-        yourRank: 2,
-        yourWeeklyDistance: 8.5,
-        totalGames: 8,
-        recentActivity: "Emma Wilson joined the group • 1d ago",
-        isPremium: false,
-        topPlayers: [
-            GroupPlayer(name: "Alex Rodriguez", weeklyDistance: 9.2, isCurrentUser: false),
-            GroupPlayer(name: "You", weeklyDistance: 8.5, isCurrentUser: true),
-            GroupPlayer(name: "Chris Taylor", weeklyDistance: 7.9, isCurrentUser: false)
-        ]
-    )
-]
 
 #Preview {
     GroupsView()

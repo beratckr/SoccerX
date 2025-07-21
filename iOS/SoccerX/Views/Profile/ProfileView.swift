@@ -1,9 +1,11 @@
 import SwiftUI
+import Combine
 
 struct ProfileView: View {
     @EnvironmentObject var authService: AuthenticationService
     @State private var showingSettings = false
     @State private var showingEditProfile = false
+    @State private var isLoading = false
     
     var body: some View {
         NavigationView {
@@ -59,7 +61,7 @@ struct ProfileView: View {
                         .frame(width: 100, height: 100)
                     
                     if let user = authService.currentUser {
-                        Text(String(user.displayName?.first ?? "U").uppercased())
+                        Text(String(user.displayName.first ?? "U").uppercased())
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -89,32 +91,34 @@ struct ProfileView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                 
-                Text("Member since July 2024")
+                Text(memberSinceText)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
                 // Premium Badge
-                HStack(spacing: 8) {
-                    Text("PRO")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.yellow, Color.orange]),
-                                startPoint: .leading,
-                                endPoint: .trailing
+                if authService.currentUser?.isPremium == true {
+                    HStack(spacing: 8) {
+                        Text("PRO")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.yellow, Color.orange]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
                             )
-                        )
-                        .cornerRadius(12)
-                    
-                    Text("Premium Member")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                            .cornerRadius(12)
+                        
+                        Text("Premium Member")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 4)
                 }
-                .padding(.top, 4)
             }
         }
         .padding(.top, 20)
@@ -127,11 +131,19 @@ struct ProfileView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
-                statCard(icon: "figure.run", title: "Total Games", value: "47", subtitle: "This season")
-                statCard(icon: "map", title: "Total Distance", value: "245.8 km", subtitle: "All time")
-                statCard(icon: "clock", title: "Total Time", value: "52h 30m", subtitle: "Playing time")
-                statCard(icon: "flame.fill", title: "Calories", value: "24,850", subtitle: "Burned")
+            if isLoading {
+                ProgressView("Loading stats...")
+                    .foregroundColor(.white)
+                    .padding(.top, 20)
+            } else {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
+                    statCard(icon: "figure.run", title: "Total Games", value: "0", subtitle: "All time")
+                    statCard(icon: "map", title: "Total Distance", value: "0.0 km", subtitle: "All time")
+                    statCard(icon: "clock", title: "Total Time", value: "0m", subtitle: "Playing time")
+                    statCard(icon: "flame.fill", title: "Calories", value: "0", subtitle: "Burned")
+                    statCard(icon: "star.fill", title: "Avg MVP Score", value: "0", subtitle: "Average")
+                    statCard(icon: "trophy.fill", title: "Best MVP Score", value: "0", subtitle: "Personal best")
+                }
             }
         }
     }
@@ -264,6 +276,28 @@ struct ProfileView: View {
             .padding(.vertical, 12)
         }
     }
+    
+    // MARK: - Helper Methods
+    private var memberSinceText: String {
+        guard let createdAt = authService.currentUser?.createdAt else {
+            return "New member"
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return "Member since \(formatter.string(from: createdAt.dateValue()))"
+    }
+    
+    private func formatTotalTime(_ seconds: Int) -> String {
+        let hours = seconds / 3600
+        let minutes = (seconds % 3600) / 60
+        
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+    
 }
 
 // MARK: - Placeholder Views
