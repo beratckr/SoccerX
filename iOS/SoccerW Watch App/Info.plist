@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleName</key>
+    <string>SoccerW</string>
+    <key>CFBundleDisplayName</key>
+    <string>SoccerX</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>SoccerX needs your location to track your distance and route during soccer games.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>SoccerX needs your location to continue tracking your soccer game in the background.</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>SoccerX reads your heart rate and workout data to provide performance insights during soccer games.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>SoccerX saves your soccer workouts to the Health app to track your fitness progress.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+        <string>workout-processing</string>
+    </array>
+    <key>WKBackgroundModes</key>
+    <array>
+        <string>workout-processing</string>
+    </array>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>com.soccerx.watch.refresh</string>
+        <string>com.soccerx.watch.process</string>
+    </array>
+    <key>WKApplication</key>
+    <true/>
+    <key>WKCompanionAppBundleIdentifier</key>
+    <string>com.soccerx.app</string>
+</dict>
+</plist>

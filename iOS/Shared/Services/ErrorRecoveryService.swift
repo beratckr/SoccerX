@@ -12,7 +12,7 @@ class ErrorRecoveryService: ObservableObject {
     @Published var recoveryHistory: [RecoveryResult] = []
     
     private let logger = Logger(subsystem: "com.soccerx.app", category: "ErrorRecovery")
-    private let connectivityManager = WatchConnectivityManager.shared
+    private let connectivityManager = SharedWatchConnectivityManager.shared
     private let offlineQueue = OfflineDataQueue.shared
     private let optimizationEngine = SyncOptimizationEngine.shared
     private var cancellables = Set<AnyCancellable>()
@@ -59,7 +59,7 @@ class ErrorRecoveryService: ObservableObject {
     
     // MARK: - Error Handlers
     
-    private func handleConnectivityError(_ error: WatchConnectivityManager.SyncError) {
+    private func handleConnectivityError(_ error: SharedWatchConnectivityManager.SyncError) {
         logger.warning("Connectivity error detected: \(error.localizedDescription)")
         
         switch error {
@@ -78,6 +78,18 @@ class ErrorRecoveryService: ObservableObject {
             
         case .transferLimitExceeded:
             addRecoveryAction(.reduceTransferSize)
+            
+        case .notReachable:
+            addRecoveryAction(.checkConnectionHealth)
+            
+        case .transferFailed:
+            addRecoveryAction(.retryFailedMessages)
+            
+        case .messageTimeout:
+            addRecoveryAction(.retryFailedMessages)
+            
+        case .invalidData:
+            addRecoveryAction(.clearCorruptedData)
         }
     }
     
@@ -350,7 +362,7 @@ class ErrorRecoveryService: ObservableObject {
     func executeAutoRecovery() async {
         guard !isRecovering, !recoveryActions.isEmpty else { return }
         
-        logger.info("Starting auto recovery with \(recoveryActions.count) actions")
+        logger.info("Starting auto recovery with \(self.recoveryActions.count) actions")
         
         // Execute high priority actions automatically
         let highPriorityActions = recoveryActions.filter { 
@@ -512,11 +524,23 @@ struct RecoveryAction: Identifiable {
 }
 
 struct RecoveryResult: Codable {
-    let actionType: RecoveryActionType
+    let actionType: String // Store as String for Codable
     let success: Bool
     let error: String?
     let duration: TimeInterval
     let timestamp: Date
+    
+    init(actionType: RecoveryActionType, success: Bool, error: String?, duration: TimeInterval, timestamp: Date = Date()) {
+        self.actionType = actionType.rawValue
+        self.success = success
+        self.error = error
+        self.duration = duration
+        self.timestamp = timestamp
+    }
+    
+    var actionTypeEnum: RecoveryActionType? {
+        RecoveryActionType(rawValue: actionType)
+    }
 }
 
 struct RecoveryStatus {

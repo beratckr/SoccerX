@@ -9,7 +9,7 @@ class RealTimeDataTransfer: ObservableObject {
     @Published var connectionQuality: ConnectionQuality = .none
     @Published var isTransferring = false
     
-    private let connectivityManager = WatchConnectivityManager.shared
+    private let connectivityManager = SharedWatchConnectivityManager.shared
     private let logger = Logger(subsystem: "com.soccerx.app", category: "RealTimeTransfer")
     private var cancellables = Set<AnyCancellable>()
     private var transferTimer: Timer?
@@ -47,7 +47,7 @@ class RealTimeDataTransfer: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func updateConnectionQuality(for state: WatchConnectivityManager.ConnectionState) {
+    private func updateConnectionQuality(for state: SharedWatchConnectivityManager.ConnectionState) {
         switch state {
         case .reachable:
             connectionQuality = .excellent
@@ -55,7 +55,9 @@ class RealTimeDataTransfer: ObservableObject {
             connectionQuality = .good
         case .notReachable:
             connectionQuality = .poor
-        case .notActivated:
+        case .notActivated, .activating:
+            connectionQuality = .none
+        case .failed:
             connectionQuality = .none
         }
     }
@@ -192,12 +194,15 @@ class RealTimeDataTransfer: ObservableObject {
         
         do {
             // Send bulk data using the connectivity manager
+            // Note: The sendBulkData method is async but also uses a completion handler
+            // We'll await it and handle the result inline
             try await connectivityManager.sendBulkData(
                 type: .bulkData,
                 data: gameData,
-                priority: .medium,
+                priority: .normal,
                 compress: true
             ) { [weak self] result in
+                // This completion handler will be called by sendBulkData
                 Task { @MainActor in
                     self?.handleBulkTransferCompletion(transferId: transferId, result: result)
                 }
@@ -239,9 +244,9 @@ class RealTimeDataTransfer: ObservableObject {
     
     private func sendRealTimeMessage(
         transferId: String,
-        type: WatchConnectivityManager.MessageType,
+        type: SharedWatchConnectivityManager.MessageType,
         payload: [String: Any],
-        priority: MessagePriority,
+        priority: SharedWatchConnectivityManager.MessagePriority,
         timeout: TimeInterval
     ) async throws {
         
@@ -249,7 +254,7 @@ class RealTimeDataTransfer: ObservableObject {
         let session = TransferSession(
             id: transferId,
             type: type,
-            priority: SyncPriority(rawValue: priority.rawValue) ?? .medium,
+            priority: convertMessagePriorityToSyncPriority(priority),
             totalSize: estimatePayloadSize(payload),
             startTime: Date()
         )
@@ -392,6 +397,19 @@ class RealTimeDataTransfer: ObservableObject {
         return try JSONEncoder().encode(Array(dataPoints))
     }
     
+    private func convertMessagePriorityToSyncPriority(_ priority: SharedWatchConnectivityManager.MessagePriority) -> SyncPriority {
+        switch priority {
+        case .critical:
+            return .critical
+        case .high:
+            return .high
+        case .normal:
+            return .medium
+        case .low:
+            return .low
+        }
+    }
+    
     // MARK: - Cleanup
     
     deinit {
@@ -404,7 +422,7 @@ class RealTimeDataTransfer: ObservableObject {
 
 struct TransferSession {
     let id: String
-    let type: WatchConnectivityManager.MessageType
+    let type: SharedWatchConnectivityManager.MessageType
     let priority: SyncPriority
     let totalSize: Int
     let startTime: Date

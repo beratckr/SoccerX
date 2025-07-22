@@ -48,17 +48,14 @@ enum RepositoryError: Error, LocalizedError {
 
 // Base repository implementation
 class BaseRepository<T: Codable & Identifiable> {
-    let db: Firestore
+    lazy var db: Firestore = {
+        return Firestore.firestore()
+    }()
     let collectionPath: String
     
     init(collectionPath: String) {
-        self.db = Firestore.firestore()
         self.collectionPath = collectionPath
-        
-        // Configure offline persistence
-        let settings = FirestoreSettings()
-        settings.cacheSettings = PersistentCacheSettings(sizeBytes: FirestoreCacheSizeUnlimited as NSNumber)
-        db.settings = settings
+        // Don't configure settings here - let Firebase handle it once
     }
     
     var collection: CollectionReference {

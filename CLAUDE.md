@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SoccerX is a soccer tracking application with iOS native app and Apple Watch companion app, backed by a serverless backend. The project is currently in the initial setup phase with folder structure created but no source code implemented yet.
+SoccerX is a soccer tracking application with iOS native app and Apple Watch companion app, backed by a serverless Firebase backend. The project has a complete backend implementation and iOS/watchOS apps with core features implemented.
 
 ## Project Structure
 
@@ -51,9 +51,11 @@ This is a multi-platform project with three main components:
 cd Backend/functions
 npm install                    # Install dependencies
 npm run build                  # Compile TypeScript
-npm run serve                  # Start Firebase emulators
+npm run serve                  # Build and start Firebase emulators
+npm run shell                  # Build and start Firebase functions shell
 npm run deploy                 # Deploy to Firebase
-npm test                       # Run tests
+npm run logs                   # View Firebase function logs
+npm test                       # Run Jest tests
 ```
 
 ### Firebase Emulator Suite
@@ -61,14 +63,28 @@ npm test                       # Run tests
 cd Backend
 firebase emulators:start       # Start all emulators
 firebase emulators:start --only functions,firestore  # Start specific emulators
+./start-emulators.sh           # Convenience script with proper environment
+
+# Emulator ports:
+# - Auth: 9099
+# - Functions: 5001
+# - Firestore: 8080
+# - Storage: 9199
+# - UI: 4000
 ```
 
 ### iOS Development
-⚠️ **To be set up**: Xcode project needs to be initialized
 ```bash
-# After Xcode project is created:
-xcodebuild -scheme SoccerX -destination 'platform=iOS Simulator,name=iPhone 15' build
-xcodebuild test -scheme SoccerX -destination 'platform=iOS Simulator,name=iPhone 15'
+cd iOS
+./build.sh                # Build iOS app for simulator
+./resolve-dependencies.sh # Resolve Swift Package Manager dependencies
+
+# Direct Xcode commands:
+xcodebuild -workspace SoccerX.xcworkspace -scheme SoccerX clean build
+xcodebuild -workspace SoccerX.xcworkspace -scheme SoccerX -destination 'platform=iOS Simulator,name=iPhone 15' test
+
+# Run specific test:
+xcodebuild test -workspace SoccerX.xcworkspace -scheme SoccerX -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:SoccerXTests/GroupManagerTests
 ```
 
 ## UI/UX Design Reference
@@ -94,11 +110,13 @@ These HTML mockups demonstrate the intended user experience and should be refere
 
 ### Chosen Technologies
 - **Backend**: Firebase (Functions, Firestore, Auth, Storage, Messaging)
-- **iOS Development**: SwiftUI + Combine + Core Data
-- **Apple Watch**: WatchKit + WatchConnectivity
-- **Language**: TypeScript (backend), Swift (iOS)
+- **iOS Development**: SwiftUI + Combine (no Core Data - using Firebase)
+- **Apple Watch**: SwiftUI + WatchConnectivity + HealthKit
+- **Language**: TypeScript (backend), Swift 5.9+ (iOS)
 - **Real-time**: Firestore real-time listeners
 - **Push Notifications**: Firebase Cloud Messaging (FCM)
+- **Authentication**: Sign in with Apple + Firebase Auth
+- **Minimum Versions**: iOS 17.0, watchOS 10.0
 
 ### Backend Implementation Status ✅
 - Firebase Functions with TypeScript configured
@@ -110,31 +128,79 @@ These HTML mockups demonstrate the intended user experience and should be refere
 ## Key Implementation Notes
 
 - **Backend Complete**: Firebase Functions backend fully implemented with TypeScript
-- **iOS project pending**: Xcode project needs to be initialized  
+- **iOS/watchOS Implemented**: Both apps created with core features (auth, groups, tracking)
 - **Real-time features**: Live game tracking with Firestore listeners
-- **Design system**: UI mockups show dark theme with modern iOS design patterns
-- **Multi-platform**: Shared models between iOS and watchOS through Firebase SDK
-- **Offline support**: Firestore provides automatic offline sync
+- **Design system**: Dark theme with custom components (badges, cards, animations)
+- **Multi-platform**: Shared models and WatchConnectivity for iPhone-Watch sync
+- **Offline support**: Queue system for up to 7 days of offline data
+- **Architecture**: MVVM with repositories and service layer
 
-## Next Development Steps
+## High-Level Architecture
 
-1. **Initialize Xcode project** with iOS and watchOS targets
-2. **Install Firebase iOS SDK** and configure authentication
-3. **Create Swift data models** that match TypeScript backend types
-4. **Implement authentication flow** using Firebase Auth
-5. **Set up real-time listeners** for live game updates
-6. **Implement core UI screens** based on mockup designs
-7. **Add Apple Watch companion app** for game tracking
-8. **Set up push notifications** with FCM
-9. **Test end-to-end flow** with Firebase emulators
+### Data Flow and Synchronization
+1. **Game Tracking Flow**: Watch App → iPhone App → Firebase Backend → Group Members
+2. **Authentication**: Sign in with Apple → Firebase Auth → User Profile Creation
+3. **Real-time Updates**: Firestore Listeners → Combine Publishers → SwiftUI Views
+4. **Offline Queue**: Local storage → Priority-based sync → Batch upload when online
+
+### Key Service Interactions
+- **GroupManager**: Handles group creation, invites, member management, and statistics
+- **LeaderboardManager**: Calculates rankings, fetches game stats, manages timeframes
+- **AuthenticationService**: Manages Sign in with Apple and Firebase Auth integration
+- **WatchConnectivityService**: Bidirectional communication between iPhone and Watch
+
+### Repository Pattern Implementation
+- `BaseRepository<T>`: Generic CRUD operations with Firestore
+- Model repositories inherit and add specific queries
+- All repositories return Combine publishers for reactive updates
+- Error handling through `RepositoryError` enum
+
+## Testing
+
+### Backend Testing
+- Run tests: `npm test` in Backend/functions
+- Framework: Jest with TypeScript
+
+### iOS Testing
+- Test plan: `SoccerXTestPlan.xctestplan`
+- Categories: Models, Services, ViewModels, Bug Detection
+- Configuration: Code coverage and thread sanitizer enabled
+- Environment: Uses Firebase emulator when FIREBASE_EMULATOR env is set
+
+## Common Development Tasks
+
+### Adding a New Feature
+1. **Backend**: Add service method in `Backend/functions/src/services/`
+2. **iOS Model**: Create/update model in `iOS/SoccerX/Models/`
+3. **Repository**: Add repository method in `iOS/SoccerX/Repositories/`
+4. **Service/Manager**: Update relevant service in `iOS/SoccerX/Services/`
+5. **ViewModel**: Create/update ViewModel in `iOS/SoccerX/ViewModels/`
+6. **View**: Implement UI in `iOS/SoccerX/Views/`
+
+### Running with Firebase Emulator
+```bash
+# Terminal 1: Start emulators
+cd Backend && firebase emulators:start
+
+# Terminal 2: Run iOS app with emulator
+export FIREBASE_EMULATOR=true
+open iOS/SoccerX.xcworkspace
+# Run in Xcode with environment variable set
+```
+
+### Debugging Watch Connectivity
+1. Run both iPhone and Watch simulators
+2. Check `WatchConnectivityService` logs in console
+3. Use `activationState` and `isReachable` properties
+4. Test with Manual Testing Guide in `iOS/SoccerXWatch/MANUAL_TESTING_GUIDE.md`
 
 ## Firebase Configuration
 
 ### Required Environment Setup
 1. Install Firebase CLI: `npm install -g firebase-tools`
 2. Login to Firebase: `firebase login`
-3. Create Firebase project: `firebase projects:create soccerx-app`
-4. Initialize project: `firebase init` (select Functions, Firestore, Storage)
+3. Use existing project: `firebase use soccerx-app`
+4. GoogleService-Info.plist already included in iOS project
 
 ### Backend Services Available
 - **Authentication**: User signup/login with email/password and social providers
@@ -152,4 +218,11 @@ These HTML mockups demonstrate the intended user experience and should be refere
 - NEVER proactively create documentation files (\*.md) or README files
 - ALWAYS check task complexity from taskmaster. If tasks complexity is ≥7 ultrathink
 - NEVER commit files unless explicitly requested by the User
-- **For commands and development setup, read** : `ai_context.md`
+- **For detailed architecture and specifications, read**: `ai_context.md`
+- **For comprehensive technical documentation including**:
+  - Complete database schema and data models
+  - MVP score calculation algorithm
+  - Performance requirements and benchmarks
+  - Synchronization architecture details
+  - Security rules and authentication flow
+  - Deployment strategy and phases

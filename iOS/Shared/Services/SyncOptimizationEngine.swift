@@ -11,7 +11,15 @@ class SyncOptimizationEngine: ObservableObject {
     @Published var bandwidth: Bandwidth = .unknown
     @Published var compressionRatio: Double = 0
     @Published var dataUsage: DataUsage = DataUsage()
-    @Published var syncRules: SyncRules = SyncRules()
+    @Published var syncRules: SyncRules = SyncRules(
+        allowBulkTransfer: true,
+        allowHighResolutionData: true,
+        allowBackgroundSync: true,
+        maxBatchSize: 100,
+        compressionEnabled: true,
+        maxTransferSize: 10 * 1024 * 1024, // 10MB
+        priorityThreshold: .medium
+    )
     @Published var optimizationLevel: OptimizationLevel = .balanced
     
     private let logger = Logger(subsystem: "com.soccerx.app", category: "SyncOptimization")
@@ -66,7 +74,7 @@ class SyncOptimizationEngine: ObservableObject {
         // Update sync rules based on connection
         updateSyncRulesForConnection()
         
-        logger.info("Connection updated: \(connectionType.rawValue), satisfied: \(path.status == .satisfied)")
+        logger.info("Connection updated: \(self.connectionType.rawValue), satisfied: \(path.status == .satisfied)")
     }
     
     private func updateSyncRulesForConnection() {
@@ -111,7 +119,7 @@ class SyncOptimizationEngine: ObservableObject {
     
     // MARK: - Data Compression
     
-    func compressData(_ data: Data, algorithm: CompressionAlgorithm = .zlib) async throws -> CompressedData {
+    func compressData(_ data: Data, algorithm: SyncCompressionAlgorithm = .zlib) async throws -> CompressedData {
         let startTime = Date()
         let originalSize = data.count
         
@@ -325,13 +333,13 @@ class SyncOptimizationEngine: ObservableObject {
     func shouldAllowTransfer(size: Int, priority: SyncPriority) -> Bool {
         // Check size limits
         guard size <= syncRules.maxTransferSize else {
-            logger.warning("Transfer blocked: size \(size) exceeds limit \(syncRules.maxTransferSize)")
+            logger.warning("Transfer blocked: size \(size) exceeds limit \(self.syncRules.maxTransferSize)")
             return false
         }
         
         // Check priority threshold
         guard priority >= syncRules.priorityThreshold else {
-            logger.debug("Transfer blocked: priority \(priority.rawValue) below threshold \(syncRules.priorityThreshold.rawValue)")
+            logger.debug("Transfer blocked: priority \(priority.rawValue) below threshold \(self.syncRules.priorityThreshold.rawValue)")
             return false
         }
         
@@ -441,7 +449,7 @@ class SyncOptimizationEngine: ObservableObject {
         var recommendations: [OptimizationRecommendation] = []
         
         // Check connection type
-        if connectionType == .cellular && dataUsage.cellularUsageToday > dataUsage.cellularDailyLimit * 0.8 {
+        if connectionType == .cellular && dataUsage.cellularUsageToday > Int64(Double(dataUsage.cellularDailyLimit) * 0.8) {
             recommendations.append(.reduceCellularUsage)
         }
         
@@ -547,7 +555,7 @@ enum OptimizationLevel: String, CaseIterable {
     case performance = "Performance"
 }
 
-enum CompressionAlgorithm: String, CaseIterable {
+enum SyncCompressionAlgorithm: String, CaseIterable {
     case zlib = "ZLIB"
     case lz4 = "LZ4"
     case adaptive = "Adaptive"
@@ -555,7 +563,7 @@ enum CompressionAlgorithm: String, CaseIterable {
 
 struct CompressedData {
     let data: Data
-    let algorithm: CompressionAlgorithm
+    let algorithm: SyncCompressionAlgorithm
     let originalSize: Int
     let compressedSize: Int
     let checksum: String
@@ -578,7 +586,7 @@ enum CompressionError: LocalizedError {
 }
 
 struct CompressionResult {
-    let algorithm: CompressionAlgorithm
+    let algorithm: SyncCompressionAlgorithm
     let originalSize: Int
     let compressedSize: Int
     let ratio: Double
@@ -619,5 +627,13 @@ struct CompressionStats {
         totalCompressedBytes = 0
         averageRatio = 0
         spaceSaved = 0
+    }
+    
+    init(totalCompressions: Int, totalOriginalBytes: Int, totalCompressedBytes: Int, averageRatio: Double, spaceSaved: Int) {
+        self.totalCompressions = totalCompressions
+        self.totalOriginalBytes = totalOriginalBytes
+        self.totalCompressedBytes = totalCompressedBytes
+        self.averageRatio = averageRatio
+        self.spaceSaved = spaceSaved
     }
 }

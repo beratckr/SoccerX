@@ -13,6 +13,8 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     @Published var pendingMessages: Int = 0
     @Published var transferProgress: Double = 0
     @Published var syncError: SyncError?
+    @Published var activeGameSession: ActiveGameSession?
+    @Published var latestGameStats: GameStats?
     
     private let session = WCSession.default
     private let logger = Logger(subsystem: "com.soccerx.app", category: "WatchConnectivity")
@@ -31,6 +33,10 @@ class WatchConnectivityManager: NSObject, ObservableObject {
         case gameUpdate = "game_update"
         case syncRequest = "sync_request"
         case syncResponse = "sync_response"
+        case trackingStateUpdate = "trackingStateUpdate"
+        case gameSessionUpdate = "gameSessionUpdate"
+        case gameDataPoint = "gameDataPoint"
+        case gameCompleted = "gameCompleted"
     }
     
     enum MessagePriority: Int, CaseIterable {
@@ -61,6 +67,63 @@ class WatchConnectivityManager: NSObject, ObservableObject {
                 return "Apple Watch not paired"
             }
         }
+    }
+    
+    struct ActiveGameSession {
+        let id: String
+        let startTime: Date
+        var distance: Double
+        var calories: Double
+        var avgHeartRate: Int
+        var maxHeartRate: Int
+        var avgSpeed: Double
+        var maxSpeed: Double
+        var duration: TimeInterval
+        var dataPoints: [GameDataPoint] = []
+        
+        init(from message: [String: Any]) {
+            self.id = message["sessionId"] as? String ?? UUID().uuidString
+            self.startTime = Date(timeIntervalSince1970: message["startTime"] as? TimeInterval ?? Date().timeIntervalSince1970)
+            self.distance = message["distance"] as? Double ?? 0
+            self.calories = message["calories"] as? Double ?? 0
+            self.avgHeartRate = message["avgHeartRate"] as? Int ?? 0
+            self.maxHeartRate = message["maxHeartRate"] as? Int ?? 0
+            self.avgSpeed = message["avgSpeed"] as? Double ?? 0
+            self.maxSpeed = message["maxSpeed"] as? Double ?? 0
+            self.duration = message["duration"] as? TimeInterval ?? 0
+        }
+    }
+    
+    struct GameDataPoint {
+        let timestamp: Date
+        let heartRate: Int
+        let speed: Double
+        let distance: Double
+        let calories: Double
+        let altitude: Double
+        let latitude: Double
+        let longitude: Double
+        
+        init(from message: [String: Any]) {
+            self.timestamp = Date(timeIntervalSince1970: message["timestamp"] as? TimeInterval ?? Date().timeIntervalSince1970)
+            self.heartRate = message["heartRate"] as? Int ?? 0
+            self.speed = message["speed"] as? Double ?? 0
+            self.distance = message["distance"] as? Double ?? 0
+            self.calories = message["calories"] as? Double ?? 0
+            self.altitude = message["altitude"] as? Double ?? 0
+            self.latitude = message["latitude"] as? Double ?? 0
+            self.longitude = message["longitude"] as? Double ?? 0
+        }
+    }
+    
+    struct GameStats {
+        let distance: Double
+        let duration: Int
+        let avgSpeed: Double
+        let maxSpeed: Double
+        let calories: Int
+        let avgHeartRate: Int
+        let maxHeartRate: Int
     }
     
     private override init() {
@@ -257,8 +320,21 @@ extension WatchConnectivityManager: @preconcurrency WCSessionDelegate {
                 self.handleSyncResponse(message)
             case .gameUpdate:
                 self.handleGameUpdate(message)
+            case .trackingStateUpdate:
+                self.handleTrackingStateUpdate(message)
+            case .gameSessionUpdate:
+                self.handleGameSessionUpdate(message)
+            case .gameDataPoint:
+                self.handleGameDataPoint(message)
+            case .gameCompleted:
+                self.handleGameCompleted(message)
             default:
-                self.logger.debug("Received message of type: \(messageType.rawValue)")
+                // Handle non-enum message types
+                if let type = message["type"] as? String, type == "pendingGameData" {
+                    self.handlePendingGameData(message)
+                } else {
+                    self.logger.debug("Received message of type: \(messageType.rawValue)")
+                }
             }
             
             self.lastSyncTime = Date()
@@ -278,6 +354,137 @@ extension WatchConnectivityManager: @preconcurrency WCSessionDelegate {
         
         logger.debug("Received game update for: \(gameId)")
         // Process game update here
+    }
+    
+    private func handleTrackingStateUpdate(_ message: [String: Any]) {
+        if let state = message["state"] as? String {
+            logger.info("Watch tracking state: \(state)")
+            // Update UI or send notifications based on state
+            NotificationCenter.default.post(
+                name: Notification.Name("WatchTrackingStateChanged"),
+                object: nil,
+                userInfo: ["state": state]
+            )
+        }
+    }
+    
+    private func handleGameSessionUpdate(_ message: [String: Any]) {
+        activeGameSession = ActiveGameSession(from: message)
+        logger.info("Game session updated: \(self.activeGameSession?.id ?? "unknown")")
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(
+            name: Notification.Name("ActiveGameSessionUpdated"),
+            object: nil,
+            userInfo: ["session": activeGameSession as Any]
+        )
+    }
+    
+    private func handleGameDataPoint(_ message: [String: Any]) {
+        let dataPoint = GameDataPoint(from: message)
+        activeGameSession?.dataPoints.append(dataPoint)
+        
+        // Update real-time stats
+        if let session = activeGameSession {
+            updateRealTimeStats(with: dataPoint, session: session)
+        }
+        
+        logger.debug("Game data point received")
+    }
+    
+    private func handleGameCompleted(_ message: [String: Any]) {
+        guard let sessionId = message["sessionId"] as? String,
+              let sessionDataString = message["sessionData"] as? String,
+              let sessionData = Data(base64Encoded: sessionDataString) else {
+            logger.error("Invalid game completed message format")
+            return
+        }
+        
+        // Process completed game
+        processCompletedGame(sessionId: sessionId, data: sessionData)
+        
+        // Clear active session
+        activeGameSession = nil
+        
+        logger.info("Game completed: \(sessionId)")
+    }
+    
+    private func updateRealTimeStats(with dataPoint: GameDataPoint, session: ActiveGameSession) {
+        // Update session with latest data
+        activeGameSession?.distance = dataPoint.distance
+        activeGameSession?.calories = dataPoint.calories
+        
+        // Update heart rate stats
+        if dataPoint.heartRate > 0 {
+            if dataPoint.heartRate > session.maxHeartRate {
+                activeGameSession?.maxHeartRate = dataPoint.heartRate
+            }
+        }
+        
+        // Update speed stats
+        if dataPoint.speed > session.maxSpeed {
+            activeGameSession?.maxSpeed = dataPoint.speed
+        }
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(
+            name: Notification.Name("GameDataPointReceived"),
+            object: nil,
+            userInfo: ["dataPoint": dataPoint]
+        )
+    }
+    
+    private func processCompletedGame(sessionId: String, data: Data) {
+        // Decode session data
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            // Here you would decode and save to Core Data or Firebase
+            
+            // Update latest game stats
+            if let session = activeGameSession {
+                latestGameStats = GameStats(
+                    distance: session.distance,
+                    duration: Int(session.duration),
+                    avgSpeed: session.avgSpeed,
+                    maxSpeed: session.maxSpeed,
+                    calories: Int(session.calories),
+                    avgHeartRate: session.avgHeartRate,
+                    maxHeartRate: session.maxHeartRate
+                )
+            }
+            
+            // Post notification
+            NotificationCenter.default.post(
+                name: Notification.Name("GameCompleted"),
+                object: nil,
+                userInfo: ["sessionId": sessionId, "stats": latestGameStats as Any]
+            )
+        } catch {
+            logger.error("Error decoding completed game session: \(error)")
+        }
+    }
+    
+    private func handlePendingGameData(_ message: [String: Any]) {
+        guard let dataString = message["data"] as? String,
+              let data = Data(base64Encoded: dataString) else {
+            logger.error("Invalid pending game data format")
+            return
+        }
+        
+        // Save pending data using persistence manager
+        do {
+            let sessionId = UUID().uuidString // Generate new ID for pending data
+            try GameDataPersistenceManager.shared.savePendingGameData(data, sessionId: sessionId)
+            logger.info("Saved pending game data for later sync")
+            
+            // Trigger sync attempt
+            Task {
+                await GameDataPersistenceManager.shared.syncPendingData()
+            }
+        } catch {
+            logger.error("Failed to save pending game data: \(error)")
+        }
     }
 }
 

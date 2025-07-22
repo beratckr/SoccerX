@@ -14,7 +14,7 @@ class OfflineDataQueue: ObservableObject {
     @Published var queueHealth: QueueHealth = .healthy
     
     private let logger = Logger(subsystem: "com.soccerx.app", category: "OfflineQueue")
-    private let connectivityManager = WatchConnectivityManager.shared
+    private let connectivityManager = SharedWatchConnectivityManager.shared
     private let realTimeTransfer = RealTimeDataTransfer()
     private var cancellables = Set<AnyCancellable>()
     private var processingTimer: Timer?
@@ -46,7 +46,7 @@ class OfflineDataQueue: ObservableObject {
     private func setupQueueDirectory() {
         do {
             try fileManager.createDirectory(at: queueDirectory, withIntermediateDirectories: true)
-            logger.info("Queue directory initialized: \(queueDirectory.path)")
+            logger.info("Queue directory initialized: \(self.queueDirectory.path)")
         } catch {
             logger.error("Failed to create queue directory: \(error.localizedDescription)")
         }
@@ -66,7 +66,7 @@ class OfflineDataQueue: ObservableObject {
             sortQueue()
             updateQueueMetrics()
             
-            logger.info("Loaded \(queuedItems.count) items from disk")
+            logger.info("Loaded \(self.queuedItems.count) items from disk")
             
         } catch {
             logger.error("Failed to load queue from disk: \(error.localizedDescription)")
@@ -106,7 +106,7 @@ class OfflineDataQueue: ObservableObject {
         // Monitor connection state
         connectivityManager.$connectionState
             .sink { [weak self] state in
-                if state == .reachable {
+                if state == .reachable || state == .activated {
                     self?.startProcessingIfNeeded()
                 }
             }
@@ -125,7 +125,7 @@ class OfflineDataQueue: ObservableObject {
     // MARK: - Queue Operations
     
     func enqueue<T: Codable>(
-        messageType: WatchConnectivityManager.MessageType,
+        messageType: SharedWatchConnectivityManager.MessageType,
         data: T,
         priority: SyncPriority = .medium
     ) async throws {
@@ -194,7 +194,7 @@ class OfflineDataQueue: ObservableObject {
         isProcessing = true
         processingProgress = 0
         
-        logger.info("Starting queue processing with \(queuedItems.count) items")
+        logger.info("Starting queue processing with \(self.queuedItems.count) items")
         
         do {
             await processQueueBatch()
@@ -253,7 +253,7 @@ class OfflineDataQueue: ObservableObject {
     }
     
     private func processQueueItem(_ item: SyncQueueItem) async throws {
-        logger.debug("Processing queue item: \(item.messageType.rawValue)")
+        logger.debug("Processing queue item: \(item.messageType)")
         
         // Decode payload
         let payload = try JSONSerialization.jsonObject(with: item.payload) as? [String: Any]
@@ -261,10 +261,23 @@ class OfflineDataQueue: ObservableObject {
         
         // Send via connectivity manager
         return try await withCheckedThrowingContinuation { continuation in
+            // Convert SyncPriority to MessagePriority
+            let messagePriority: SharedWatchConnectivityManager.MessagePriority
+            switch item.priority {
+            case .critical:
+                messagePriority = .critical
+            case .high:
+                messagePriority = .high
+            case .medium:
+                messagePriority = .normal
+            case .low:
+                messagePriority = .low
+            }
+            
             connectivityManager.sendMessage(
-                type: item.messageType,
+                type: item.messageTypeEnum ?? .syncRequest,
                 payload: payload,
-                priority: MessagePriority(rawValue: item.priority.rawValue) ?? .medium,
+                priority: messagePriority,
                 replyHandler: { _ in
                     continuation.resume()
                 },
@@ -285,7 +298,7 @@ class OfflineDataQueue: ObservableObject {
         await removeQueueItemFromDisk(item)
         
         updateQueueMetrics()
-        logger.debug("Successfully processed item: \(item.messageType.rawValue)")
+        logger.debug("Successfully processed item: \(item.messageType)")
     }
     
     private func handleItemFailure(_ item: SyncQueueItem, error: Error) async {
@@ -299,7 +312,7 @@ class OfflineDataQueue: ObservableObject {
             // Max retries reached - remove from queue
             queuedItems.remove(at: index)
             await removeQueueItemFromDisk(item)
-            logger.warning("Item failed permanently: \(item.messageType.rawValue) (attempts: \(updatedItem.retryCount))")
+            logger.warning("Item failed permanently: \(item.messageType) (attempts: \(updatedItem.retryCount))")
         } else {
             // Update item for retry
             updatedItem.syncStatus = .failed
@@ -308,7 +321,7 @@ class OfflineDataQueue: ObservableObject {
             // Save updated item to disk
             do {
                 try await saveQueueItem(updatedItem)
-                logger.info("Item scheduled for retry: \(item.messageType.rawValue) (attempt \(updatedItem.retryCount)/\(maxRetryAttempts))")
+                logger.info("Item scheduled for retry: \(item.messageType) (attempt \(updatedItem.retryCount)/\(self.maxRetryAttempts))")
             } catch {
                 logger.error("Failed to save retry item: \(error.localizedDescription)")
             }

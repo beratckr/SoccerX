@@ -781,11 +781,296 @@
             "testStrategy": ""
           }
         ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Watch App UI and Navigation",
+        "description": "Create the complete Watch app UI with proper navigation between screens",
+        "details": "Build the Watch app user interface following the UI mockups provided. Create HomeView with large green Start button. Implement ActiveGameView showing real-time stats (duration, distance, heart rate, speed). Add pause/stop controls with confirmation dialogs. Create navigation flow between screens using NavigationStack. Implement GameSummaryView for post-game statistics. Add proper SwiftUI animations and haptic feedback. Configure background modes for continuous tracking.",
+        "testStrategy": "Test UI on physical Apple Watch device. Verify navigation flow matches mockups. Test button interactions and confirmations. Validate background mode continues tracking. Test UI responsiveness during active tracking.",
+        "priority": "high",
+        "dependencies": [1],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create HomeView with Start button",
+            "description": "Implement the main home screen with large green Start button following the UI mockup design",
+            "dependencies": [],
+            "details": "Create HomeView.swift with large circular green Start button (160x160 points). Add app icon and title at top. Display last game summary stats (distance, duration, MVP score). Add History and Settings quick action buttons at bottom. Implement connection status indicator showing iPhone connectivity. Add haptic feedback on button press. Use radial gradient background for Start button. Add pulse animation to Start button.",
+            "status": "pending",
+            "testStrategy": "Verify Start button is prominently displayed and easily tappable. Test haptic feedback works on button press. Validate last game stats display correctly. Test connection indicator updates properly."
+          },
+          {
+            "id": 2,
+            "title": "Create ActiveGameView for tracking",
+            "description": "Build the active game screen with real-time stats display showing duration, distance, heart rate, and speed",
+            "dependencies": [],
+            "details": "Create ActiveGameView.swift with main duration timer at top. Implement stats grid showing distance (km), heart rate (bpm), and speed (km/h). Add heart rate zone indicator with color coding. Create pause and stop buttons with proper spacing. Implement swipe gesture to switch between different stat views. Add GPS signal strength indicator. Show real-time updates with smooth animations. Add water lock mode to prevent accidental touches.",
+            "status": "pending",
+            "testStrategy": "Test real-time stat updates during active tracking. Verify swipe gestures work between views. Test pause/stop button functionality. Validate water lock prevents accidental input."
+          },
+          {
+            "id": 3,
+            "title": "Implement navigation flow",
+            "description": "Set up proper navigation between screens using NavigationStack and handle state transitions",
+            "dependencies": [1, 2],
+            "details": "Configure NavigationStack in main app file. Implement navigation from HomeView to ActiveGameView on Start press. Add navigation to GameSummaryView when game stops. Create proper back navigation with confirmations during active game. Implement deep linking support for notifications. Handle app state restoration. Add transition animations between views. Manage navigation state in ViewModel.",
+            "status": "pending",
+            "testStrategy": "Test navigation flow from home through game to summary. Verify back navigation shows proper warnings. Test state restoration after app termination. Validate deep linking works correctly."
+          },
+          {
+            "id": 4,
+            "title": "Add pause/stop controls",
+            "description": "Implement pause and stop functionality with confirmation dialogs to prevent accidental game ending",
+            "dependencies": [2],
+            "details": "Create pause functionality that suspends tracking but maintains session. Implement stop confirmation requiring double-tap or swipe gesture. Add resume button when game is paused with countdown timer. Create confirmation alert for stop action. Implement auto-pause on low battery (< 10%). Add haptic feedback for all control actions. Save partial game data during pause. Handle pause state in background mode.",
+            "status": "pending",
+            "testStrategy": "Test pause actually suspends GPS and sensor tracking. Verify stop confirmation prevents accidental ending. Test resume functionality maintains data continuity. Validate auto-pause on low battery."
+          },
+          {
+            "id": 5,
+            "title": "Create GameSummaryView",
+            "description": "Build the post-game summary screen showing final statistics and achievements",
+            "dependencies": [],
+            "details": "Create GameSummaryView.swift displaying final game stats. Show MVP score prominently with circular progress indicator. Display key metrics: total distance, duration, avg/max speed, calories burned. Add achievement unlocks if any. Show comparison to personal best. Add Share button for social sharing. Implement Save button to confirm game storage. Add option to start new game immediately. Include mini heat map of movement.",
+            "status": "pending",
+            "testStrategy": "Verify all game stats display accurately. Test share functionality generates proper content. Validate achievements show when unlocked. Test save confirmation works properly."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Implement Watch App Core Tracking Features",
+        "description": "Add all core tracking functionality to the Watch app including GPS, HealthKit, and workout sessions",
+        "details": "Implement comprehensive tracking system for the Watch app. Set up CoreLocation for GPS tracking with proper permissions. Configure HealthKit for workout sessions and heart rate monitoring. Create TrackingService to manage all sensors and data collection. Implement 5-second interval data aggregation. Add battery optimization with adaptive sensor frequencies. Ensure tracking continues in background mode. Store data locally for offline scenarios.",
+        "testStrategy": "Test GPS accuracy in various conditions. Verify heart rate data collection from actual device. Measure battery consumption during 2-hour sessions. Test background tracking continues properly. Validate offline data storage and retrieval.",
+        "priority": "high",
+        "dependencies": [1, 11],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up CoreLocation for GPS",
+            "description": "Configure location services and permissions for GPS tracking with proper accuracy settings",
+            "dependencies": [],
+            "details": "Add NSLocationWhenInUseUsageDescription and NSLocationAlwaysAndWhenInUseUsageDescription to Info.plist. Create LocationService class implementing CLLocationManagerDelegate. Request location permissions on first launch. Configure location accuracy based on activity (best for active play, reduced for standing). Set distance filter dynamically. Implement location update callbacks. Add GPS signal strength monitoring. Handle location errors gracefully.",
+            "status": "pending",
+            "testStrategy": "Test permission request flow on clean install. Verify GPS updates received at expected frequency. Test accuracy switching based on movement. Validate error handling for GPS failures."
+          },
+          {
+            "id": 2,
+            "title": "Implement HealthKit integration",
+            "description": "Set up workout sessions and heart rate monitoring using HealthKit framework",
+            "dependencies": [],
+            "details": "Add HealthKit capability and usage descriptions to Info.plist. Create HealthKitService for managing workout sessions. Request permissions for heart rate, active calories, distance. Configure HKWorkoutSession with soccer activity type. Implement HKLiveWorkoutBuilder for data collection. Set up heart rate queries with 1-second updates. Add workout route recording. Implement proper session lifecycle management.",
+            "status": "pending",
+            "testStrategy": "Test permission request shows all required types. Verify workout session starts/stops properly. Test heart rate data collection frequency. Validate workout saves to Health app correctly."
+          },
+          {
+            "id": 3,
+            "title": "Create TrackingService",
+            "description": "Build the main service for managing tracking sessions and coordinating all sensors",
+            "dependencies": [1, 2],
+            "details": "Create TrackingService as central coordinator for all tracking. Implement start/pause/stop methods for session control. Coordinate LocationService and HealthKitService. Add DataAggregator for 5-second interval collection. Implement state machine for tracking states. Create data models for tracking points. Add error recovery for sensor failures. Implement memory-efficient data buffering.",
+            "status": "pending",
+            "testStrategy": "Test service coordinates both location and health data. Verify state transitions work correctly. Test error recovery when sensors fail. Validate memory usage stays within limits."
+          },
+          {
+            "id": 4,
+            "title": "Add background tracking",
+            "description": "Ensure tracking continues when app is backgrounded or screen is off",
+            "dependencies": [3],
+            "details": "Enable background modes for location updates and workout processing. Configure background task scheduling for data processing. Implement extended runtime sessions for workouts. Add background location updates configuration. Create background data sync queue. Implement battery monitoring for background throttling. Add background crash recovery. Configure proper background task identifiers.",
+            "status": "pending",
+            "testStrategy": "Test tracking continues with screen off. Verify data collection in background matches foreground. Test background task execution. Validate battery usage in background mode."
+          },
+          {
+            "id": 5,
+            "title": "Implement data collection",
+            "description": "Collect and store GPS, heart rate, and motion data with proper aggregation",
+            "dependencies": [3],
+            "details": "Create GameDataPoint model for 5-second aggregated data. Implement rolling window calculations for averages. Add peak detection for max values. Create efficient storage using Core Data. Implement data compression for GPS routes. Add data validation and cleaning. Create export functionality for raw data. Implement circular buffer for memory efficiency.",
+            "status": "pending",
+            "testStrategy": "Verify 5-second aggregation accuracy. Test data storage doesn't exceed limits. Validate compression maintains data integrity. Test export functionality produces valid data."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Implement Watch-iPhone Data Synchronization",
+        "description": "Create reliable data sync between Watch and iPhone using WatchConnectivity",
+        "details": "Implement bidirectional data synchronization between Apple Watch and iPhone. Set up WatchConnectivity framework on both platforms. Create real-time sync during active games for live viewing on iPhone. Implement background transfers for completed games. Add offline queue supporting 7 days or 50MB of data. Create connection status indicators. Handle sync conflicts and retries.",
+        "testStrategy": "Test real-time sync during active games. Verify offline games sync when reconnected. Test queue limits and data eviction. Validate sync reliability with connection interruptions. Test conflict resolution scenarios.",
+        "priority": "high",
+        "dependencies": [12],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up WatchConnectivity",
+            "description": "Configure WatchConnectivity framework on both Watch and iPhone platforms",
+            "dependencies": [],
+            "details": "Create WatchSessionManager singleton for both apps. Implement WCSessionDelegate on both platforms. Handle session activation and reachability. Create message type enums for communication. Implement session state monitoring. Add error handling for session failures. Configure background session handling. Create shared data models for transfer.",
+            "status": "pending",
+            "testStrategy": "Test session activation on both devices. Verify reachability detection works. Test delegate methods called properly. Validate error handling for disconnections."
+          },
+          {
+            "id": 2,
+            "title": "Implement real-time sync",
+            "description": "Sync live game data during active sessions for real-time viewing on iPhone",
+            "dependencies": [1],
+            "details": "Create sendMessage implementation for immediate delivery. Send game updates every 5 seconds during active game. Include current stats: duration, distance, speed, heart rate. Implement message batching for efficiency. Add acknowledgment system for delivery confirmation. Handle message failures with retry. Optimize payload size for performance. Add priority levels for messages.",
+            "status": "pending",
+            "testStrategy": "Test messages deliver within 1 second. Verify all stats update on iPhone. Test message batching works correctly. Validate retry logic on failures."
+          },
+          {
+            "id": 3,
+            "title": "Add background transfers",
+            "description": "Handle large data transfers in background for completed games",
+            "dependencies": [1],
+            "details": "Implement transferUserInfo for reliable background delivery. Create game summary payload with compressed GPS data. Add progress tracking for large transfers. Implement chunk-based transfer for big files. Handle partial transfer recovery. Add transfer queue management. Create background task for processing. Implement transfer prioritization.",
+            "status": "pending",
+            "testStrategy": "Test large game data transfers completely. Verify transfers resume after interruption. Test background delivery when app not running. Validate data integrity after transfer."
+          },
+          {
+            "id": 4,
+            "title": "Create sync conflict resolution",
+            "description": "Handle offline scenarios and sync conflicts when devices reconnect",
+            "dependencies": [2, 3],
+            "details": "Implement offline queue with Core Data persistence. Store up to 7 days or 50MB of game data. Create conflict detection for duplicate games. Implement timestamp-based resolution. Add data deduplication logic. Create sync status tracking. Handle queue overflow scenarios. Implement data versioning for compatibility.",
+            "status": "pending",
+            "testStrategy": "Test offline queue persists across restarts. Verify 7-day/50MB limits enforced. Test conflict resolution with duplicates. Validate queue overflow handling."
+          },
+          {
+            "id": 5,
+            "title": "Add connection status UI",
+            "description": "Show connection status on both devices with sync progress indicators",
+            "dependencies": [1],
+            "details": "Create ConnectionStatusView component for both apps. Show real-time connection state (connected/disconnected). Add sync progress indicators during transfers. Display queue size when offline. Implement last sync timestamp. Add manual sync trigger option. Create sync history log. Add troubleshooting guidance for connection issues.",
+            "status": "pending",
+            "testStrategy": "Test UI updates match actual connection state. Verify progress indicators show accurate status. Test manual sync trigger works. Validate sync history displays correctly."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Fix iOS App UI Issues and Placeholders",
+        "description": "Remove all 'Coming Soon' placeholders and implement missing features in iOS app",
+        "details": "Replace all placeholder 'Coming Soon' screens with actual functionality. Implement Edit Profile view with user information editing. Create Settings view with app preferences and account options. Build Create Group and Join Group views with proper functionality. Implement all Profile menu items including Privacy Policy, Terms of Service, Help Center, and Share App. Remove any non-functional UI elements.",
+        "testStrategy": "Verify no 'Coming Soon' placeholders remain. Test all views have proper functionality. Validate form submissions work correctly. Test all menu items navigate to proper views. Verify data updates persist properly.",
+        "priority": "high",
+        "dependencies": [7],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Edit Profile view",
+            "description": "Replace 'Coming Soon' with actual edit profile functionality",
+            "dependencies": [],
+            "details": "Create EditProfileView with form fields for display name, bio, and profile image. Implement image picker for profile photo updates. Add form validation for required fields. Create save functionality updating Firestore. Implement loading states during save. Add error handling with user feedback. Create cancel confirmation if changes made. Update ProfileView to navigate properly.",
+            "status": "pending",
+            "testStrategy": "Test form validation works correctly. Verify image upload succeeds. Test save updates Firestore properly. Validate error messages display correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement Settings view",
+            "description": "Replace 'Coming Soon' with actual settings screen",
+            "dependencies": [],
+            "details": "Create SettingsView with sections for notifications, privacy, and app preferences. Add notification toggles for different alert types. Implement biometric lock toggle. Add units preference (metric/imperial). Create cache management options. Add account deletion option. Implement proper navigation from Profile. Add version info and debug options.",
+            "status": "pending",
+            "testStrategy": "Test all toggles save preferences correctly. Verify notification settings affect actual notifications. Test cache clearing works. Validate account deletion flow."
+          },
+          {
+            "id": 3,
+            "title": "Implement Create Group view",
+            "description": "Replace 'Coming Soon' with group creation functionality",
+            "dependencies": [],
+            "details": "Create CreateGroupView with name and description fields. Add privacy toggle for public/private groups. Implement member limit based on subscription. Generate unique invite codes for private groups. Add form validation and error handling. Create group in Firestore on submission. Show loading states during creation. Navigate to new group on success.",
+            "status": "pending",
+            "testStrategy": "Test group creation with valid data. Verify invite codes are unique. Test member limit enforcement. Validate error handling for duplicates."
+          },
+          {
+            "id": 4,
+            "title": "Implement Join Group view",
+            "description": "Replace 'Coming Soon' with join group functionality",
+            "dependencies": [],
+            "details": "Create JoinGroupView with invite code input field. Add public groups discovery list. Implement search functionality for public groups. Add join button with confirmation. Validate invite codes and show errors. Update user's groups in Firestore. Show group preview before joining. Add loading states during join process.",
+            "status": "pending",
+            "testStrategy": "Test joining with valid invite codes. Verify invalid codes show errors. Test public group discovery works. Validate user added to group properly."
+          },
+          {
+            "id": 5,
+            "title": "Implement all Profile menu items",
+            "description": "Add functionality for Privacy Policy, Terms, Help, and other menu items",
+            "dependencies": [],
+            "details": "Create PrivacyPolicyView with web view or native content. Create TermsOfServiceView with formatted legal text. Build HelpCenterView with FAQs and support options. Implement ShareAppView with share sheet. Add RateAppView linking to App Store. Create proper navigation for all items. Remove any remaining placeholders. Add external link handling where needed.",
+            "status": "pending",
+            "testStrategy": "Test all menu items navigate correctly. Verify web views load content. Test share sheet shows app info. Validate external links open properly."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Fix iOS App Navigation and Watch Integration",
+        "description": "Fix navigation issues and remove incorrect game controls from iPhone app",
+        "details": "Remove the incorrect 'Start Game' button from iPhone Dashboard since games only start from Watch. Fix the non-functional 'Find Groups' button to properly navigate. Add Watch connection status indicator to iPhone app. Update Dashboard to be Watch-data focused. Add proper prompts guiding users to start games from their Apple Watch.",
+        "testStrategy": "Verify Start Game button removed from iPhone. Test Find Groups navigates correctly. Validate Watch connection status displays. Test Dashboard shows Watch data only. Verify user guidance for Watch-first flow.",
+        "priority": "high",
+        "dependencies": [13],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Remove Start Game button from Dashboard",
+            "description": "Games should only start from Watch, remove incorrect iPhone button",
+            "dependencies": [],
+            "details": "Remove Start Game ActionButton from DashboardView QuickStartSection. Replace with Watch connection status card. Add informational text explaining games start from Watch. Update DashboardViewModel to remove game start logic. Clean up any unused game control code. Add Watch app installation check. Show prompt to install Watch app if missing.",
+            "status": "pending",
+            "testStrategy": "Verify Start Game button no longer appears. Test Watch status card displays correctly. Validate installation prompt shows when Watch app missing."
+          },
+          {
+            "id": 2,
+            "title": "Fix Find Groups navigation",
+            "description": "Make Find Groups button navigate to proper group discovery view",
+            "dependencies": [],
+            "details": "Update Find Groups button action in appropriate view. Create navigation link to JoinGroupView or discovery. Remove any placeholder or non-functional code. Add proper NavigationLink with value-based navigation. Test navigation stack push/pop behavior. Ensure back navigation works properly. Update button state management.",
+            "status": "pending",
+            "testStrategy": "Test Find Groups button navigates correctly. Verify navigation stack maintains proper state. Test back navigation returns to previous view."
+          },
+          {
+            "id": 3,
+            "title": "Add Watch connection status",
+            "description": "Show Watch connection status in iPhone app for user awareness",
+            "dependencies": [],
+            "details": "Create WatchConnectionIndicator component. Display in Dashboard and relevant screens. Show connected/disconnected state with color coding. Add last sync timestamp when disconnected. Implement tap action for connection help. Update automatically when connection changes. Add sync progress during active games.",
+            "status": "pending",
+            "testStrategy": "Test indicator shows accurate connection state. Verify updates when Watch connects/disconnects. Test help action provides useful guidance."
+          },
+          {
+            "id": 4,
+            "title": "Update Dashboard for Watch-first flow",
+            "description": "Redesign dashboard to show game data from Watch instead of iPhone controls",
+            "dependencies": [1],
+            "details": "Remove any iPhone-based game controls. Focus on displaying Watch-collected game data. Add 'Recent Games from Watch' section. Show sync status for pending Watch data. Add empty state when no Watch data available. Update quick stats to show Watch-sourced metrics. Emphasize Watch as data source in UI.",
+            "status": "pending",
+            "testStrategy": "Verify Dashboard only shows Watch data. Test empty states display correctly. Validate sync status shows for pending data."
+          },
+          {
+            "id": 5,
+            "title": "Add prompts to start from Watch",
+            "description": "Guide users to start games from Watch when they try from iPhone",
+            "dependencies": [4],
+            "details": "Add educational prompt in Dashboard explaining Watch-first approach. Create onboarding screen for first-time users. Add contextual hints when users look for game controls. Implement 'How to Start a Game' help section. Add Watch app deep link if possible. Create visual guide showing Watch start button. Update any game-related CTAs to reference Watch.",
+            "status": "pending",
+            "testStrategy": "Test prompts appear at appropriate times. Verify help content is clear and accurate. Test deep links work if implemented."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-07-19T09:04:33.630Z",
-      "updated": "2025-07-19T22:29:09.336Z",
+      "updated": "2025-01-21T10:15:00.000Z",
       "description": "Tasks for master context"
     }
   }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1500"
+   LastUpgradeVersion = "1620"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,9 +15,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AEBE2491D5154320844EF5B4"
-               BuildableName = "SoccerXWatch.app"
-               BlueprintName = "SoccerXWatch"
+               BlueprintIdentifier = "DC9E7D952E2DCA2000A8625F"
+               BuildableName = "SoccerW Watch App.app"
+               BlueprintName = "SoccerW Watch App"
+               ReferencedContainer = "container:SoccerX.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3D1A1F192C1234567890012"
+               BuildableName = "SoccerX.app"
+               BlueprintName = "SoccerX"
                ReferencedContainer = "container:SoccerX.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,7 +41,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -42,9 +58,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AEBE2491D5154320844EF5B4"
-            BuildableName = "SoccerXWatch.app"
-            BlueprintName = "SoccerXWatch"
+            BlueprintIdentifier = "DC9E7D952E2DCA2000A8625F"
+            BuildableName = "SoccerW Watch App.app"
+            BlueprintName = "SoccerW Watch App"
             ReferencedContainer = "container:SoccerX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -59,9 +75,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "AEBE2491D5154320844EF5B4"
-            BuildableName = "SoccerXWatch.app"
-            BlueprintName = "SoccerXWatch"
+            BlueprintIdentifier = "DC9E7D952E2DCA2000A8625F"
+            BuildableName = "SoccerW Watch App.app"
+            BlueprintName = "SoccerW Watch App"
             ReferencedContainer = "container:SoccerX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

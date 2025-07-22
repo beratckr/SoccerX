@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 struct SyncStatusView: View {
-    @StateObject private var connectivityManager = WatchConnectivityManager.shared
+    @StateObject private var connectivityManager = SharedWatchConnectivityManager.shared
     @StateObject private var offlineQueue = OfflineDataQueue.shared
     @StateObject private var optimizationEngine = SyncOptimizationEngine.shared
     @State private var showingDetails = false
@@ -28,7 +28,7 @@ struct SyncStatusView: View {
         .navigationTitle("Sync Status")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 Button("Details") {
                     showingDetails = true
                 }
@@ -46,7 +46,7 @@ struct SyncStatusView: View {
 // MARK: - Connection Status Card
 
 struct ConnectionStatusCard: View {
-    @StateObject private var connectivityManager = WatchConnectivityManager.shared
+    @StateObject private var connectivityManager = SharedWatchConnectivityManager.shared
     @StateObject private var optimizationEngine = SyncOptimizationEngine.shared
     
     var body: some View {
@@ -62,7 +62,7 @@ struct ConnectionStatusCard: View {
             VStack(alignment: .leading, spacing: 6) {
                 ConnectionInfoRow(
                     title: "Status",
-                    value: connectivityManager.connectionState.rawValue,
+                    value: connectivityManager.connectionState.displayText,
                     color: connectionColor
                 )
                 
@@ -92,7 +92,7 @@ struct ConnectionStatusCard: View {
             }
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
     }
     
@@ -112,6 +112,10 @@ struct ConnectionStatusCard: View {
             return "wifi.slash"
         case .notActivated:
             return "exclamationmark.triangle"
+        case .activating:
+            return "antenna.radiowaves.left.and.right"
+        case .failed:
+            return "exclamationmark.triangle"
         }
     }
     
@@ -124,6 +128,10 @@ struct ConnectionStatusCard: View {
         case .notReachable:
             return .red
         case .notActivated:
+            return .red
+        case .activating:
+            return .orange
+        case .failed:
             return .red
         }
     }
@@ -211,7 +219,7 @@ struct QueueStatusCard: View {
             }
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
     }
     
@@ -303,7 +311,7 @@ struct OptimizationCard: View {
             }
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
     }
     
@@ -331,14 +339,14 @@ struct OptimizationCard: View {
 // MARK: - Action Buttons
 
 struct ActionButtonsView: View {
-    @StateObject private var connectivityManager = WatchConnectivityManager.shared
+    @StateObject private var connectivityManager = SharedWatchConnectivityManager.shared
     @StateObject private var offlineQueue = OfflineDataQueue.shared
     @State private var showingErrorRecovery = false
     
     var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
-                ActionButton(
+                SyncActionButton(
                     title: "Force Sync",
                     icon: "arrow.triangle.2.circlepath",
                     color: .blue,
@@ -347,7 +355,7 @@ struct ActionButtonsView: View {
                     forceSyncAction()
                 }
                 
-                ActionButton(
+                SyncActionButton(
                     title: "Clear Failed",
                     icon: "trash",
                     color: .red,
@@ -358,7 +366,7 @@ struct ActionButtonsView: View {
             }
             
             HStack(spacing: 12) {
-                ActionButton(
+                SyncActionButton(
                     title: "Test Connection",
                     icon: "wifi.circle",
                     color: .green,
@@ -367,7 +375,7 @@ struct ActionButtonsView: View {
                     testConnectionAction()
                 }
                 
-                ActionButton(
+                SyncActionButton(
                     title: "Error Recovery",
                     icon: "wrench.and.screwdriver",
                     color: .orange,
@@ -471,7 +479,7 @@ struct OptimizationInfoRow: View {
     }
 }
 
-struct ActionButton: View {
+struct SyncActionButton: View {
     let title: String
     let icon: String
     let color: Color
@@ -506,7 +514,7 @@ struct SyncDetailsView: View {
                 .navigationTitle("Sync Details")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .automatic) {
                         Button("Done") {
                             // Dismiss
                         }
@@ -523,7 +531,7 @@ struct ErrorRecoveryView: View {
                 .navigationTitle("Error Recovery")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .automatic) {
                         Button("Done") {
                             // Dismiss
                         }

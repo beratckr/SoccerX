@@ -29,14 +29,21 @@ struct OnboardingView: View {
             
             // Sign in with Apple Button
             VStack(spacing: 20) {
-                SignInWithAppleButton(.signIn) { request in
-                    request.requestedScopes = [.fullName, .email]
-                } onCompletion: { result in
-                    // Handle result in AuthenticationService
+                Button(action: {
+                    authService.signInWithApple()
+                }) {
+                    HStack {
+                        Image(systemName: "applelogo")
+                            .font(.system(size: 20))
+                        Text("Sign in with Apple")
+                            .font(.system(size: 19, weight: .medium))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color.black)
+                    .cornerRadius(25)
                 }
-                .signInWithAppleButtonStyle(.black)
-                .frame(height: 50)
-                .cornerRadius(25)
                 .padding(.horizontal)
                 
                 if authService.isLoading {
@@ -80,9 +87,6 @@ struct OnboardingView: View {
             .padding(.bottom, 30)
         }
         .background(Color.black.ignoresSafeArea())
-        .onTapGesture {
-            authService.signInWithApple()
-        }
     }
 }
 

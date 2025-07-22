@@ -6,7 +6,7 @@ import FirebaseAuth
 class LeaderboardManager: ObservableObject {
     static let shared = LeaderboardManager()
     
-    private let db = Firestore.firestore()
+    private lazy var db = Firestore.firestore()
     private var cancellables = Set<AnyCancellable>()
     
     @Published private(set) var currentLeaderboards: [String: Leaderboard] = [:] // groupId: Leaderboard
@@ -14,7 +14,10 @@ class LeaderboardManager: ObservableObject {
     @Published private(set) var error: Error?
     
     private init() {
-        observeUserGroupLeaderboards()
+        // Delay initialization to ensure Firebase is configured
+        DispatchQueue.main.async { [weak self] in
+            self?.observeUserGroupLeaderboards()
+        }
     }
     
     // MARK: - Leaderboard Operations

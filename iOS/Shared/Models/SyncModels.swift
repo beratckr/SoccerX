@@ -1,7 +1,6 @@
 import Foundation
 
-// MARK: - Compatibility with watchOS GameDataPoint
-#if os(watchOS)
+// MARK: - GameDataPoint Definition
 import CoreLocation
 
 struct GameDataPoint {
@@ -11,7 +10,6 @@ struct GameDataPoint {
     let heartRate: Double
     let accuracy: Double
 }
-#endif
 
 // MARK: - Game Sync Models
 
@@ -29,7 +27,7 @@ struct GameSyncData: Codable, Identifiable {
     let maxHeartRate: Double
     let calories: Double
     let mvpScore: Double?
-    let events: [GameEvent]
+    let events: [SyncGameEvent]
     let dataPoints: [CompressedDataPoint]
     let syncStatus: SyncStatus
     let lastModified: Date
@@ -48,7 +46,7 @@ struct GameSyncData: Codable, Identifiable {
         maxHeartRate: Double = 0,
         calories: Double = 0,
         mvpScore: Double? = nil,
-        events: [GameEvent] = [],
+        events: [SyncGameEvent] = [],
         dataPoints: [CompressedDataPoint] = [],
         syncStatus: SyncStatus = .pending,
         lastModified: Date = Date()
@@ -73,7 +71,7 @@ struct GameSyncData: Codable, Identifiable {
     }
 }
 
-struct GameEvent: Codable, Identifiable {
+struct SyncGameEvent: Codable, Identifiable {
     let id: UUID
     let timestamp: Date
     let type: EventType
@@ -143,7 +141,7 @@ enum SyncPriority: String, Codable, CaseIterable, Comparable {
 
 struct SyncQueueItem: Codable, Identifiable {
     let id: UUID
-    let messageType: WatchConnectivityManager.MessageType
+    let messageType: String // Store as String for Codable
     let priority: SyncPriority
     let payload: Data
     let createdAt: Date
@@ -152,14 +150,19 @@ struct SyncQueueItem: Codable, Identifiable {
     var lastAttempt: Date?
     var syncStatus: SyncStatus
     
+    // Computed property to get the actual MessageType
+    var messageTypeEnum: SharedWatchConnectivityManager.MessageType? {
+        SharedWatchConnectivityManager.MessageType(rawValue: messageType)
+    }
+    
     init(
-        messageType: WatchConnectivityManager.MessageType,
+        messageType: SharedWatchConnectivityManager.MessageType,
         priority: SyncPriority,
         payload: Data,
         retryCount: Int = 0
     ) {
         self.id = UUID()
-        self.messageType = messageType
+        self.messageType = messageType.rawValue
         self.priority = priority
         self.payload = payload
         self.createdAt = Date()
@@ -222,12 +225,12 @@ struct GroupSync: Codable, Identifiable {
     let inviteCode: String
     let isPublic: Bool
     let memberLimit: Int
-    let weeklyChallenge: WeeklyChallenge?
-    let leaderboard: [LeaderboardEntry]
+    let weeklyChallenge: SyncWeeklyChallenge?
+    let leaderboard: [SyncLeaderboardEntry]
     let lastUpdated: Date
 }
 
-struct WeeklyChallenge: Codable {
+struct SyncWeeklyChallenge: Codable {
     let id: UUID
     let groupId: UUID
     let startDate: Date
@@ -247,7 +250,7 @@ struct WeeklyChallenge: Codable {
     }
 }
 
-struct LeaderboardEntry: Codable, Identifiable {
+struct SyncLeaderboardEntry: Codable, Identifiable {
     let id: UUID
     let userId: String
     let userName: String

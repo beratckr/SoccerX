@@ -9,19 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationView {
-            VStack {
-                Image(systemName: "sportscourt")
-                    .imageScale(.large)
-                    .foregroundStyle(.tint)
-                Text("SoccerW")
-                    .font(.headline)
-                Text("Track Your Game")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding()
-        }
+        HomeView()
     }
 }
 

@@ -15,12 +15,16 @@ class AuthenticationService: NSObject, ObservableObject {
     
     // Unhashed nonce for Apple Sign In
     private var currentNonce: String?
-    private let userRepository = UserRepository()
+    private lazy var userRepository = UserRepository()
     private var cancellables = Set<AnyCancellable>()
+    private var currentAuthorizationController: ASAuthorizationController?
     
     private override init() {
         super.init()
-        checkAuthenticationStatus()
+        // Delay initialization to ensure Firebase is configured
+        DispatchQueue.main.async { [weak self] in
+            self?.checkAuthenticationStatus()
+        }
     }
     
     func checkAuthenticationStatus() {
@@ -59,17 +63,24 @@ class AuthenticationService: NSObject, ObservableObject {
     }
     
     func signInWithApple() {
+        print("🔐 Starting Sign in with Apple...")
+        
         let nonce = randomNonceString()
         currentNonce = nonce
+        print("✅ Generated nonce")
         
         let request = ASAuthorizationAppleIDProvider().createRequest()
         request.requestedScopes = [.fullName, .email]
         request.nonce = sha256(nonce)
+        print("✅ Created authorization request")
         
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
+        currentAuthorizationController = ASAuthorizationController(authorizationRequests: [request])
+        currentAuthorizationController?.delegate = self
+        currentAuthorizationController?.presentationContextProvider = self
+        print("✅ Set up authorization controller")
+        
+        currentAuthorizationController?.performRequests()
+        print("✅ Called performRequests")
     }
     
     func signOut() {
@@ -232,10 +243,13 @@ extension AuthenticationService: ASAuthorizationControllerDelegate {
 
 extension AuthenticationService: ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        print("🪟 Getting presentation anchor...")
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {
+            print("❌ No window scene found, creating new window")
             return UIWindow()
         }
+        print("✅ Returning window: \(window)")
         return window
     }
 }
